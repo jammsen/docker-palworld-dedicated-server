@@ -26,7 +26,7 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 
 ## Getting started
 
-1. Create `game` sub-directories on your Dockernode in your game-server-directory (`/srv/palworld`) and give it with `chmod 777 game` full permissions.
+1. Create `game` sub-directories on your Dockernode in your game-server-directory (`/srv/palworld`) and give it with `chmod 777 game` full permissions or use `chown -R 1000:1000 game/`.
 2. Setup Port-Forwarding or NAT for the ports in the Docker-Compose file
 3. (Build if needed )Start via `docker-compose up -d` - See docker-compose.yml and next section for more infos
 4. After first start, stop the server, setup your config at `game/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini` and start it again
