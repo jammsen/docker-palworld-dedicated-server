@@ -17,6 +17,21 @@ function updateServer() {
 function startServer() {
     echo ">>> Starting the gameserver"
     cd $GAME_PATH
+
+    if [ ! -f ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini ]; then
+        if [ ! -d ${GAME_PATH}/Pal/Saved/Config/LinuxServer ]; then
+            mkdir -p ${GAME_PATH}/Pal/Saved/Config/LinuxServer
+        fi
+        wget -qO ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini https://raw.githubusercontent.com/jammsen/docker-palworld-dedicated-server/master/PalWorldSettings.ini
+        sed -i -e "s/###RANDOM###/$RANDOM/g" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+        if [[ -n $PUBLIC_IP ]]; then
+            sed -i -e "s/###IP###/$PUBLIC_IP/g" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+        fi
+        if [[ -n $PUBLIC_PORT ]]; then
+            sed -i -e "s/###PORT###/$PUBLIC_PORT/g" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+        fi
+    fi
+
     START_OPTIONS=""
     if [[ -n $COMMUNITY_SERVER ]] && [[ $COMMUNITY_SERVER == "true" ]]; then
         START_OPTIONS="$START_OPTIONS EpicApp=PalServer"
@@ -24,17 +39,7 @@ function startServer() {
     if [[ -n $MULTITHREAD_ENABLED ]] && [[ $MULTITHREAD_ENABLED == "true" ]]; then
         START_OPTIONS="$START_OPTIONS -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
     fi
-    if [[ -n $PUBLIC_IP ]]; then
-        START_OPTIONS="$START_OPTIONS -publicip=$PUBLIC_IP"
-    fi
-    if [[ -n $PUBLIC_PORT ]]; then
-        START_OPTIONS="$START_OPTIONS -publicport=$PUBLIC_PORT"
-    fi
-    if [[ -n $SERVER_PASSWORD ]]; then
-        START_OPTIONS="$START_OPTIONS -serverpassword=$SERVER_PASSWORD"
-    fi
-
-    ./PalServer.sh port="$GAME_PORT" players="$MAX_PLAYERS" "$START_OPTIONS" -servername="$SERVER_NAME"
+    ./PalServer.sh "$START_OPTIONS" 
 }
 
 function startMain() {
