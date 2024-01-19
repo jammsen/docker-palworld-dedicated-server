@@ -29,6 +29,7 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 1. Create `game` sub-directories on your Dockernode in your game-server-directory (`/srv/palworld`) and give it with `chmod 777 game` full permissions.
 2. Setup Port-Forwarding or NAT for the ports in the Docker-Compose file
 3. (Build if needed )Start via `docker-compose up -d` - See docker-compose.yml and next section for more infos
+4. After first start, stop the server, setup your config at `game/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini` and start it again
 
 ## Environment-Variables
 | Variable               | Describe                                                         | Default Value | Allowed Value |
@@ -36,8 +37,6 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 | ALWAYS_UPDATE_ON_START | Updates the server on startup                                    | true          | false/true    |
 | GAME_PORT              | Game port of the server                                          | 8211          | 1024-65535    |
 | MAX_PLAYERS            | Maximum amout of players                                         | 32            | 1-32          |
-| SERVER_NAME            | Name of the server                                               |               | string        |
-| SERVER_PASSWORD        | Password of the server                                           |               | string        |
 | MULTITHREAD_ENABLED    | Sets options for "Improved multi-threaded CPU performance"       | true          | false/true    |
 | COMMUNITY_SERVER       | Sets the server to a "Community-Server", will appear in the list | false         | false/true    |
 | PUBLIC_IP              | Public ip, auto-detect if not specified                          | false         | ip address    |

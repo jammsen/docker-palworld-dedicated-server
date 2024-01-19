@@ -10,11 +10,9 @@ ENV TIMEZONE=Europe/Berlin \
     ALWAYS_UPDATE_ON_START=false \
     GAME_PORT=8211 \
     MAX_PLAYERS=16 \
-    SERVER_NAME="jammsen-docker-generated" \
-    SERVER_PASSWORD="test" \
     MULTITHREAD_ENABLED=true \
     COMMUNITY_SERVER=true \
-    PUBLIC_IP=10.0.0.5 \
+    PUBLIC_IP=10.0.0.1 \
     PUBLIC_PORT=8211
 
 VOLUME [ "/palworld" ]
