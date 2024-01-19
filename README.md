@@ -42,8 +42,7 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 | COMMUNITY_SERVER       | Sets the server to a "Community-Server", will appear in the list | false         | false/true    |
 | PUBLIC_IP              | Public ip, auto-detect if not specified                          | false         | ip address    |
 | PUBLIC_PORT            | Public port, auto-detect if not specified                        | false         | 1024-65535    |
-|                        |                                                                  |               |               |
-|                        |                                                                  |               |               |
+
 Look at https://tech.palworldgame.com/optimize-game-balance for more information
 
 ## Planned features in the future
