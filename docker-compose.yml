@@ -7,7 +7,7 @@ services:
     restart: always
     network_mode: bridge
     ports:
-      - 8211:8211
+      - "8211:8211/udp"
     environment:
       - ALWAYS_UPDATE_ON_START=false
       - GAME_PORT=8211
