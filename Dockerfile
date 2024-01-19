@@ -13,7 +13,11 @@ ENV TIMEZONE=Europe/Berlin \
     MULTITHREAD_ENABLED=true \
     COMMUNITY_SERVER=true \
     PUBLIC_IP=10.0.0.1 \
-    PUBLIC_PORT=8211
+    PUBLIC_PORT=8211 \
+    SERVER_NAME= \
+    SERVER_PASSWORD= \
+    ADMIN_PASSWORD=
+
 
 VOLUME [ "/palworld" ]
 

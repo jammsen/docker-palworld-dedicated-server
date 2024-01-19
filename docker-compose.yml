@@ -16,5 +16,8 @@ services:
       - COMMUNITY_SERVER=true
       - PUBLIC_IP=
       - PUBLIC_PORT=
+      - SERVER_NAME=
+      - SERVER_PASSWORD=
+      - ADMIN_PASSWORD=
     volumes:
       - ./game:/palworld

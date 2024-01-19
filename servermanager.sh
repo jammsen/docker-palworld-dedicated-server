@@ -24,19 +24,38 @@ function startServer() {
         if [ ! -d ${GAME_PATH}/Pal/Saved/Config/LinuxServer ]; then
             mkdir -p ${GAME_PATH}/Pal/Saved/Config/LinuxServer
         fi
-        curl -o ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini https://raw.githubusercontent.com/jammsen/docker-palworld-dedicated-server/master/PalWorldSettings.ini
-#        wget -qO ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini https://raw.githubusercontent.com/jammsen/docker-palworld-dedicated-server/master/PalWorldSettings.ini
+        # Copy default config
+        cp ${GAME_PATH}/DefaultPalWorldSettings.ini ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
         RAND_VALUE=$RANDOM
         echo "Servername is now jammsen-docker-generated-$RAND_VALUE"
         sed -i -e "s/###RANDOM###/$RAND_VALUE/g" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
-        if [[ -n $PUBLIC_IP ]]; then
-            echo "Setting Public IP to $PUBLIC_IP"
-            sed -i -e "s/###IP###/$PUBLIC_IP/g" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
-        fi
-        if [[ -n $PUBLIC_PORT ]]; then
-            echo "Setting Public Port to $PUBLIC_PORT"
-            sed -i -e "s/###PORT###/$PUBLIC_PORT/g" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
-        fi
+    fi
+
+    # You may want to change your servers settings whenever it starts
+    # Not only when there was no config before
+    if [[ -n $PUBLIC_IP ]]; then
+        echo "Setting Public IP to $PUBLIC_IP"
+        sed -i "s/PublicIP=\"[^\"]*\"/PublicIP=\"$PUBLIC_IP\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $PUBLIC_PORT ]]; then
+        echo "Setting Public Port to $PUBLIC_PORT"
+        sed -i "s/PublicPort=[0-9]*/PublicPort=$PUBLIC_PORT/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $SERVER_NAME ]]; then
+        echo "Setting Server name to $SERVER_NAME"
+        sed -i "s/ServerName=\"[^\"]*\"/ServerName=\"$SERVER_NAME\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $SERVER_PASSWORD ]]; then
+        echo "Setting Server Password to $SERVER_PASSWORD"
+        sed -i "s/ServerPassword=\"[^\"]*\"/ServerPassword=\"$SERVER_PASSWORD\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $ADMIN_PASSWORD ]]; then
+        echo "Setting Server Admin Password to $ADMIN_PASSWORD"
+        sed -i "s/AdminPassword=\"[^\"]*\"/AdminPassword=\"$ADMIN_PASSWORD\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $MAX_PLAYERS ]]; then
+        echo "Setting Maximum Players to $MAX_PLAYERS"
+        sed -i "s/ServerPlayerMaxNum=[0-9]*/ServerPlayerMaxNum=$MAX_PLAYERS/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
     fi
 
     START_OPTIONS=""
@@ -46,7 +65,7 @@ function startServer() {
     if [[ -n $MULTITHREAD_ENABLED ]] && [[ $MULTITHREAD_ENABLED == "true" ]]; then
         START_OPTIONS="$START_OPTIONS -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
     fi
-    ./PalServer.sh "$START_OPTIONS" 
+    ./PalServer.sh "$START_OPTIONS"
 }
 
 function startMain() {
