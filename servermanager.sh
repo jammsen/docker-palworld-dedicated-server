@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GAME_PATH="/palworld/"
+GAME_PATH="/palworld"
 
 function installServer() {
     # force a fresh install of all
@@ -25,7 +25,6 @@ function startServer() {
             mkdir -p ${GAME_PATH}/Pal/Saved/Config/LinuxServer
         fi
         curl -o ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini https://raw.githubusercontent.com/jammsen/docker-palworld-dedicated-server/master/PalWorldSettings.ini
-#        wget -qO ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini https://raw.githubusercontent.com/jammsen/docker-palworld-dedicated-server/master/PalWorldSettings.ini
         RAND_VALUE=$RANDOM
         echo "Servername is now jammsen-docker-generated-$RAND_VALUE"
         sed -i -e "s/###RANDOM###/$RAND_VALUE/g" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
