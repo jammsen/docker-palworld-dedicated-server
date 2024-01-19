@@ -17,7 +17,7 @@ ENV TIMEZONE=Europe/Berlin \
     PUBLIC_IP=10.0.0.5 \
     PUBLIC_PORT=8211
 
-VOLUME ["/palworld"}
+VOLUME [ "/palworld" ]
 
 EXPOSE 8211/tcp 8211/udp
 
