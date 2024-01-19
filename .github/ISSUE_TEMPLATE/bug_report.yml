@@ -1,0 +1,77 @@
+name: "Bug report"
+description: Create a bug report or help us improve things
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Important information
+        Please understand you are asking for support for the Docker-Image and Docker-Container. I'm NOT the creator of the Dedicated-Game-Server itself, i'm not involved in programming that. If you need help for that, you might want to ask here for topics related to that: https://tech.palworldgame.com/dedicated-server-guide
+  - type: checkboxes
+    id: understand-important-info
+    attributes:
+      label: Have you read the Important information text above
+      options:
+        - label: Yes i did
+          required: true
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Current behavior
+      description: A clear and concise description of what the problem is.
+      placeholder: Currently...
+    validations:
+      required: true
+  - type: textarea
+    id: desired-behavior
+    attributes:
+      label: Desired behavior
+      description: Remember, im not familiar with your setup, your permission, your Docker settings and all that kind of stuff, please provide a clear description of what your desired outcome is.
+      placeholder: Desried ...
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot-links
+    attributes:
+      label: Links to screenshots
+      placeholder: ...
+    validations:
+      required: false
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: To Reproduce
+      description: What steps can i do to reproduce your problem?
+      value: |
+        Steps to reproduce the behavior:
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: software
+    attributes:
+      label: Software setup
+      value: |
+        - OS:
+        - Docker:
+    validations:
+      required: true
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Hardware setup
+      value: |
+        - vCPU: 
+        - RAM: 
+        - Disk:
+    validations:
+      required: true
+  - type: textarea
+    id: more
+    attributes:
+      label: Additional context
+      placeholder: Add any other context about the problem here, in as much detail as possible.
+    validations:
+      required: false

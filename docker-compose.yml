@@ -1,0 +1,22 @@
+version: '3.9'
+services:
+  palworld-dedicated-server:
+    build: .
+    container_name: palworld-dedicated-server
+    image: jammsen/palworld-dedicated-server:latest
+    restart: always
+    network_mode: bridge
+    ports:
+      - 8211:8211
+    environment:
+      - ALWAYS_UPDATE_ON_START=false
+      - GAME_PORT=8211
+      - MAX_PLAYERS=16
+      - SERVER_NAME=jammsen-docker-generated
+      - SERVER_PASSWORD=
+      - MULTITHREAD_ENABLED=true
+      - COMMUNITY_SERVER=true
+      - PUBLIC_IP=
+      - PUBLIC_PORT=
+    volumes:
+      - ./game:/palworld
