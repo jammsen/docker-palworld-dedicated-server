@@ -32,15 +32,18 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 4. After first start, stop the server, setup your config at `game/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini` and start it again
 
 ## Environment-Variables
-| Variable               | Describe                                                                                          | Default Value | Allowed Value |
-| ---------------------- | ------------------------------------------------------------------------------------------------- | ------------- | ------------- |
-| ALWAYS_UPDATE_ON_START | Updates the server on startup                                                                     | true          | false/true    |
-| GAME_PORT              | Game port of the server                                                                           | 8211          | 1024-65535    |
-| MAX_PLAYERS            | Maximum amout of players                                                                          | 32            | 1-32          |
-| MULTITHREAD_ENABLED    | Sets options for "Improved multi-threaded CPU performance"                                        | true          | false/true    |
-| COMMUNITY_SERVER       | Sets the server to a "Community-Server", will appear in the list. Needs PUBLIC_IP and PUBLIC_PORT | true         | false/true    |
-| PUBLIC_IP              | Public ip, auto-detect if not specified, see COMMUNITY_SERVER                                     | false         | ip address    |
-| PUBLIC_PORT            | Public port, auto-detect if not specified, see COMMUNITY_SERVER                                   | false         | 1024-65535    |
+| Variable               | Describe                                                                                                                              | Default Value                                          | Allowed Value |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------- |
+| ALWAYS_UPDATE_ON_START | Updates the server on startup                                                                                                         | true                                                   | false/true    |
+| MAX_PLAYERS            | Maximum amout of players                                                                                                              | 32                                                     | 1-32          |
+| MULTITHREAD_ENABLED    | Sets options for "Improved multi-threaded CPU performance"                                                                            | true                                                   | false/true    |
+| COMMUNITY_SERVER       | Sets the server to a "Community-Server". If true, the server will appear in the Community-Serverlist. Needs PUBLIC_IP and PUBLIC_PORT | true                                                   | false/true    |
+| PUBLIC_IP              | Public ip, auto-detect if not specified, see COMMUNITY_SERVER                                                                         | 10.0.0.1                                               | ip address    |
+| PUBLIC_PORT            | Public port, auto-detect if not specified, see COMMUNITY_SERVER                                                                       | 8211                                                   | 1024-65535    |
+| SERVER_NAME            | Name of the server                                                                                                                    | jammsen-docker-generated-###RANDOM###                  | string        |
+| SERVER_DESCRIPTION     | Desription of the server                                                                                                              | Palworld-Dedicated-Server running in Docker by jammsen | string        |
+| SERVER_PASSWORD        | Password of the server                                                                                                                | serverPasswordHere                                     | string        |
+| ADMIN_PASSWORD         | Admin password of the server                                                                                                          | adminPasswordHere                                      | string        |
 
 Look at https://tech.palworldgame.com/optimize-game-balance for more information and config-settings in `game/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`
 
