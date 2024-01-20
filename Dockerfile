@@ -7,13 +7,17 @@ ENV TIMEZONE=Europe/Berlin \
     DEBIAN_FRONTEND=noninteractive \
     PUID=0 \
     PGID=0 \
-    ALWAYS_UPDATE_ON_START=false \
-    GAME_PORT=8211 \
-    MAX_PLAYERS=16 \
+    ALWAYS_UPDATE_ON_START=true \
+    MAX_PLAYERS=32 \
     MULTITHREAD_ENABLED=true \
     COMMUNITY_SERVER=true \
     PUBLIC_IP=10.0.0.1 \
-    PUBLIC_PORT=8211
+    PUBLIC_PORT=8211 \
+    SERVER_NAME=jammsen-docker-generated-###RANDOM### \
+    SERVER_DESCRIPTION="Palworld-Dedicated-Server running in Docker by jammsen" \
+    SERVER_PASSWORD=serverPasswordHere \
+    ADMIN_PASSWORD=adminPasswordHere
+
 
 VOLUME [ "/palworld" ]
 

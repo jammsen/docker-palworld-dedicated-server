@@ -18,24 +18,49 @@ function startServer() {
     echo ">>> Starting the gameserver"
     cd $GAME_PATH
 
-    echo "Checking for config"
+    echo "Checking if config exists"
     if [ ! -f ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini ]; then
         echo "No config found, generating one"
         if [ ! -d ${GAME_PATH}/Pal/Saved/Config/LinuxServer ]; then
             mkdir -p ${GAME_PATH}/Pal/Saved/Config/LinuxServer
         fi
-        curl -o ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini https://raw.githubusercontent.com/jammsen/docker-palworld-dedicated-server/master/PalWorldSettings.ini
-        RAND_VALUE=$RANDOM
-        echo "Servername is now jammsen-docker-generated-$RAND_VALUE"
-        sed -i -e "s/###RANDOM###/$RAND_VALUE/g" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
-        if [[ -n $PUBLIC_IP ]]; then
-            echo "Setting Public IP to $PUBLIC_IP"
-            sed -i -e "s/###IP###/$PUBLIC_IP/g" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+        # Copy default-config, which comes with the server to gameserver-save location
+        cp ${GAME_PATH}/DefaultPalWorldSettings.ini ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+
+    if [[ -n $PUBLIC_IP ]]; then
+        echo "Setting public ip to $PUBLIC_IP"
+        sed -i "s/PublicIP=\"[^\"]*\"/PublicIP=\"$PUBLIC_IP\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $PUBLIC_PORT ]]; then
+        echo "Setting public port to $PUBLIC_PORT"
+        sed -i "s/PublicPort=[0-9]*/PublicPort=$PUBLIC_PORT/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $SERVER_NAME ]]; then
+        echo "Setting server name to $SERVER_NAME"
+        sed -i "s/ServerName=\"[^\"]*\"/ServerName=\"$SERVER_NAME\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+        if [[ "$SERVER_NAME" == *"###RANDOM###"* ]]; then
+            RAND_VALUE=$RANDOM
+            echo "Found standard template, using random numbers in server name"
+            sed -i -e "s/###RANDOM###/$RAND_VALUE/g" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+            echo "Server name is now jammsen-docker-generated-$RAND_VALUE"
         fi
-        if [[ -n $PUBLIC_PORT ]]; then
-            echo "Setting Public Port to $PUBLIC_PORT"
-            sed -i -e "s/###PORT###/$PUBLIC_PORT/g" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
-        fi
+    fi
+    if [[ -n $SERVER_DESCRIPTION ]]; then
+        echo "Setting server description to $SERVER_DESCRIPTION"
+        sed -i "s/ServerDescription=\"[^\"]*\"/ServerDescription=\"$SERVER_DESCRIPTION\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $SERVER_PASSWORD ]]; then
+        echo "Setting server password to $SERVER_PASSWORD"
+        sed -i "s/ServerPassword=\"[^\"]*\"/ServerPassword=\"$SERVER_PASSWORD\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $ADMIN_PASSWORD ]]; then
+        echo "Setting server admin password to $ADMIN_PASSWORD"
+        sed -i "s/AdminPassword=\"[^\"]*\"/AdminPassword=\"$ADMIN_PASSWORD\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $MAX_PLAYERS ]]; then
+        echo "Setting max-players to $MAX_PLAYERS"
+        sed -i "s/ServerPlayerMaxNum=[0-9]*/ServerPlayerMaxNum=$MAX_PLAYERS/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
     fi
 
     START_OPTIONS=""
@@ -45,7 +70,7 @@ function startServer() {
     if [[ -n $MULTITHREAD_ENABLED ]] && [[ $MULTITHREAD_ENABLED == "true" ]]; then
         START_OPTIONS="$START_OPTIONS -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
     fi
-    ./PalServer.sh "$START_OPTIONS" 
+    ./PalServer.sh "$START_OPTIONS"
 }
 
 function startMain() {
