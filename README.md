@@ -38,7 +38,7 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 | GAME_PORT              | Game port of the server                                                                           | 8211          | 1024-65535    |
 | MAX_PLAYERS            | Maximum amout of players                                                                          | 32            | 1-32          |
 | MULTITHREAD_ENABLED    | Sets options for "Improved multi-threaded CPU performance"                                        | true          | false/true    |
-| COMMUNITY_SERVER       | Sets the server to a "Community-Server", will appear in the list. Needs PUBLIC_IP and PUBLIC_PORT | false         | false/true    |
+| COMMUNITY_SERVER       | Sets the server to a "Community-Server", will appear in the list. Needs PUBLIC_IP and PUBLIC_PORT | true         | false/true    |
 | PUBLIC_IP              | Public ip, auto-detect if not specified, see COMMUNITY_SERVER                                     | false         | ip address    |
 | PUBLIC_PORT            | Public port, auto-detect if not specified, see COMMUNITY_SERVER                                   | false         | 1024-65535    |
 
