@@ -3,18 +3,27 @@ services:
   palworld-dedicated-server:
     build: .
     container_name: palworld-dedicated-server
-    image: jammsen/palworld-dedicated-server:latest
-    restart: always
+    image: handz/palworld-dedicated-server:latest
+    restart: unless-stopped
     network_mode: bridge
     ports:
       - "8211:8211/udp"
     environment:
+      - TIMEZONE=UTC
       - ALWAYS_UPDATE_ON_START=false
       - GAME_PORT=8211
       - MAX_PLAYERS=16
       - MULTITHREAD_ENABLED=true
-      - COMMUNITY_SERVER=true
-      - PUBLIC_IP=
-      - PUBLIC_PORT=
+      - COMMUNITY_SERVER=false
+      #- PUBLIC_IP=
+      #- PUBLIC_PORT=
+      - SERVER_NAME=
+      - SERVER_DESC=
+      #- SERVER_PASSWORD=
+      - ADMIN_PASSWORD=
     volumes:
       - ./game:/palworld
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
