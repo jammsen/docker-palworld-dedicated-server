@@ -18,7 +18,7 @@ function startServer() {
     echo ">>> Starting the gameserver"
     cd $GAME_PATH
 
-    echo "Checking for config"
+    echo "Checking if config exists"
     if [ ! -f ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini ]; then
         echo "No config found, copying default one"
         if [ ! -d ${GAME_PATH}/Pal/Saved/Config/LinuxServer ]; then
@@ -59,6 +59,22 @@ function startServer() {
     if [[ -n $MAX_PLAYERS ]]; then
         echo "Setting maximum player count to $MAX_PLAYERS"
         sed -i "s/ServerPlayerMaxNum=[^,]*/ServerPlayerMaxNum=$MAX_PLAYERS/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $SERVER_DESCRIPTION ]]; then
+        echo "Setting server description to $SERVER_DESCRIPTION"
+        sed -i "s/ServerDescription=\"[^\"]*\"/ServerDescription=\"$SERVER_DESCRIPTION\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $SERVER_PASSWORD ]]; then
+        echo "Setting server password to $SERVER_PASSWORD"
+        sed -i "s/ServerPassword=\"[^\"]*\"/ServerPassword=\"$SERVER_PASSWORD\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $ADMIN_PASSWORD ]]; then
+        echo "Setting server admin password to $ADMIN_PASSWORD"
+        sed -i "s/AdminPassword=\"[^\"]*\"/AdminPassword=\"$ADMIN_PASSWORD\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+    if [[ -n $MAX_PLAYERS ]]; then
+        echo "Setting max-players to $MAX_PLAYERS"
+        sed -i "s/ServerPlayerMaxNum=[0-9]*/ServerPlayerMaxNum=$MAX_PLAYERS/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
     fi
 
     START_OPTIONS=""
