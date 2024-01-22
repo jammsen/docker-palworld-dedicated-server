@@ -62,6 +62,11 @@ function startServer() {
         echo "Setting max-players to $MAX_PLAYERS"
         sed -i "s/ServerPlayerMaxNum=[0-9]*/ServerPlayerMaxNum=$MAX_PLAYERS/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
     fi
+    if [[ -n $RCON_ENABLED ]]; then
+        echo "Setting RCONEnabled to $RCON_ENABLED"
+        sed -i "s/RCONEnabled=\(False\|True\)/RCONEnabled=$RCON_ENABLED/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    fi
+
 
     START_OPTIONS=""
     if [[ -n $COMMUNITY_SERVER ]] && [[ $COMMUNITY_SERVER == "true" ]]; then

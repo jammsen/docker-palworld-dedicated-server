@@ -16,12 +16,13 @@ ENV TIMEZONE=Europe/Berlin \
     SERVER_NAME=jammsen-docker-generated-###RANDOM### \
     SERVER_DESCRIPTION="Palworld-Dedicated-Server running in Docker by jammsen" \
     SERVER_PASSWORD=serverPasswordHere \
-    ADMIN_PASSWORD=adminPasswordHere
-
+    ADMIN_PASSWORD=adminPasswordHere \
+    RCON_ENABLED=False \
 
 VOLUME [ "/palworld" ]
 
 EXPOSE 8211/udp
+EXPOSE 25575
 
 ADD --chmod=777 servermanager.sh /servermanager.sh
 

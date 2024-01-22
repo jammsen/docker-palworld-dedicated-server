@@ -44,6 +44,7 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 | SERVER_DESCRIPTION     | Desription of the server                                                                                                              | Palworld-Dedicated-Server running in Docker by jammsen | string        |
 | SERVER_PASSWORD        | Password of the server                                                                                                                | serverPasswordHere                                     | string        |
 | ADMIN_PASSWORD         | Admin password of the server                                                                                                          | adminPasswordHere                                      | string        |
+| RCON_ENABLED         | Change whether RCON is enabled or not                                                                                                           | False                                      | False/True        |
 
 Look at https://tech.palworldgame.com/optimize-game-balance for more information and config-settings in `game/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`
 
