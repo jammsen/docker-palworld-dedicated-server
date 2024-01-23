@@ -33,7 +33,7 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 5. After first start, stop the server, setup your config at `game/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini` and start it again
 
 ## Environment-Variables
-| Variable               | Describe                                                                                                                              | Default Value                                          | Allowed Value   |
+| Variable               | Description                                                                                                                           | Default Value                                          | Allowed Value   |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | --------------- |
 | ALWAYS_UPDATE_ON_START | Updates the server on startup                                                                                                         | true                                                   | false/true      |
 | MAX_PLAYERS            | Maximum amout of players                                                                                                              | 32                                                     | 1-32            |
@@ -43,7 +43,7 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 | PUBLIC_IP              | Public ip, auto-detect if not specified, see COMMUNITY_SERVER                                                                         | 10.0.0.1                                               | ip address      |
 | PUBLIC_PORT            | Public port, auto-detect if not specified, see COMMUNITY_SERVER                                                                       | 8211                                                   | 1024-65535      |
 | SERVER_NAME            | Name of the server                                                                                                                    | jammsen-docker-generated-###RANDOM###                  | string          |
-| SERVER_DESCRIPTION     | Desription of the server                                                                                                              | Palworld-Dedicated-Server running in Docker by jammsen | string          |
+| SERVER_DESCRIPTION     | Description of the server                                                                                                             | Palworld-Dedicated-Server running in Docker by jammsen | string          |
 | SERVER_PASSWORD        | Password of the server                                                                                                                | serverPasswordHere                                     | string          |
 | ADMIN_PASSWORD         | Admin password of the server                                                                                                          | adminPasswordHere                                      | string          |
 | BACKUP_ENABLED         | Backup function, creates backups in your `game` directory                                                                             | true                                                   | false/true      |
