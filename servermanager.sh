@@ -86,6 +86,12 @@ function startServer() {
 }
 
 function startMain() {
+    if [[ -n $BACKUP_ENABLED ]] && [[ $BACKUP_ENABLED == "true" ]]; then
+        # Preparing the cronlist file
+        echo "$BACKUP_CRON_EXPRESSION /backupmanager.sh" >> cronlist
+        # Making sure supercronic is enabled and the cronfile is loaded
+        /usr/local/bin/supercronic cronlist &
+    fi
     # Check if server is installed, if not try again
     if [ ! -f "/palworld/PalServer.sh" ]; then
         installServer
