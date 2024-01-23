@@ -87,6 +87,7 @@ services:
       - ADMIN_PASSWORD=adminPasswordHere
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
+      - WORLD_OPTION_SETTINGS=${WORLD_OPTION_SETTINGS}
     volumes:
       - ./game:/palworld
 ```
@@ -124,6 +125,7 @@ services:
       - ADMIN_PASSWORD=adminPasswordHere
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
+      - WORLD_OPTION_SETTINGS=${WORLD_OPTION_SETTINGS}
     volumes:
       - ./game:/palworld
   
