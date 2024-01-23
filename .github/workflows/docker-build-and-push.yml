@@ -41,6 +41,10 @@ jobs:
           images: |
             jammsen/palworld-dedicated-server
             ghcr.io/${{ github.repository }}
+      - 
+        name: Get short SHA
+        id: slug
+        run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
       -
         name: Build and push
         uses: docker/build-push-action@v4
@@ -49,8 +53,8 @@ jobs:
           push: true
           tags: |
             ${{ steps.meta.outputs.tags }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/palworld-dedicated-server:${{ env.GIT_SHA }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/palworld-dedicated-server:${{ steps.slug.outputs.sha7 }}
             ${{ secrets.DOCKERHUB_USERNAME }}/palworld-dedicated-server:latest
-            ghcr.io/${{ secrets.DOCKERHUB_USERNAME }}/docker-palworld-dedicated-server:${{ env.GIT_SHA }}
+            ghcr.io/${{ secrets.DOCKERHUB_USERNAME }}/docker-palworld-dedicated-server:${{ steps.slug.outputs.sha7 }}
             ghcr.io/${{ secrets.DOCKERHUB_USERNAME }}/docker-palworld-dedicated-server:latest
           labels: ${{ steps.meta.outputs.labels }}
