@@ -1,54 +1,74 @@
-| Docker Variable                           | Game setting veriable                | Description | Data type |
-|-------------------------------------------|--------------------------------------|-------------|-----------|
-| DIFFICULTY                                | Difficulty                           |             |           |
-| DAYTIME_SPEEDRATE                         | DayTimeSpeedRate                     |             |           |
-| NIGHTTIME_SPEEDRATE                       | NightTimeSpeedRate                   |             |           |
-| EXP_RATE                                  | ExpRate                              |             |           |
-| PAL_CAPTURE_RATE                          | PalCaptureRate                       |             |           |
-| PAL_SPAWN_NUM_RATE                        | PalSpawnNumRate                      |             |           |
-| PAL_DAMAGE_RATE_ATTACK                    | PalDamageRateAttack                  |             |           |
-| PAL_DAMAGE_RATE_DEFENSE                   | PalDamageRateDefense                 |             |           |
-| PLAYER_DAMAGE_RATE_ATTACK                 | PlayerDamageRateAttack               |             |           |
-| PLAYER_DAMAGE_RATE_DEFENSE                | PlayerDamageRateDefense              |             |           |
-| Player_Stomach_Decreace_Rate              | PlayerStomachDecreaceRate            |             |           |
-| PLAYER_STAMINA_DECREACE_RATE              | PlayerStaminaDecreaceRate            |             |           |
-| PLAYER_AUTO_HP_REGENE_RATE                | PlayerAutoHPRegeneRate               |             |           |
-| PLAYER_AUTO_HP_REGENE_RATE_IN_SLEEP       | PlayerAutoHpRegeneRateInSleep        |             |           |
-| PAL_STOMACH_DECREACE_RATE                 | PalStomachDecreaceRate               |             |           |
-| PAL_STAMINA_DECREACE_RATE                 | PalStaminaDecreaceRate               |             |           |
-| PAL_AUTO_HP_REGENE_RATE                   | PalAutoHPRegeneRate                  |             |           |
-| PAL_AUTO_HP_REGENE_RATE_IN_SLEEP          | PalAutoHpRegeneRateInSleep           |             |           |
-| BUILD_OBJECT_DAMAGE_RATE                  | BuildObjectDamageRate                |             |           |
-| BUILD_OBJECT_DETERIORATION_DAMAGE_RATE    | PalAutoHpRegeneRateInSleep           |             |           |
-| COLLECTION_DROP_RATE                      | CollectionDropRate                   |             |           |
-| COLLECTION_OBJECT_HP_RATE                 | CollectionObjectHpRate               |             |           |
-| COLLECTION_OBJECT_RESPAWN_SPEED_RATE      | CollectionObjectRespawnSpeedRate     |             |           |
-| ENEMY_DROP_ITEM_RATE                      | EnemyDropItemRate                    |             |           |
-| DEATH_PENALTY                             | DeathPenalty                         |             |           |
-| ENABLE_PLAYER_TO_PLAYER_DAMAGE            | bEnablePlayerToPlayerDamage          |             |           |
-| ENABLE_FRIENDLY_FIRE                      | bEnableFriendlyFire                  |             |           |
-| ENABLE_INVADER_ENEMY                      | bEnableInvaderEnemy                  |             |           |
-| ACTIVE_UNKO                               | bActiveUNKO                          |             |           |
-| ENABLE_AIM_ASSIST_PAD                     | bEnableAimAssistPad                  |             |           |
-| ENABLE_AIM_ASSIST_KEYBOARD                | bEnableAimAssistKeyboard             |             |           |
-| DROP_ITEM_MAX_NUM                         | DropItemMaxNum                       |             |           |
-| DROP_ITEM_MAX_NUM_UNKO                    | DropItemMaxNum                       |             |           |
-| BASE_CAMP_MAX_NUM                         | BaseCampMaxNum                       |             |           |
-| BASE_CAMP_WORKER_MAXNUM                   | BaseCampWorkerMaxNum                 |             |           |
-| DROP_ITEM_ALIVE_MAX_HOURS                 | DropItemAliveMaxHours                |             |           |
-| AUTO_RESET_GUILD_NO_ONLINE_PLAYERS        | bAutoResetGuildNoOnlinePlayers       |             |           |
-| AUTO_RESET_GUILD_TIME_NO_ONLINE_PLAYERS   | AutoResetGuildTimeNoOnlinePlayers    |             |           |
-| GUILD_PLAYER_MAX_NUM                      | GuildPlayerMaxNum                    |             |           |
-| PAL_EGG_DEFAULT_HATCHING_TIME             | PalEggDefaultHatchingTime            |             |           |
-| WORK_SPEED_RATE                           | WorkSpeedRate                        |             |           |
-| IS_MULTIPLAY                              | bIsMultiplay                         |             |           |
-| IS_PVP                                    | bIsPvP                               |             |           |
-| CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP | bCanPickupOtherGuildDeathPenaltyDrop |             |           |
-| ENABLE_NON_LOGIN_PENALTY                  | bEnableNonLoginPenalty               |             |           |
-| ENABLE_FAST_TRAVEL                        | bEnableFastTravel                    |             |           |
-| IS_START_LOCATION_SELECT_BY_MAP           | bIsStartLocationSelectByMap          |             |           |
-| EXIST_PLAYER_AFTER_LOGOUT                 | bExistPlayerAfterLogout              |             |           |
-| ENABLE_DEFENSE_OTHER_GUILD_PLAYER         | bEnableDefenseOtherGuildPlayer       |             |           |
-| COOP_PLAYER_MAX_NUM                       | CoopPlayerMaxNum                     |             |           |
-| MAX_PLAYERS                               | max                                  |             |           |
-| SERVER_NAME                               | server                               |             |           |
+This is a table of all the settings currently editable via docker env vars
+Much of this is from the [Palworld Tech Guide](https://tech.palworldgame.com/optimize-game-balance)
+
+
+
+Please not that all of this is subject to change. The game is in early access.
+
+
+| **Docker Variable**                       | **Game setting veriable**            | **Description**                                                                                                                                              | **Data type** |
+|-------------------------------------------|--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
+| DIFFICULTY                                | Difficulty                           | Difficulty                                                                                                                                                   | Enum          |
+| DAYTIME_SPEEDRATE                         | DayTimeSpeedRate                     | Day time speed                                                                                                                                               | Float         |
+| NIGHTTIME_SPEEDRATE                       | NightTimeSpeedRate                   | Night time speed                                                                                                                                             | Float         |
+| EXP_RATE                                  | ExpRate                              | EXP rate                                                                                                                                                     | Float         |
+| PAL_CAPTURE_RATE                          | PalCaptureRate                       | Pal capture rate                                                                                                                                             | Float         |
+| PAL_SPAWN_NUM_RATE                        | PalSpawnNumRate                      | Pal appearance rate                                                                                                                                          | Float         |
+| PAL_DAMAGE_RATE_ATTACK                    | PalDamageRateAttack                  | Damage from pals multipiler                                                                                                                                  | Float         |
+| PAL_DAMAGE_RATE_DEFENSE                   | PalDamageRateDefense                 | Damage to pals multipiler                                                                                                                                    | Float         |
+| PLAYER_DAMAGE_RATE_ATTACK                 | PlayerDamageRateAttack               | Damage from player multipiler                                                                                                                                | Float         |
+| PLAYER_DAMAGE_RATE_DEFENSE                | PlayerDamageRateDefense              | Damage to  player multipiler                                                                                                                                 | Float         |
+| Player_Stomach_Decreace_Rate              | PlayerStomachDecreaceRate            | Player hunger depletion rate                                                                                                                                 | Float         |
+| PLAYER_STAMINA_DECREACE_RATE              | PlayerStaminaDecreaceRate            | Player stamina reduction rate                                                                                                                                | Float         |
+| PLAYER_AUTO_HP_REGENE_RATE                | PlayerAutoHPRegeneRate               | Player auto HP regeneration rate                                                                                                                             | Float         |
+| PLAYER_AUTO_HP_REGENE_RATE_IN_SLEEP       | PlayerAutoHpRegeneRateInSleep        | Player sleep HP regeneration rate                                                                                                                            | Float         |
+| PAL_STOMACH_DECREACE_RATE                 | PalStomachDecreaceRate               | Pal hunger depletion rate                                                                                                                                    | Float         |
+| PAL_STAMINA_DECREACE_RATE                 | PalStaminaDecreaceRate               | Pal stamina reduction rate                                                                                                                                   | Float         |
+| PAL_AUTO_HP_REGENE_RATE                   | PalAutoHPRegeneRate                  | Pal auto HP regeneration rate                                                                                                                                | Float         |
+| PAL_AUTO_HP_REGENE_RATE_IN_SLEEP          | PalAutoHpRegeneRateInSleep           | Pal sleep health regeneration rate (in Palbox)                                                                                                               | Float         |
+| BUILD_OBJECT_DAMAGE_RATE                  | BuildObjectDamageRate                | Damage to structure multipiler                                                                                                                               | Float         |
+| BUILD_OBJECT_DETERIORATION_DAMAGE_RATE    | PalAutoHpRegeneRateInSleep           | Structure determination rate                                                                                                                                 | Float         |
+| COLLECTION_DROP_RATE                      | CollectionDropRate                   | Getherable items multipiler                                                                                                                                  | Float         |
+| COLLECTION_OBJECT_HP_RATE                 | CollectionObjectHpRate               | Getherable objects HP multipiler                                                                                                                             | Float         |
+| COLLECTION_OBJECT_RESPAWN_SPEED_RATE      | CollectionObjectRespawnSpeedRate     | Getherable objects respawn interval                                                                                                                          | Float         |
+| ENEMY_DROP_ITEM_RATE                      | EnemyDropItemRate                    | Dropped Items Multipiler                                                                                                                                     | Float         |
+| DEATH_PENALTY                             | DeathPenalty                         | \`None\` : No lost, Item : Lost item without equipment, \`ItemAndEquipment\` : Lost item and equipment, \`All\`: Lost All item, equipment, pal(in inventory) | Enum          |
+| ENABLE_PLAYER_TO_PLAYER_DAMAGE            | bEnablePlayerToPlayerDamage          |                                                                                                                                                              | Boolean       |
+| ENABLE_FRIENDLY_FIRE                      | bEnableFriendlyFire                  |                                                                                                                                                              | Boolean       |
+| ENABLE_INVADER_ENEMY                      | bEnableInvaderEnemy                  |                                                                                                                                                              | Boolean       |
+| ACTIVE_UNKO                               | bActiveUNKO                          |                                                                                                                                                              | Boolean       |
+| ENABLE_AIM_ASSIST_PAD                     | bEnableAimAssistPad                  |                                                                                                                                                              | Boolean       |
+| ENABLE_AIM_ASSIST_KEYBOARD                | bEnableAimAssistKeyboard             |                                                                                                                                                              | Boolean       |
+| DROP_ITEM_MAX_NUM                         | DropItemMaxNum                       |                                                                                                                                                              | Integer       |
+| DROP_ITEM_MAX_NUM_UNKO                    | DropItemMaxNum                       |                                                                                                                                                              | Integer       |
+| BASE_CAMP_MAX_NUM                         | BaseCampMaxNum                       |                                                                                                                                                              | Integer       |
+| BASE_CAMP_WORKER_MAXNUM                   | BaseCampWorkerMaxNum                 |                                                                                                                                                              | Integer       |
+| DROP_ITEM_ALIVE_MAX_HOURS                 | DropItemAliveMaxHours                |                                                                                                                                                              | Float         |
+| AUTO_RESET_GUILD_NO_ONLINE_PLAYERS        | bAutoResetGuildNoOnlinePlayers       |                                                                                                                                                              | Bool          |
+| AUTO_RESET_GUILD_TIME_NO_ONLINE_PLAYERS   | AutoResetGuildTimeNoOnlinePlayers    |                                                                                                                                                              | Float         |
+| GUILD_PLAYER_MAX_NUM                      | GuildPlayerMaxNum                    | Max player of Guild                                                                                                                                          | Integer       |
+| PAL_EGG_DEFAULT_HATCHING_TIME             | PalEggDefaultHatchingTime            | Time(h) to incubate massive egg                                                                                                                              | Float         |
+| WORK_SPEED_RATE                           | WorkSpeedRate                        |                                                                                                                                                              | Float         |
+| IS_MULTIPLAY                              | bIsMultiplay                         |                                                                                                                                                              | Boolean       |
+| IS_PVP                                    | bIsPvP                               |                                                                                                                                                              | Boolean       |
+| CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP | bCanPickupOtherGuildDeathPenaltyDrop |                                                                                                                                                              | Boolean       |
+| ENABLE_NON_LOGIN_PENALTY                  | bEnableNonLoginPenalty               |                                                                                                                                                              | Boolean       |
+| ENABLE_FAST_TRAVEL                        | bEnableFastTravel                    |                                                                                                                                                              | Boolean       |
+| IS_START_LOCATION_SELECT_BY_MAP           | bIsStartLocationSelectByMap          |                                                                                                                                                              | Boolean       |
+| EXIST_PLAYER_AFTER_LOGOUT                 | bExistPlayerAfterLogout              |                                                                                                                                                              | Boolean       |
+| ENABLE_DEFENSE_OTHER_GUILD_PLAYER         | bEnableDefenseOtherGuildPlayer       |                                                                                                                                                              | Boolean       |
+| COOP_PLAYER_MAX_NUM                       | CoopPlayerMaxNum                     |                                                                                                                                                              | Integer       |
+| MAX_PLAYERS                               | ServerPlayerMaxNum                   | Maximum number of people who can join the server                                                                                                             | Integer       |
+| SERVER_NAME                               | ServerName                           | Server name                                                                                                                                                  | Integer       |
+| SERVER_DESCRIPTION                        | ServerDescription                    | Server description                                                                                                                                           | String        |
+| ADMIN_PASSWORD                            | server admin password                | AdminPassword                                                                                                                                                | String        |
+| SERVER_PASSWORD                           | AdminPassword                        | Set the server password.                                                                                                                                     | String        |
+| TS_SERVER_PASSWORD                        | tSServerPassword                     |                                                                                                                                                              | String        |
+| GX_SERVER_PASSWORD                        | GXServerPassword                     |                                                                                                                                                              | String        |
+| PUBLIC_PORT                               | public port                          | Public port number                                                                                                                                           | Integer       |
+| PUBLIC_IP                                 | public ip                            | Public IP                                                                                                                                                    | String        |
+| RCON_ENABLED                              | RCONEnabled                          | Enable RCON                                                                                                                                                  | Boolean       |
+| RCON_PORT                                 | RCONPort                             | Port number for RCON                                                                                                                                         | Integer       |
+| REGION                                    | Region                               |                                                                                                                                                              | String        |
+| USEAUTH                                   | bUseAuth                             |                                                                                                                                                              | Boolean       |
+| BAN_LIST_URL                              | BanListURL                           |                                                                                                                                                              | String        |
