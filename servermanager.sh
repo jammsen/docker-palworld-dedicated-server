@@ -36,10 +36,6 @@ function startServer() {
         echo "Setting rcon-enabled to $RCON_ENABLED"
         sed -i "s/RCONEnabled=[a-zA-Z]*/RCONEnabled=$RCON_ENABLED/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
     fi
-    if [[ ! -z ${RCON_PORT+x} ]]; then
-        echo "Setting rcon-port to $RCON_PORT"
-        sed -i "s/RCONPort=[0-9]*/RCONPort=$RCON_PORT/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
-    fi
     if [[ ! -z ${PUBLIC_IP+x} ]]; then
         echo "Setting public ip to $PUBLIC_IP"
         sed -i "s/PublicIP=\"[^\"]*\"/PublicIP=\"$PUBLIC_IP\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini

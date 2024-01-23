@@ -31,7 +31,6 @@ ENV TIMEZONE=Europe/Berlin \
     MULTITHREAD_ENABLED=true \
     COMMUNITY_SERVER=true \
     RCON_ENABLED=true \
-    RCON_PORT=25575 \
     PUBLIC_IP=10.0.0.1 \
     PUBLIC_PORT=8211 \
     SERVER_NAME=jammsen-docker-generated-###RANDOM### \
