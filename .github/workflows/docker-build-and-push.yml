@@ -49,8 +49,8 @@ jobs:
           push: true
           tags: |
             ${{ steps.meta.outputs.tags }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/palworld-dedicated-server:$GIT_SHA
+            ${{ secrets.DOCKERHUB_USERNAME }}/palworld-dedicated-server:${{ env.GIT_SHA }}
             ${{ secrets.DOCKERHUB_USERNAME }}/palworld-dedicated-server:latest
-            ghcr.io/${{ secrets.DOCKERHUB_USERNAME }}/docker-palworld-dedicated-server:$GIT_SHA
+            ghcr.io/${{ secrets.DOCKERHUB_USERNAME }}/docker-palworld-dedicated-server:${{ env.GIT_SHA }}
             ghcr.io/${{ secrets.DOCKERHUB_USERNAME }}/docker-palworld-dedicated-server:latest
           labels: ${{ steps.meta.outputs.labels }}
