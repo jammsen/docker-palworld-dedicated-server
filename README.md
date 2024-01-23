@@ -33,7 +33,7 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 5. After first start, stop the server, setup your config at `game/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini` and start it again
 
 ## Environment-Variables
-| Variable               | Describe                                                                                                                              | Default Value                                          | Allowed Value   |
+| Variable               | Description                                                                                                                           | Default Value                                          | Allowed Value   |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | --------------- |
 | ALWAYS_UPDATE_ON_START | Updates the server on startup                                                                                                         | true                                                   | false/true      |
 | MAX_PLAYERS            | Maximum amout of players                                                                                                              | 32                                                     | 1-32            |
