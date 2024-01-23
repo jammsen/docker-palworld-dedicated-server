@@ -81,6 +81,19 @@ function startServer() {
     ./PalServer.sh "$START_OPTIONS"
 }
 
+function checkCredentials() {
+    echo "Checking creds"
+    if [ ${SERVER_PASSWORD} == "serverPasswordHere" ]; then
+        echo "Please change the default server password. Exiting..."
+        exit 1
+    fi
+
+    if [ ${ADMIN_PASSWORD} == "adminPasswordHere" ]; then
+        echo "Please change the default admin password. Exiting..."
+        exit 1
+    fi
+}
+
 function startMain() {
     if [[ -n $BACKUP_ENABLED ]] && [[ $BACKUP_ENABLED == "true" ]]; then
         # Preparing the cronlist file
@@ -88,6 +101,9 @@ function startMain() {
         # Making sure supercronic is enabled and the cronfile is loaded
         /usr/local/bin/supercronic cronlist &
     fi
+
+    checkCredentials
+
     # Check if server is installed, if not try again
     if [ ! -f "/palworld/PalServer.sh" ]; then
         installServer
