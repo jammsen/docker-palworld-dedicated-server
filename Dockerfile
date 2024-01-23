@@ -40,6 +40,11 @@ ENV TIMEZONE=Europe/Berlin \
     BACKUP_ENABLED=true \
     BACKUP_CRON_EXPRESSION="0 * * * *"
 
+USER root
+
+RUN mkdir /palworld
+RUN chown steam:steam /palworld
+
 VOLUME [ "/palworld" ]
 
 EXPOSE 8211/udp
@@ -47,5 +52,7 @@ EXPOSE 25575/tcp
 
 ADD --chmod=777 servermanager.sh /servermanager.sh
 ADD --chmod=777 backupmanager.sh /backupmanager.sh
+
+USER steam
 
 CMD ["/servermanager.sh"]
