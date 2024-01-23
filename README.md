@@ -51,6 +51,8 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 
 Look at https://tech.palworldgame.com/optimize-game-balance for more information and config-settings in `game/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`
 
+For advanced users: This script now supports editing all of current settings in env vars. You can see all of the options as well as the the limits for each [here](supported_vars.md).
+
 ## Docker-Compose examples
 
 ### Standalone gameserver
