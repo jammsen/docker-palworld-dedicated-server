@@ -41,7 +41,7 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 | COMMUNITY_SERVER       | Sets the server to a "Community-Server". If true, the server will appear in the Community-Serverlist. Needs PUBLIC_IP and PUBLIC_PORT | true                                                   | false/true    |
 | RCON_ENABLED           | RCON function - use ADMIN_PASSWORD to login after enabling it                                                                         | true                                                   | false/true    |
 | RCON_PORT              | RCON port to connect to                                                                                                               | 25575                                                  | 1024-65535    |
-| PUBLIC_IP              | Public ip, auto-detect if not specified, see COMMUNITY_SERVER                                                                         | 10.0.0.1                                               | ip address    |
+| PUBLIC_IP or FQDN              | Public ip/FQDN, auto-detect if not specified, see COMMUNITY_SERVER                                                                         | 10.0.0.1 or palworld.server.com                                               | ip address or FQDN    |
 | PUBLIC_PORT            | Public port, auto-detect if not specified, see COMMUNITY_SERVER                                                                       | 8211                                                   | 1024-65535    |
 | SERVER_NAME            | Name of the server                                                                                                                    | jammsen-docker-generated-###RANDOM###                  | string        |
 | SERVER_DESCRIPTION     | Desription of the server                                                                                                              | Palworld-Dedicated-Server running in Docker by jammsen | string        |
@@ -60,7 +60,7 @@ services:
     build: .
     container_name: palworld-dedicated-server
     image: jammsen/palworld-dedicated-server:latest
-    restart: always
+    restart: unless-stopped
     network_mode: bridge
     ports:
       - target: 8211 # gamerserver port inside of the container
@@ -95,7 +95,7 @@ services:
     build: .
     container_name: palworld-dedicated-server
     image: jammsen/palworld-dedicated-server:latest
-    restart: always
+    restart: unless-stopped
     network_mode: bridge
     ports:
       - target: 8211 # gamerserver port inside of the container
@@ -124,8 +124,13 @@ services:
   
   rcon:
     image: outdead/rcon:latest
+    container_name: palworld-rcon
+    restart: unless-stopped
     entrypoint: ['/rcon', '-a', '10.0.0.5:25575', '-p', 'adminPasswordHere']
-    profiles: ['rcon'] 
+    tty: true
+    stdin_open: true
+    depends_on:
+      - palworld-dedicated-server
 ```
 The profiles defintion, prevents the container from starting with the server and in your console you can run now RCON commands via
 #### RCON
