@@ -57,7 +57,7 @@ Look at https://tech.palworldgame.com/optimize-game-balance for more information
 version: '3.9'
 services:
   palworld-dedicated-server:
-    build: .
+    #build: .
     container_name: palworld-dedicated-server
     image: jammsen/palworld-dedicated-server:latest
     restart: always
@@ -92,7 +92,7 @@ services:
 version: '3.9'
 services:
   palworld-dedicated-server:
-    build: .
+    #build: .
     container_name: palworld-dedicated-server
     image: jammsen/palworld-dedicated-server:latest
     restart: always
