@@ -22,7 +22,7 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
 
 USER steam
 
-ENV TIMEZONE=Europe/Berlin \
+ENV TZ=UTC \
     DEBIAN_FRONTEND=noninteractive \
     PUID=0 \
     PGID=0 \

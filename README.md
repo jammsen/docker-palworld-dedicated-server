@@ -48,6 +48,7 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 | ADMIN_PASSWORD         | Admin password of the server                                                                                                          | adminPasswordHere                                      | string          |
 | BACKUP_ENABLED         | Backup function, creates backups in your `game` directory                                                                             | true                                                   | false/true      |
 | BACKUP_CRON_EXPRESSION | Needs a Cron-Expression - See https://github.com/aptible/supercronic#crontab-format or https://crontab-generator.org/                 | 0 * * * * (meaning every hour)                         | Cron-Expression |
+| TZ                 | Timezone used for time stamping server backups               | UTC                         | See [TZ Identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#Time_Zone_abbreviations) |
 
 Look at https://tech.palworldgame.com/optimize-game-balance for more information and config-settings in `game/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`
 
