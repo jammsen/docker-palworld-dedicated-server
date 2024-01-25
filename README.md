@@ -63,6 +63,7 @@ services:
     image: jammsen/palworld-dedicated-server:latest
     restart: always
     network_mode: bridge
+    platform: linux/amd64
     ports:
       - target: 8211 # gamerserver port inside of the container
         published: 8211 # gamerserver port on your host
@@ -100,6 +101,7 @@ services:
     image: jammsen/palworld-dedicated-server:latest
     restart: always
     network_mode: bridge
+    platform: linux/amd64
     ports:
       - target: 8211 # gamerserver port inside of the container
         published: 8211 # gamerserver port on your host
