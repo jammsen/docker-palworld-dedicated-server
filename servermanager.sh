@@ -5,13 +5,13 @@ GAME_PATH="/palworld"
 function installServer() {
     # force a fresh install of all
     echo ">>> Doing a fresh install of the gameserver"
-    /home/steam/steamcmd/steamcmd.sh +@sSteamCmdForcePlatformBitness 64 +force_install_dir "/palworld" +login anonymous +app_update 2394010 validate +quit
+    /home/steam/steamcmd/steamcmd.sh +@sSteamCmdForcePlatformBitness 64 +force_install_dir "$GAME_PATH" +login anonymous +app_update 2394010 validate +quit
 }
 
 function updateServer() {
     # force an update and validation
     echo ">>> Doing an update of the gameserver"
-    /home/steam/steamcmd/steamcmd.sh +@sSteamCmdForcePlatformBitness 64 +force_install_dir "/palworld" +login anonymous +app_update 2394010 validate +quit
+    /home/steam/steamcmd/steamcmd.sh +@sSteamCmdForcePlatformBitness 64 +force_install_dir "$GAME_PATH" +login anonymous +app_update 2394010 validate +quit
 }
 
 function startServer() {
@@ -89,7 +89,7 @@ function startMain() {
         /usr/local/bin/supercronic cronlist &
     fi
     # Check if server is installed, if not try again
-    if [ ! -f "/palworld/PalServer.sh" ]; then
+    if [ ! -f "$GAME_PATH/PalServer.sh" ]; then
         installServer
     fi
     if [ $ALWAYS_UPDATE_ON_START == "true" ]; then
