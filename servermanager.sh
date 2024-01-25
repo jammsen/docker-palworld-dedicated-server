@@ -290,7 +290,7 @@ function startServer() {
         echo "Setting BanListURL to $BAN_LIST_URL"
         sed -i 's/BanListURL=(((ftp|http|https):\/\/)|(\/)|(..\/))(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/BanListURL=$BAN_LIST_URL/g' ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
     fi
-    echo ">>> Finished setting up setting ..."
+    echo ">>> Finished setting up settings ..."
 
 
     START_OPTIONS=""
@@ -303,15 +303,14 @@ function startServer() {
     ./PalServer.sh "$START_OPTIONS"
 }
 
-function checkCredentials() {
-    echo "Checking creds"
-    if [ ${SERVER_PASSWORD} == "serverPasswordHere" ]; then
-        echo "Please change the default server password. Exiting..."
+function checkForDefaultCredentials() {
+    echo ">>> Checking for existence of default credentials"
+    if [ ${ADMIN_PASSWORD} == "adminPasswordHere" ]; then
+        echo ">>> Error: Security thread detected: Please change the default admin password. Aborting server start ..."
         exit 1
     fi
-
-    if [ ${ADMIN_PASSWORD} == "adminPasswordHere" ]; then
-        echo "Please change the default admin password. Exiting..."
+    if [ ${SERVER_PASSWORD} == "serverPasswordHere" ]; then
+        echo ">>> Error: Security thread detected: Please change the default server password. Aborting server start ..."
         exit 1
     fi
 }
@@ -324,7 +323,7 @@ function startMain() {
         /usr/local/bin/supercronic cronlist &
     fi
 
-    checkCredentials
+    checkForDefaultCredentials
 
     # Check if server is installed, if not try again
     if [ ! -f "$GAME_PATH/PalServer.sh" ]; then
