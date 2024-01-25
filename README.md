@@ -88,6 +88,7 @@ services:
       - ADMIN_PASSWORD=adminPasswordHere
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
+      - TZ=UTC
     volumes:
       - ./game:/palworld
 ```
@@ -125,6 +126,7 @@ services:
       - ADMIN_PASSWORD=adminPasswordHere
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
+      - TZ=UTC
     volumes:
       - ./game:/palworld
   
