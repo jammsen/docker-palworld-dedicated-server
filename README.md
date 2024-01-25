@@ -35,6 +35,7 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 ## Environment-Variables
 | Variable               | Description                                                                                                                           | Default Value                                           | Allowed Value   |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------- |
+| TZ                     | Timezone used for time stamping server backups                                                                                        | Europe/Berlin                                           | See [TZ identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#Time_Zone_abbreviations) |
 | ALWAYS_UPDATE_ON_START | Updates the server on startup                                                                                                         | true                                                    | false/true      |
 | MAX_PLAYERS            | Maximum amout of players                                                                                                              | 32                                                      | 1-32            |
 | MULTITHREAD_ENABLED    | Sets options for "Improved multi-threaded CPU performance"                                                                            | true                                                    | false/true      |
@@ -51,8 +52,6 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 | ExampleGameVar         | See [supported_vars.md](supportedvars.md) for all of the game vars that can be included here                                          | Check [supported_vars.md](supported_vars.md) for details| Cron-Expression |
 
 This script now supports editing all of current settings in env vars. You can see all of the options as well as the the limits for each [here](supported_vars.md).
-Look at https://tech.palworldgame.com/optimize-game-balance for more information and config-settings in `game/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`
-
 
 ## Docker-Compose examples
 
@@ -67,15 +66,16 @@ services:
     restart: always
     network_mode: bridge
     ports:
-      - target: 8211 # gamerserver port inside of the container
-        published: 8211 # gamerserver port on your host
+      - target: 8211 # Gamerserver port inside of the container
+        published: 8211 # Gamerserver port on your host
         protocol: udp
         mode: host
-      - target: 25575 # rcon port inside of the container
-        published: 25575 # rcon port on your host
+      - target: 25575 # RCon port inside of the container
+        published: 25575 # RCon port on your host
         protocol: tcp
         mode: host
     environment:
+      - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
       - ALWAYS_UPDATE_ON_START=true
       - MAX_PLAYERS=32
       - MULTITHREAD_ENABLED=true
@@ -90,6 +90,7 @@ services:
       - ADMIN_PASSWORD=adminPasswordHere
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
+      - TZ=UTC
     volumes:
       - ./game:/palworld
 ```
@@ -104,15 +105,16 @@ services:
     restart: always
     network_mode: bridge
     ports:
-      - target: 8211 # gamerserver port inside of the container
-        published: 8211 # gamerserver port on your host
+      - target: 8211 # Gamerserver port inside of the container
+        published: 8211 # Gamerserver port on your host
         protocol: udp
         mode: host
-      - target: 25575 # rcon port inside of the container
-        published: 25575 # rcon port on your host
+      - target: 25575 # RCon port inside of the container
+        published: 25575 # RCon port on your host
         protocol: tcp
         mode: host
     environment:
+      - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
       - ALWAYS_UPDATE_ON_START=true
       - MAX_PLAYERS=32
       - MULTITHREAD_ENABLED=true
@@ -127,6 +129,7 @@ services:
       - ADMIN_PASSWORD=adminPasswordHere
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
+      - TZ=UTC
     volumes:
       - ./game:/palworld
   
