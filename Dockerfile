@@ -22,10 +22,10 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
 
 USER steam
 
-ENV TIMEZONE=Europe/Berlin \
-    DEBIAN_FRONTEND=noninteractive \
+ENV DEBIAN_FRONTEND=noninteractive \
     PUID=0 \
     PGID=0 \
+    TZ=Europe/Berlin \
     ALWAYS_UPDATE_ON_START=true \
     MAX_PLAYERS=32 \
     MULTITHREAD_ENABLED=true \
