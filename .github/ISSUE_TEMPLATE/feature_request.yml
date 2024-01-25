@@ -1,0 +1,40 @@
+name: "🚀 Feature request"
+description: Suggest a feature that will improve things
+labels: ["enhancement"]
+title: "[Feature Request] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Important information
+        Thank you for taking the time to fill out this feature request! Please understand you are asking for support for the Docker-Image and Docker-Container. I'm NOT the creator of the Dedicated-Game-Server itself, i'm not involved in programming that. If you need help for that, you might want to ask here for topics related to that: https://tech.palworldgame.com/dedicated-server-guide
+  - type: checkboxes
+    id: understand-important-info
+    attributes:
+      label: Have you read the Important information text above
+      options:
+        - label: Yes i did
+          required: true
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Describe the feature
+      description: A clear and concise description of what you think would be a helpful addition, including the possible use cases and alternatives you have considered. If you have a working prototype or something similar, please include a link.
+      placeholder: Feature description
+    validations:
+      required: true
+  - type: checkboxes
+    id: additional-info
+    attributes:
+      label: Additional information
+      description: Additional information that helps us decide how to proceed.
+      options:
+        - label: Would you be willing to help implement this feature?
+  - type: checkboxes
+    id: required-info
+    attributes:
+      label: Final checks
+      description: Before submitting, please understand and agree to this
+      options:
+        - label: I understand that this is a feature request function. I also unterstand that if i use this to report a bug report, that my issue might be un-answered closed.
+          required: true
