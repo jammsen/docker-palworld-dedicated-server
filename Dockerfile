@@ -1,4 +1,4 @@
-FROM cm2network/steamcmd:root
+FROM --platform=linux/amd64 cm2network/steamcmd:root
 
 LABEL org.opencontainers.image.authors="Sebastian Schmidt"
 LABEL org.opencontainers.image.source="https://github.com/jammsen/docker-palworld-dedicated-server"
