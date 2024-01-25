@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Stop on errors, comment in, if needed
+#set -e
+
 GAME_PATH="/palworld"
 
 function installServer() {
@@ -22,6 +25,7 @@ function startServer() {
     echo ">>> Starting the gameserver"
     cd $GAME_PATH
 
+    echo ">>> Setting up setting ..."
     echo "Checking if config exists"
     if [ ! -f ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini ]; then
         echo "No config found, generating one"
@@ -284,8 +288,9 @@ function startServer() {
     fi
     if [[ ! -z ${BAN_LIST_URL+x} ]]; then
         echo "Setting BanListURL to $BAN_LIST_URL"
-        sed -i "s/BanListURL=https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/BanListURL=$BAN_LIST_URL/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+        sed -i 's/BanListURL=(((ftp|http|https):\/\/)|(\/)|(..\/))(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/BanListURL=$BAN_LIST_URL/g' ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
     fi
+    echo ">>> Finished setting up setting ..."
 
 
     START_OPTIONS=""

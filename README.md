@@ -65,7 +65,6 @@ ___
 | ALWAYS_UPDATE_ON_START | Updates the server on startup                                       | true                           | false/true                            |
 | MULTITHREAD_ENABLED    | Sets options for "Improved multi-threaded CPU performance"          | true                           | false/true                            |
 | COMMUNITY_SERVER       | Set to enabled, the server will appear in the Community-Serverlist. | true                           | false/true                            |
-| RCON_ENABLED           | RCON function - Use ADMIN_PASSWORD to login                         | true                           | false/true                            |
 | BACKUP_ENABLED         | Backup function, creates backups in your `game` directory           | true                           | false/true                            |
 | BACKUP_CRON_EXPRESSION | Needs a Cron-Expression - See [Cron expression](#cron-expression)   | 0 * * * * (meaning every hour) | Cron-Expression                       |
 
@@ -146,7 +145,7 @@ Information-sources and credits to the following websites:
 | SERVER_PASSWORD                           | AdminPassword                        | Set the server password.                                                                                                                                          | serverPasswordHere                                     | String        |
 | PUBLIC_PORT                               | public port                          | Public port number                                                                                                                                                | 8211                                                   | Integer       |
 | PUBLIC_IP                                 | public ip                            | Public IP                                                                                                                                                         |                                                        | String        |
-| RCON_ENABLED                              | RCONEnabled                          | Enable RCON                                                                                                                                                       | false                                                  | Boolean       |
+| RCON_ENABLED                              | RCONEnabled                          | Enable RCON - Use ADMIN_PASSWORD to login                                                                                                                         | false                                                  | Boolean       |
 | RCON_PORT                                 | RCONPort                             | Port number for RCON                                                                                                                                              | 25575                                                  | Integer       |
 | REGION                                    | Region                               | Area                                                                                                                                                              |                                                        | String        |
 | USEAUTH                                   | bUseAuth                             | Use authentication                                                                                                                                                | true                                                   | Boolean       |
@@ -177,20 +176,72 @@ services:
     environment:
       - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
       - ALWAYS_UPDATE_ON_START=true
-      - MAX_PLAYERS=32
       - MULTITHREAD_ENABLED=true
       - COMMUNITY_SERVER=true
-      - RCON_ENABLED=true
-      - RCON_PORT=25575
-      - PUBLIC_IP=10.0.0.5
-      - PUBLIC_PORT=8211
-      - SERVER_NAME=jammsen-docker-generated-###RANDOM###
-      - SERVER_DESCRIPTION=Palworld-Dedicated-Server running in Docker by jammsen
-      - SERVER_PASSWORD=serverPasswordHere
-      - ADMIN_PASSWORD=adminPasswordHere
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
-      - TZ=UTC
+      - DIFFICULTY=None
+      - DAYTIME_SPEEDRATE=1.000000
+      - NIGHTTIME_SPEEDRATE=1.000000
+      - EXP_RATE=1.000000
+      - PAL_CAPTURE_RATE=1.000000
+      - PAL_SPAWN_NUM_RATE=1.000000
+      - PAL_DAMAGE_RATE_ATTACK=1.000000
+      - PAL_DAMAGE_RATE_DEFENSE=1.000000
+      - PLAYER_DAMAGE_RATE_ATTACK=1.000000
+      - PLAYER_DAMAGE_RATE_DEFENSE=1.000000
+      - PLAYER_STOMACH_DECREASE_RATE=1.000000
+      - PLAYER_STAMINA_DECREACE_RATE=1.000000
+      - PLAYER_AUTO_HP_REGENE_RATE=1.000000
+      - PLAYER_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
+      - PAL_STOMACH_DECREACE_RATE=1.000000
+      - PAL_STAMINA_DECREACE_RATE=1.000000
+      - PAL_AUTO_HP_REGENE_RATE=1.000000
+      - PAL_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
+      - BUILD_OBJECT_DAMAGE_RATE=1.000000
+      - BUILD_OBJECT_DETERIORATION_DAMAGE_RATE=1.000000
+      - COLLECTION_DROP_RATE=1.000000
+      - COLLECTION_OBJECT_HP_RATE=1.000000
+      - COLLECTION_OBJECT_RESPAWN_SPEED_RATE=1.000000
+      - ENEMY_DROP_ITEM_RATE=1.000000
+      - DEATH_PENALTY=All
+      - ENABLE_PLAYER_TO_PLAYER_DAMAGE=false
+      - ENABLE_FRIENDLY_FIRE=false
+      - ENABLE_INVADER_ENEMY=true
+      - ACTIVE_UNKO=false
+      - ENABLE_AIM_ASSIST_PAD=true
+      - ENABLE_AIM_ASSIST_KEYBOARD=false
+      - DROP_ITEM_MAX_NUM=3000
+      - DROP_ITEM_MAX_NUM_UNKO=100
+      - BASE_CAMP_MAX_NUM=128
+      - BASE_CAMP_WORKER_MAXNUM=15
+      - DROP_ITEM_ALIVE_MAX_HOURS=1.000000 
+      - AUTO_RESET_GUILD_NO_ONLINE_PLAYERS=false
+      - AUTO_RESET_GUILD_TIME_NO_ONLINE_PLAYERS=72.000000
+      - GUILD_PLAYER_MAX_NUM=20
+      - PAL_EGG_DEFAULT_HATCHING_TIME=72.000000
+      - WORK_SPEED_RATE=1.000000 
+      - IS_MULTIPLAY=false
+      - IS_PVP=false
+      - CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP=false
+      - ENABLE_NON_LOGIN_PENALTY=true
+      - ENABLE_FAST_TRAVEL=true
+      - IS_START_LOCATION_SELECT_BY_MAP=true
+      - EXIST_PLAYER_AFTER_LOGOUT=false
+      - ENABLE_DEFENSE_OTHER_GUILD_PLAYER=false
+      - COOP_PLAYER_MAX_NUM=4
+      - MAX_PLAYERS=32
+      - SERVER_NAME=jammsen-docker-generated-###RANDOM###
+      - SERVER_DESCRIPTION=Palworld-Dedicated-Server running in Docker by jammsen
+      - ADMIN_PASSWORD=adminPasswordHere
+      - SERVER_PASSWORD=serverPasswordHere
+      - PUBLIC_PORT=8211
+      - PUBLIC_IP=
+      - RCON_ENABLED=false
+      - RCON_PORT=25575
+      - REGION=
+      - USEAUTH=true
+      - BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
     volumes:
       - ./game:/palworld
 ```
@@ -218,20 +269,72 @@ services:
     environment:
       - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
       - ALWAYS_UPDATE_ON_START=true
-      - MAX_PLAYERS=32
       - MULTITHREAD_ENABLED=true
       - COMMUNITY_SERVER=true
-      - RCON_ENABLED=true
-      - RCON_PORT=25575
-      - PUBLIC_IP=10.0.0.5
-      - PUBLIC_PORT=8211
-      - SERVER_NAME=jammsen-docker-generated-###RANDOM###
-      - SERVER_DESCRIPTION=Palworld-Dedicated-Server running in Docker by jammsen
-      - SERVER_PASSWORD=serverPasswordHere
-      - ADMIN_PASSWORD=adminPasswordHere
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
-      - TZ=UTC
+      - DIFFICULTY=None
+      - DAYTIME_SPEEDRATE=1.000000
+      - NIGHTTIME_SPEEDRATE=1.000000
+      - EXP_RATE=1.000000
+      - PAL_CAPTURE_RATE=1.000000
+      - PAL_SPAWN_NUM_RATE=1.000000
+      - PAL_DAMAGE_RATE_ATTACK=1.000000
+      - PAL_DAMAGE_RATE_DEFENSE=1.000000
+      - PLAYER_DAMAGE_RATE_ATTACK=1.000000
+      - PLAYER_DAMAGE_RATE_DEFENSE=1.000000
+      - PLAYER_STOMACH_DECREASE_RATE=1.000000
+      - PLAYER_STAMINA_DECREACE_RATE=1.000000
+      - PLAYER_AUTO_HP_REGENE_RATE=1.000000
+      - PLAYER_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
+      - PAL_STOMACH_DECREACE_RATE=1.000000
+      - PAL_STAMINA_DECREACE_RATE=1.000000
+      - PAL_AUTO_HP_REGENE_RATE=1.000000
+      - PAL_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
+      - BUILD_OBJECT_DAMAGE_RATE=1.000000
+      - BUILD_OBJECT_DETERIORATION_DAMAGE_RATE=1.000000
+      - COLLECTION_DROP_RATE=1.000000
+      - COLLECTION_OBJECT_HP_RATE=1.000000
+      - COLLECTION_OBJECT_RESPAWN_SPEED_RATE=1.000000
+      - ENEMY_DROP_ITEM_RATE=1.000000
+      - DEATH_PENALTY=All
+      - ENABLE_PLAYER_TO_PLAYER_DAMAGE=false
+      - ENABLE_FRIENDLY_FIRE=false
+      - ENABLE_INVADER_ENEMY=true
+      - ACTIVE_UNKO=false
+      - ENABLE_AIM_ASSIST_PAD=true
+      - ENABLE_AIM_ASSIST_KEYBOARD=false
+      - DROP_ITEM_MAX_NUM=3000
+      - DROP_ITEM_MAX_NUM_UNKO=100
+      - BASE_CAMP_MAX_NUM=128
+      - BASE_CAMP_WORKER_MAXNUM=15
+      - DROP_ITEM_ALIVE_MAX_HOURS=1.000000 
+      - AUTO_RESET_GUILD_NO_ONLINE_PLAYERS=false
+      - AUTO_RESET_GUILD_TIME_NO_ONLINE_PLAYERS=72.000000
+      - GUILD_PLAYER_MAX_NUM=20
+      - PAL_EGG_DEFAULT_HATCHING_TIME=72.000000
+      - WORK_SPEED_RATE=1.000000 
+      - IS_MULTIPLAY=false
+      - IS_PVP=false
+      - CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP=false
+      - ENABLE_NON_LOGIN_PENALTY=true
+      - ENABLE_FAST_TRAVEL=true
+      - IS_START_LOCATION_SELECT_BY_MAP=true
+      - EXIST_PLAYER_AFTER_LOGOUT=false
+      - ENABLE_DEFENSE_OTHER_GUILD_PLAYER=false
+      - COOP_PLAYER_MAX_NUM=4
+      - MAX_PLAYERS=32
+      - SERVER_NAME=jammsen-docker-generated-###RANDOM###
+      - SERVER_DESCRIPTION=Palworld-Dedicated-Server running in Docker by jammsen
+      - ADMIN_PASSWORD=adminPasswordHere
+      - SERVER_PASSWORD=serverPasswordHere
+      - PUBLIC_PORT=8211
+      - PUBLIC_IP=
+      - RCON_ENABLED=false
+      - RCON_PORT=25575
+      - REGION=
+      - USEAUTH=true
+      - BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
     volumes:
       - ./game:/palworld
   
