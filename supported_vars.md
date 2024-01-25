@@ -1,5 +1,7 @@
 This is a table of all the settings currently editable via docker env vars
+
 Much of this is from the [Palworld Tech Guide](https://tech.palworldgame.com/optimize-game-balance)
+
 Also credit to [PalworldSettingGenerator](https://dysoncheng.github.io/PalWorldSettingGenerator/setting.html) for variable descriptions.
 
 

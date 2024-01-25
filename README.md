@@ -48,7 +48,7 @@ This includes a Palworld Dedicated Server based on Linux and Docker.
 | ADMIN_PASSWORD         | Admin password of the server                                                                                                          | adminPasswordHere                                       | string          |
 | BACKUP_ENABLED         | Backup function, creates backups in your `game` directory                                                                             | true                                                    | false/true      |
 | BACKUP_CRON_EXPRESSION | Needs a Cron-Expression - See https://github.com/aptible/supercronic#crontab-format or https://crontab-generator.org/                 | 0 * * * * (meaning every hour)                          | Cron-Expression |
-| ExampleGameVar         | See [the supported_vars.md document](supportedvars.md) for all of the game vars that can be included here                             | Check [supported_vars.md](supported_vars.md) for details| Cron-Expression |
+| ExampleGameVar         | See [supported_vars.md](supportedvars.md) for all of the game vars that can be included here                                          | Check [supported_vars.md](supported_vars.md) for details| Cron-Expression |
 
 This script now supports editing all of current settings in env vars. You can see all of the options as well as the the limits for each [here](supported_vars.md).
 Look at https://tech.palworldgame.com/optimize-game-balance for more information and config-settings in `game/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`
