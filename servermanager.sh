@@ -72,9 +72,9 @@ function startServer() {
         echo "Setting PlayerDamageRateDefense to $PLAYER_DAMAGE_RATE_DEFENSE"
         sed -i "s/PlayerDamageRateDefense=[+-]?([0-9]*[.])?[0-9]+/PlayerDamageRateDefense=$PLAYER_DAMAGE_RATE_DEFENSE/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
     fi
-    if [[ ! -z ${Player_Stomach_Decreace_Rate+x} ]]; then
-        echo "Setting PlayerStomachDecreaceRate to $Player_Stomach_Decreace_Rate"
-        sed -i "s/PlayerStomachDecreaceRate=[+-]?([0-9]*[.])?[0-9]+/PlayerStomachDecreaceRate=$Player_Stomach_Decreace_Rate/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    if [[ ! -z ${PLAYER_STOMACH_DECREASE_RATE+x} ]]; then
+        echo "Setting PlayerStomachDecreaceRate to $PLAYER_STOMACH_DECREASE_RATE"
+        sed -i "s/PlayerStomachDecreaceRate=[+-]?([0-9]*[.])?[0-9]+/PlayerStomachDecreaceRate=$PLAYER_STOMACH_DECREASE_RATE/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
     fi
     if [[ ! -z ${PLAYER_STAMINA_DECREACE_RATE+x} ]]; then
         echo "Setting PlayerStaminaDecreaceRate to $PLAYER_STAMINA_DECREACE_RATE"
@@ -257,14 +257,6 @@ function startServer() {
     if [[ ! -z ${SERVER_PASSWORD+x} ]]; then
         echo "Setting server password to $SERVER_PASSWORD"
         sed -i "s/ServerPassword=\"[^\"]*\"/ServerPassword=\"$SERVER_PASSWORD\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
-    fi
-    if [[ ! -z ${TS_SERVER_PASSWORD+x} ]]; then
-        echo "Setting tSServerPassword to $TS_SERVER_PASSWORD"
-        sed -i "s/tSServerPassword=\"[^\"]*\"/tSServerPassword=\"$TS_SERVER_PASSWORD\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
-    fi
-    if [[ ! -z ${GX_SERVER_PASSWORD+x} ]]; then
-        echo "Setting GXServerPassword to $GX_SERVER_PASSWORD"
-        sed -i "s/GXServerPassword=\"[^\"]*\"/GXServerPassword=\"$GX_SERVER_PASSWORD\"/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
     fi
     if [[ ! -z ${PUBLIC_PORT+x} ]]; then
         echo "Setting public port to $PUBLIC_PORT"
