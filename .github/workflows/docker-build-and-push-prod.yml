@@ -1,4 +1,4 @@
-name: docker-build-and-push-ci
+name: docker-build-and-push-prod-ci
 
 on:
   push:
