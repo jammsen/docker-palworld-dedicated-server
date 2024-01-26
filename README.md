@@ -1,6 +1,7 @@
 # Docker - Palworld Dedicated Server
 
-[![Build Docker Image](https://github.com/jammsen/docker-palworld-dedicated-server/actions/workflows/docker-build-and-push.yml/badge.svg)](https://github.com/jammsen/docker-palworld-dedicated-server/actions/workflows/docker-build-and-push.yml)
+[![Build-Status master](https://github.com/jammsen/docker-palworld-dedicated-server/actions/workflows/docker-build-and-push-prod.yml/badge.svg)](https://github.com/jammsen/docker-palworld-dedicated-server/actions/workflows/docker-build-and-push-prod.yml)
+[![Build-Status develop](https://github.com/jammsen/docker-palworld-dedicated-server/actions/workflows/docker-build-and-push-develop.yml/badge.svg)](https://github.com/jammsen/docker-palworld-dedicated-server/actions/workflows/docker-build-and-push-develop.yml)
 ![Docker Pulls](https://img.shields.io/docker/pulls/jammsen/palworld-dedicated-server)
 ![Docker Stars](https://img.shields.io/docker/stars/jammsen/palworld-dedicated-server)
 ![Image Size](https://img.shields.io/docker/image-size/jammsen/palworld-dedicated-server/latest)

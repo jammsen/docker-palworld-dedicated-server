@@ -329,11 +329,11 @@ function startServer() {
 
 function checkForDefaultCredentials() {
     echo ">>> Checking for existence of default credentials"
-    if [ ${ADMIN_PASSWORD} == "adminPasswordHere" ]; then
+    if [[ -n $ADMIN_PASSWORD ]] && [[ $ADMIN_PASSWORD == "adminPasswordHere" ]]; then
         echo ">>> Error: Security thread detected: Please change the default admin password. Aborting server start ..."
         exit 1
     fi
-    if [ ${SERVER_PASSWORD} == "serverPasswordHere" ]; then
+    if [[ -n $SERVER_PASSWORD ]] && [[ $SERVER_PASSWORD == "serverPasswordHere" ]]; then
         echo ">>> Error: Security thread detected: Please change the default server password. Aborting server start ..."
         exit 1
     fi
