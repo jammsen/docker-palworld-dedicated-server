@@ -161,20 +161,11 @@ Information-sources and credits to the following websites:
 version: '3.9'
 services:
   palworld-dedicated-server:
-    #build: .
     container_name: palworld-dedicated-server
     image: jammsen/palworld-dedicated-server:latest
-    restart: always
-    network_mode: bridge
+    restart: "unless-stopped"
     ports:
-      - target: 8211 # Gamerserver port inside of the container
-        published: 8211 # Gamerserver port on your host
-        protocol: udp
-        mode: host
-      - target: 25575 # RCON port inside of the container
-        published: 25575 # RCON port on your host
-        protocol: tcp
-        mode: host
+      - 8211:8211/udp
     environment:
       - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
       - ALWAYS_UPDATE_ON_START=true
@@ -245,6 +236,7 @@ services:
       - REGION=
       - USEAUTH=true
       - BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
+    
     volumes:
       - ./game:/palworld
 ```
@@ -255,20 +247,12 @@ services:
 version: '3.9'
 services:
   palworld-dedicated-server:
-    #build: .
     container_name: palworld-dedicated-server
     image: jammsen/palworld-dedicated-server:latest
-    restart: always
-    network_mode: bridge
+    restart: "unless-stopped"
     ports:
-      - target: 8211 # Gamerserver port inside of the container
-        published: 8211 # Gamerserver port on your host
-        protocol: udp
-        mode: host
-      - target: 25575 # RCON port inside of the container
-        published: 25575 # RCON port on your host
-        protocol: tcp
-        mode: host
+      - "8211:8211/udp"
+      - "25575:25575/tcp"
     environment:
       - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
       - ALWAYS_UPDATE_ON_START=true
@@ -334,16 +318,18 @@ services:
       - SERVER_PASSWORD=serverPasswordHere
       - PUBLIC_PORT=8211
       - PUBLIC_IP=
-      - RCON_ENABLED=false
+      - RCON_ENABLED=true
       - RCON_PORT=25575
       - REGION=
       - USEAUTH=true
       - BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
+    
     volumes:
       - ./game:/palworld
   
   rcon:
     image: outdead/rcon:latest
+    restart: "no"
     entrypoint: ['/rcon', '-a', '10.0.0.5:25575', '-p', 'adminPasswordHere']
     profiles: ['rcon'] 
 ```
