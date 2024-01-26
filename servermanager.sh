@@ -25,7 +25,27 @@ function startServer() {
     echo ">>> Starting the gameserver"
     cd $GAME_PATH
 
-    echo ">>> Setting up setting ..."
+    echo ">>> Setting up Engine.ini ..."
+    config_file="${GAME_PATH}/Pal/Saved/Config/LinuxServer/Engine.ini"
+    pattern1="OnlineSubsystemUtils.IpNetDriver"
+    pattern2="^NetServerMaxTickRate=[0-9]*"
+
+    if grep -qE "$pattern1" "$config_file"; then
+        echo "Found [/Script/OnlineSubsystemUtils.IpNetDriver] section"
+    else
+        echo "Found no [/Script/OnlineSubsystemUtils.IpNetDriver], adding it"
+        echo -e "\n[/Script/OnlineSubsystemUtils.IpNetDriver]" >> "$config_file"
+    fi
+    if grep -qE "$pattern2" "$config_file"; then
+        echo "Found NetServerMaxTickRate parameter, chaning it to $NETSERVERMAXTICKRATE"
+        sed -E -i "s/$pattern2/NetServerMaxTickRate=$NETSERVERMAXTICKRATE/" "$config_file"
+    else
+        echo "Found no NetServerMaxTickRate parameter, adding it to $NETSERVERMAXTICKRATE"
+        echo "NetServerMaxTickRate=$NETSERVERMAXTICKRATE" >> "$config_file"
+    fi
+    echo ">>> Finished setting up Engine.ini ..."
+
+    echo ">>> Setting up PalWorldSettings.ini ..."
     echo "Checking if config exists"
     if [ ! -f ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini ]; then
         echo "No config found, generating one"
@@ -295,8 +315,7 @@ function startServer() {
         sed -E -i "s~BanListURL=\"[^\"]*\"~BanListURL=\"$BAN_LIST_URL\"~" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
         # sed -E -i 's/BanListURL=(((ftp|http|https):\/\/)|(\/)|(..\/))(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/BanListURL=$BAN_LIST_URL/g' ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
     fi
-    echo ">>> Finished setting up settings ..."
-
+    echo ">>> Finished setting up PalWorldSettings.ini ..."
 
     START_OPTIONS=""
     if [[ -n $COMMUNITY_SERVER ]] && [[ $COMMUNITY_SERVER == "true" ]]; then
