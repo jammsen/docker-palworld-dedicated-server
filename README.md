@@ -5,7 +5,6 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/jammsen/palworld-dedicated-server)
 ![Docker Stars](https://img.shields.io/docker/stars/jammsen/palworld-dedicated-server)
 ![Image Size](https://img.shields.io/docker/image-size/jammsen/palworld-dedicated-server/latest)
-
 This includes a Palworld Dedicated Server based on Linux and Docker.
 
 ___
