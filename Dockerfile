@@ -50,6 +50,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SERVER_PASSWORD=serverPasswordHere \
     PUBLIC_IP=10.0.0.1 \
     PUBLIC_PORT=8211 \
-    RCON_ENABLED=true 
+    RCON_ENABLED=false
 
 CMD ["/servermanager.sh"]
