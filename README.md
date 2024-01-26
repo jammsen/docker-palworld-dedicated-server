@@ -22,7 +22,8 @@ ___
 * [Docker-Compose examples](#docker-compose-examples)
   * [Standalone gameserver](#standalone-gameserver)
   * [Gameserver with RCON](#gameserver-with-rcon)
-  * [Run RCON commands](#run-rcon-commands)
+   * [Run RCON commands](#run-rcon-commands)
+  * [Usage with Portainer - Soon TM](#usage-with-portainer)
 * [FAQ](#faq)
 * [Planned features in the future](#planned-features-in-the-future)
 * [Software used](#software-used)
@@ -363,6 +364,9 @@ Complete Save
 **Imporant:**
 - Keep the `--rm` in the command line, or you will have many exited containers in your list. 
 - All RCON-Commands can be research here: https://tech.palworldgame.com/server-commands
+
+### Usage with Portainer
+Soon ... see #39
 
 ## FAQ
 
