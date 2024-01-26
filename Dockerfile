@@ -23,8 +23,7 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
 ADD --chown=steam:steam --chmod=755 servermanager.sh /servermanager.sh
 ADD --chown=steam:steam --chmod=755 backupmanager.sh /backupmanager.sh
 
-EXPOSE 8211/udp
-EXPOSE 25575/tcp
+
 
 RUN mkdir /palworld \
     && chown steam:steam /palworld
@@ -50,6 +49,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SERVER_PASSWORD=serverPasswordHere \
     PUBLIC_IP=10.0.0.1 \
     PUBLIC_PORT=8211 \
+    RCON_PORT=25575 \
     RCON_ENABLED=true 
+    
+EXPOSE ${PUBLIC_PORT}/udp ${RCON_PORT}/tcp
 
 CMD ["/servermanager.sh"]
