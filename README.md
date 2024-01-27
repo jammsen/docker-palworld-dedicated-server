@@ -24,7 +24,7 @@ ___
   - [Standalone Game Server](#standalone-gameserver)
   - [Game Server with RCON](#gameserver-with-rcon)
     - [Running RCON Commands](#run-rcon-commands)
-  - [Usage with Portainer (Coming Soon)](#usage-with-portainer)
+  - [Usage with Portainer](#usage-with-portainer)
 - [Frequently Asked Questions](#faq)
 - [Future Plans](#planned-features-in-the-future)
 - [Software Used](#software-used)
