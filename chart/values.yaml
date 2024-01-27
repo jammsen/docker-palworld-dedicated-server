@@ -1,0 +1,97 @@
+image:
+  repository: jammsen/palworld-dedicated-server
+  pullPolicy: Always
+  tag: latest
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: LoadBalancer
+  ## Example annotations for kube-vip or MetalLB to assign a specific IP to the LoadBalancer
+  annotations: {}
+    # kube-vip.io/loadbalancerIPs: 192.168.1.100
+    # metallb.universe.tf/loadBalancerIPs: 192.168.1.100
+  gamePort: 8211
+  queryPort: 27015
+  rconPort: 25575
+
+resources:
+  # limits:
+  #   cpu: 4
+  #   memory: 32Gi
+  requests:
+    cpu: 4
+    memory: 16Gi
+
+## Enable persistence using Persistent Volume Claims
+## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+##
+persistence:
+  enabled: true
+
+  ## A manually managed Persistent Volume and Claim
+  ## Requires persistence.enabled: true
+  ## If defined, PVC must be created manually before volume will be bound
+  existingClaim: ""
+
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  ## Storage class of PV to bind. By default it looks for standard storage class.
+  ## If the PV uses a different storage class, specify that here.
+  # storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 20Gi
+
+  ## If subPath is set mount a sub folder of a volume instead of the root of the volume.
+  ##
+  subPath: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+## Environment variables to add to the deployment 
+## ref: https://github.com/jammsen/docker-palworld-dedicated-server#environment-variables
+## 
+## Do not set PORT environment variables here. Instead, change the ports in .Values.service.
+## 
+env:
+  TZ: UTC # Change this for logging and backup
+  ALWAYS_UPDATE_ON_START: true
+  MAX_PLAYERS: 16
+  MULTITHREAD_ENABLED: true
+  COMMUNITY_SERVER: false
+  RCON_ENABLED: true
+  SERVER_NAME: "serverNameHere"
+  SERVER_DESCRIPTION: ""
+  BACKUP_ENABLED: true
+  BACKUP_CRON_EXPRESSION: 0 * * * *
+  SERVER_PASSWORD: "serverPasswordHere"
+  ADMIN_PASSWORD: "adminPasswordHere"
+
+## Optional - Create environment variables from an existing secret
+## 
+envFrom: {}
+  # SERVER_PASSWORD:
+  #   secretKeyRef:
+  #     name: palworld-config
+  #     key: serverPassword
+  # ADMIN_PASSWORD:
+  #   secretKeyRef:
+  #     name: palworld-config
+  #     key: adminPassword

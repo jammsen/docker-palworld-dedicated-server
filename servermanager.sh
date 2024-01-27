@@ -324,6 +324,9 @@ function startServer() {
     if [[ -n $MULTITHREAD_ENABLED ]] && [[ $MULTITHREAD_ENABLED == "true" ]]; then
         START_OPTIONS="$START_OPTIONS -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
     fi
+    if [[ -n $QUERY_PORT ]]; then
+        START_OPTIONS="$START_OPTIONS -queryport=$QUERY_PORT"
+    fi
     ./PalServer.sh "$START_OPTIONS"
 }
 

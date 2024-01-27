@@ -66,6 +66,7 @@ ___
 | ALWAYS_UPDATE_ON_START | Updates the server on startup                                       | true                           | false/true                            |
 | MULTITHREAD_ENABLED    | Sets options for "Improved multi-threaded CPU performance"          | true                           | false/true                            |
 | COMMUNITY_SERVER       | Set to enabled, the server will appear in the Community-Serverlist. | true                           | false/true                            |
+| QUERY_PORT             | Port used to query the community server                             | 27015                          | Integer                               |
 | BACKUP_ENABLED         | Backup function, creates backups in your `game` directory           | true                           | false/true                            |
 | BACKUP_CRON_EXPRESSION | Needs a Cron-Expression - See [Cron expression](#cron-expression)   | 0 * * * * (meaning every hour) | Cron-Expression                       |
 
@@ -171,6 +172,10 @@ services:
         published: 8211 # Gamerserver port on your host
         protocol: udp
         mode: host
+      - target: 27015 # Query port inside of the container
+        published: 27015 # Query port on your host
+        protocol: udp
+        mode: host
       - target: 25575 # RCON port inside of the container
         published: 25575 # RCON port on your host
         protocol: tcp
@@ -180,6 +185,7 @@ services:
       - ALWAYS_UPDATE_ON_START=true
       - MULTITHREAD_ENABLED=true
       - COMMUNITY_SERVER=true
+      - QUERY_PORT=27011
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
       - NETSERVERMAXTICKRATE=120
@@ -265,6 +271,10 @@ services:
         published: 8211 # Gamerserver port on your host
         protocol: udp
         mode: host
+      - target: 27015 # Query port inside of the container
+        published: 27015 # Query port on your host
+        protocol: udp
+        mode: host
       - target: 25575 # RCON port inside of the container
         published: 25575 # RCON port on your host
         protocol: tcp
@@ -274,6 +284,7 @@ services:
       - ALWAYS_UPDATE_ON_START=true
       - MULTITHREAD_ENABLED=true
       - COMMUNITY_SERVER=true
+      - QUERY_PORT=27011
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
       - NETSERVERMAXTICKRATE=120
