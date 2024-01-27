@@ -27,7 +27,7 @@ EXPOSE 8211/udp
 EXPOSE 25575/tcp
 
 RUN mkdir /palworld \
-    && chown steam:steam /palworld
+    && chown -R steam:steam /palworld
 
 VOLUME [ "/palworld" ]
 
