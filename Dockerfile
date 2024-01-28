@@ -38,17 +38,18 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PGID=0 \
     TZ=Europe/Berlin \
     ALWAYS_UPDATE_ON_START=true \
-    MAX_PLAYERS=32 \
     MULTITHREAD_ENABLED=true \
     COMMUNITY_SERVER=true \
-    RCON_ENABLED=true \
-    PUBLIC_IP=10.0.0.1 \
-    PUBLIC_PORT=8211 \
+    BACKUP_ENABLED=true \
+    BACKUP_CRON_EXPRESSION="0 * * * *" \
+    NETSERVERMAXTICKRATE=120 \
+    MAX_PLAYERS=32 \
     SERVER_NAME=jammsen-docker-generated-###RANDOM### \
     SERVER_DESCRIPTION="Palworld-Dedicated-Server running in Docker by jammsen" \
-    SERVER_PASSWORD=serverPasswordHere \
     ADMIN_PASSWORD=adminPasswordHere \
-    BACKUP_ENABLED=true \
-    BACKUP_CRON_EXPRESSION="0 * * * *"
+    SERVER_PASSWORD=serverPasswordHere \
+    PUBLIC_IP=10.0.0.1 \
+    PUBLIC_PORT=8211 \
+    RCON_ENABLED=true 
 
 CMD ["/servermanager.sh"]

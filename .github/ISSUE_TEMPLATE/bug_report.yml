@@ -1,11 +1,13 @@
-name: "Bug report"
-description: Create a bug report or help us improve things
+name: "🐞 Bug report"
+description: Create a bug report to help us improve things
+labels: ["bug"]
+title: "[Bug Report] Your descriptive title here!"
 body:
   - type: markdown
     attributes:
       value: |
         ## Important information
-        Please understand you are asking for support for the Docker-Image and Docker-Container. I'm NOT the creator of the Dedicated-Game-Server itself, i'm not involved in programming that. If you need help for that, you might want to ask here for topics related to that: https://tech.palworldgame.com/dedicated-server-guide
+        Thank you for taking the time to fill out this bug report! Please understand you are asking for support for the Docker-Image and Docker-Container. I'm NOT the creator of the Dedicated-Game-Server itself, i'm not involved in programming that. If you need help for that, you might want to ask here for topics related to that: https://tech.palworldgame.com/dedicated-server-guide
   - type: checkboxes
     id: understand-important-info
     attributes:
