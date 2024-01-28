@@ -70,14 +70,18 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 
 These settings control the behavior of the Docker container:
 
-| Variable               | Description                                                         | Default value                  | Allowed values                        |
-| ---------------------- | ------------------------------------------------------------------- | ------------------------------ | ------------------------------------- |
-| TZ                     | Timezone used for time stamping server backups                      | Europe/Berlin                  | See [TZ identifiers](#tz-identifiers) |
-| ALWAYS_UPDATE_ON_START | Updates the server on startup                                       | true                           | false/true                            |
-| MULTITHREAD_ENABLED    | Sets options for "Improved multi-threaded CPU performance"          | true                           | false/true                            |
-| COMMUNITY_SERVER       | Set to enabled, the server will appear in the Community-Serverlist. | true                           | false/true                            |
-| BACKUP_ENABLED         | Backup function, creates backups in your `game` directory           | true                           | false/true                            |
-| BACKUP_CRON_EXPRESSION | Needs a Cron-Expression - See [Cron expression](#cron-expression)   | 0 * * * * (meaning every hour) | Cron-Expression                       |
+> If you want to change the server settings via environment variables use the default value (`auto`) for the environment variable `SERVER_SETTINGS_MODE`, otherwise change it to `manual` and edit the config file directly.
+
+| Variable                | Description                                                                                                                                                                                                                   | Default value                  | Allowed values                                                                                                                                                                                    |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TZ                      | Timezone used for time stamping server backups                                                                                                                                                                                | Europe/Berlin                  | See [TZ identifiers](#tz-identifiers)                                                                                                                                                             |
+| ALWAYS_UPDATE_ON_START  | Updates the server on startup                                                                                                                                                                                                 | true                           | false/true                                                                                                                                                                                        |
+| MULTITHREAD_ENABLED     | Sets options for "Improved multi-threaded CPU performance"                                                                                                                                                                    | true                           | false/true                                                                                                                                                                                        |
+| COMMUNITY_SERVER        | Set to enabled, the server will appear in the Community-Serverlist.                                                                                                                                                           | true                           | false/true                                                                                                                                                                                        |
+| BACKUP_ENABLED          | Backup function, creates backups in your `game` directory                                                                                                                                                                     | true                           | false/true                                                                                                                                                                                        |
+| BACKUP_CRON_EXPRESSION  | Needs a Cron-Expression - See [Cron expression](#cron-expression)                                                                                                                                                             | 0 * * * * (meaning every hour) | Cron-Expression                                                                                                                                                                                   |
+| SERVER_SETTINGS_MODE    | Determines whether settings can be modified via environment variables or via file, except `COMMUNITY_SERVER` and `MULTITHREAD_ENABLED`!                                                                                       | `auto`                         | `auto`: Settings are modified only by environment variables, manual edits will be ignored<br>`manual`: Settings are modified only by editing the file directly, environment variables are ignored |
+| STEAMCMD_VALIDATE_FILES | Set to enabled SteamCMD will also validate the gameserver files, making sure nothing is corrupted and also overwrite any file changes of the source<br>See https://developer.valvesoftware.com/wiki/SteamCMD#Downloading_an_App | true                           | false/true                                                                                                                                                                                        |
 
 ### TZ identifiers
 
@@ -97,17 +101,10 @@ Information sources and credits to the following websites:
 
 **Importtant:** Please note that all of this is subject to change. **The game is still in early access.**
 
- > If you want to change the server settings via environment variables use the default value (`auto`) fot the environment variable `SETTINGS_MODE`, otherwise change it to `manual` and edit the config file directly.
-
-| Env Variable           | Description                                                                                    | Default value | Allowed values                                                                                                                    |
-| ---------------------- | ---------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| SETTINGS_MODE          | Determines whether settings can be modified via environment variables or directly on the file. | `auto`        | `auto` -> Settings are modified by env vars / `manual` -> settings are read-only and only changeable by editing the file directly |
+> To change a setting, you can set the environment variable to the value you want. If the environment variable is not set or is blank, the default value will be used. 
 
 
-To change a setting, you can set the environment variable to the value you want. If the environment variable is not set or is blank, the default value will be used. 
-
-
-| Variable                                  | Game setting                         | Description                                                                                                                                                       | Default Value                                          | Allowed Value |
+| Variable                                  | Game setting                         | Description                                                                                                                                                       | Default value                                          | Allowed value |
 | ----------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------- |
 | NETSERVERMAXTICKRATE                      | NetServerMaxTickRate                 | Changes the TickRate of the server, be very careful with this setting!                                                                                            | 120                                                    | 30-120        |
 | DIFFICULTY                                | Difficulty                           | Choose one of the following:<br>`None`<br>`Normal`<br>`Difficult`                                                                                                 | None                                                   | Enum          |
@@ -150,7 +147,7 @@ To change a setting, you can set the environment variable to the value you want.
 | AUTO_RESET_GUILD_TIME_NO_ONLINE_PLAYERS   | AutoResetGuildTimeNoOnlinePlayers    | Time to automatically reset guild when no players are online                                                                                                      | 72.000000                                              | Float         |
 | GUILD_PLAYER_MAX_NUM                      | GuildPlayerMaxNum                    | Max player of Guild                                                                                                                                               | 20                                                     | Integer       |
 | PAL_EGG_DEFAULT_HATCHING_TIME             | PalEggDefaultHatchingTime            | Time(h) to incubate massive egg                                                                                                                                   | 72.000000                                              | Float         |
-| WORK_SPEED_RATE                           | WorkSpeedRate                        | Work speed multiplier                                                                                                                                              | 1.000000                                               | Float         |
+| WORK_SPEED_RATE                           | WorkSpeedRate                        | Work speed multiplier                                                                                                                                             | 1.000000                                               | Float         |
 | IS_MULTIPLAY                              | bIsMultiplay                         | Enable multiplayer                                                                                                                                                | false                                                  | Boolean       |
 | IS_PVP                                    | bIsPvP                               | Enable PVP                                                                                                                                                        | false                                                  | Boolean       |
 | CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP | bCanPickupOtherGuildDeathPenaltyDrop | Allow players from other guilds to pick up death penalty items                                                                                                    | false                                                  | Boolean       |
@@ -166,7 +163,7 @@ To change a setting, you can set the environment variable to the value you want.
 | ADMIN_PASSWORD                            | server admin password                | AdminPassword                                                                                                                                                     | adminPasswordHere                                      | String        |
 | SERVER_PASSWORD                           | AdminPassword                        | Set the server password.                                                                                                                                          | serverPasswordHere                                     | String        |
 | PUBLIC_PORT                               | public port                          | Public port number                                                                                                                                                | 8211                                                   | Integer       |
-| PUBLIC_IP                                 | public ip or FQDN                            | Public IP or FQDN                                                                                                                                                         |                                                        | String        |
+| PUBLIC_IP                                 | public ip or FQDN                    | Public IP or FQDN                                                                                                                                                 |                                                        | String        |
 | RCON_ENABLED                              | RCONEnabled                          | Enable RCON - Use ADMIN_PASSWORD to login                                                                                                                         | false                                                  | Boolean       |
 | RCON_PORT                                 | RCONPort                             | Port number for RCON                                                                                                                                              | 25575                                                  | Integer       |
 | REGION                                    | Region                               | Area                                                                                                                                                              |                                                        | String        |
@@ -197,11 +194,12 @@ services:
     environment:
       - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
       - ALWAYS_UPDATE_ON_START=true
-      - SETTINGS_MODE=auto # Change this to manual if you want to edit the config yourself
       - MULTITHREAD_ENABLED=true
       - COMMUNITY_SERVER=true
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
+      - STEAMCMD_VALIDATE_FILES=true
+      - SERVER_SETTINGS_MODE=auto # Change this to manual if you want to edit the config yourself
       - NETSERVERMAXTICKRATE=120
       - DIFFICULTY=None
       - DAYTIME_SPEEDRATE=1.000000
@@ -291,11 +289,12 @@ services:
     environment:
       - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
       - ALWAYS_UPDATE_ON_START=true
-      - SETTINGS_MODE=auto # Change this to manual if you want to edit the config yourself
       - MULTITHREAD_ENABLED=true
       - COMMUNITY_SERVER=true
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
+      - STEAMCMD_VALIDATE_FILES=true
+      - SERVER_SETTINGS_MODE=auto # Change this to manual if you want to edit the config yourself
       - NETSERVERMAXTICKRATE=120
       - DIFFICULTY=None
       - DAYTIME_SPEEDRATE=1.000000
@@ -368,7 +367,7 @@ services:
     profiles: ['rcon'] 
 ```
 
-*Note: The profiles defintion, prevents the container from starting with the server, this is on purpose, because of Docker-Compose's ability to run container over the CLI, after the start*
+*Note: The profiles definition, prevents the container from starting with the server, this is on purpose, because of Docker-Compose's ability to run container over the CLI, after the start*
 
 #### Run RCON commands
 
@@ -408,11 +407,12 @@ services:
     environment:
       - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
       - ALWAYS_UPDATE_ON_START=true
-      - SETTINGS_MODE=auto # Change this to manual if you want to edit the config yourself
       - MULTITHREAD_ENABLED=true
       - COMMUNITY_SERVER=true
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
+      - STEAMCMD_VALIDATE_FILES=true
+      - SERVER_SETTINGS_MODE=auto # Change this to manual if you want to edit the config yourself
       - NETSERVERMAXTICKRATE=120
       - DIFFICULTY=None
       - DAYTIME_SPEEDRATE=1.000000
@@ -537,6 +537,8 @@ services:
       - COMMUNITY_SERVER=true
       - BACKUP_ENABLED=true
       - BACKUP_CRON_EXPRESSION=0 * * * *
+      - STEAMCMD_VALIDATE_FILES=true
+      - SERVER_SETTINGS_MODE=auto
       - NETSERVERMAXTICKRATE=120
       - DIFFICULTY=None
       - DAYTIME_SPEEDRATE=1.000000

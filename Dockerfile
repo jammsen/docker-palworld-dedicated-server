@@ -37,27 +37,17 @@ USER steam
 ENV DEBIAN_FRONTEND=noninteractive \
     PUID=0 \
     PGID=0 \
-    # Base settings
-    TZ=Europe/Berlin \
+    # Container setttings
+    TZ="Europe/Berlin"   \
     ALWAYS_UPDATE_ON_START=true \
     MULTITHREAD_ENABLED=true \
-    NETSERVERMAXTICKRATE=120 \
+    COMMUNITY_SERVER=true \
     BACKUP_ENABLED=true \
     BACKUP_CRON_EXPRESSION="0 * * * *" \
-    # Control settings file modifications
-    SETTINGS_MODE=auto \
-    # Core server settings
-    COMMUNITY_SERVER=true \
-    MAX_PLAYERS=32 \
-    SERVER_NAME="jammsen-docker-generated-###RANDOM###" \
-    SERVER_DESCRIPTION="Palworld-Dedicated-Server running in Docker by jammsen" \
-    ADMIN_PASSWORD=adminPasswordHere \
-    SERVER_PASSWORD=serverPasswordHere \
-    PUBLIC_IP= \
-    PUBLIC_PORT=8211 \
-    RCON_ENABLED=true \
-    RCON_PORT=25575 \
-    # Game settings
+    STEAMCMD_VALIDATE_FILES=true \
+    SERVER_SETTINGS_MODE=auto \
+    # Server-setting 
+    NETSERVERMAXTICKRATE=120 \
     DIFFICULTY=None \
     DAYTIME_SPEEDRATE=1.000000 \
     NIGHTTIME_SPEEDRATE=1.000000 \
@@ -83,7 +73,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     COLLECTION_OBJECT_RESPAWN_SPEED_RATE=1.000000 \
     ENEMY_DROP_ITEM_RATE=1.000000 \
     DEATH_PENALTY=All \
-    # Server settings
     ENABLE_PLAYER_TO_PLAYER_DAMAGE=false \
     ENABLE_FRIENDLY_FIRE=false \
     ENABLE_INVADER_ENEMY=true \
@@ -109,9 +98,17 @@ ENV DEBIAN_FRONTEND=noninteractive \
     EXIST_PLAYER_AFTER_LOGOUT=false \
     ENABLE_DEFENSE_OTHER_GUILD_PLAYER=false \
     COOP_PLAYER_MAX_NUM=4 \
+    MAX_PLAYERS=32 \
+    SERVER_NAME="jammsen-docker-generated-###RANDOM###" \
+    SERVER_DESCRIPTION="Palworld-Dedicated-Server running in Docker by jammsen" \
+    ADMIN_PASSWORD=adminPasswordHere \
+    SERVER_PASSWORD=serverPasswordHere \
+    PUBLIC_PORT=8211 \
+    PUBLIC_IP= \
+    RCON_ENABLED=false \
+    RCON_PORT=25575 \
     REGION= \
     USEAUTH=true \
-    BAN_LIST_URL="https://api.palworldgame.com/api/banlist.txt"
-
+    BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
 
 CMD ["/servermanager.sh"]
