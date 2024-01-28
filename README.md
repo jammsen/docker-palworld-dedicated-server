@@ -165,7 +165,6 @@ services:
     container_name: palworld-dedicated-server
     image: jammsen/palworld-dedicated-server:latest
     restart: always
-    network_mode: bridge
     ports:
       - target: 8211 # Gamerserver port inside of the container
         published: 8211 # Gamerserver port on your host
@@ -259,7 +258,6 @@ services:
     container_name: palworld-dedicated-server
     image: jammsen/palworld-dedicated-server:latest
     restart: always
-    network_mode: bridge
     ports:
       - target: 8211 # Gamerserver port inside of the container
         published: 8211 # Gamerserver port on your host
