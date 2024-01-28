@@ -353,7 +353,11 @@ function startMain() {
         /usr/local/bin/supercronic cronlist &
     fi
 
-    checkForDefaultCredentials
+    if [[ -n $SKIP_SERVER_SETUP ]] && [[ $SKIP_SERVER_SETUP == "true" ]]; then
+        echo ">>> Skip credential checks"
+    else
+        checkForDefaultCredentials
+    fi
 
     # Check if server is installed, if not try again
     if [ ! -f "$GAME_PATH/PalServer.sh" ]; then
