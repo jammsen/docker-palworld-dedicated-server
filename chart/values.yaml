@@ -65,33 +65,30 @@ tolerations: []
 
 affinity: {}
 
-## Environment variables to add to the deployment 
+## Environment variables used to configure Palworld
 ## ref: https://github.com/jammsen/docker-palworld-dedicated-server#environment-variables
 ## 
-## Do not set PORT environment variables here. Instead, change the ports in .Values.service.
-## 
-env:
-  TZ: UTC # Change this for logging and backup
-  ALWAYS_UPDATE_ON_START: true
-  MAX_PLAYERS: 16
-  MULTITHREAD_ENABLED: true
-  COMMUNITY_SERVER: false
-  RCON_ENABLED: true
-  SERVER_NAME: "serverNameHere"
-  SERVER_DESCRIPTION: ""
-  BACKUP_ENABLED: true
-  BACKUP_CRON_EXPRESSION: 0 * * * *
-  SERVER_PASSWORD: "serverPasswordHere"
-  ADMIN_PASSWORD: "adminPasswordHere"
+config:
+  ## ConfigMap environment variables
+  env:
+    TZ: UTC # Change this for logging and backup
+    ALWAYS_UPDATE_ON_START: true
+    MAX_PLAYERS: 16
+    MULTITHREAD_ENABLED: true
+    COMMUNITY_SERVER: false
+    RCON_ENABLED: true
+    SERVER_NAME: "serverNameHere"
+    SERVER_DESCRIPTION: ""
+    BACKUP_ENABLED: true
+    BACKUP_CRON_EXPRESSION: 0 * * * *
 
-## Optional - Create environment variables from an existing secret
-## 
-envFrom: {}
-  # SERVER_PASSWORD:
-  #   secretKeyRef:
-  #     name: palworld-config
-  #     key: serverPassword
-  # ADMIN_PASSWORD:
-  #   secretKeyRef:
-  #     name: palworld-config
-  #     key: adminPassword
+  ## Secret environment variables
+  secretEnv:
+    ## Should this Helm chart create the secret. If false, you must define the secret name.
+    create: true
+    ## The name of the secret
+    name: ""
+    ## Environment variables to add to the secret. Used when create = true.
+    env:
+      SERVER_PASSWORD: "serverPasswordHere"
+      ADMIN_PASSWORD: "adminPasswordHere"

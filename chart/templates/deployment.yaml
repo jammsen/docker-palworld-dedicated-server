@@ -36,7 +36,19 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            {{- include "palworld.environment" . | nindent 12 }}
+            - name: PUBLIC_IP
+              value: ""
+            - name: PUBLIC_PORT
+              value: "8211"
+            - name: QUERY_PORT
+              value: "27015"
+            - name: RCON_PORT
+              value: "25575"
+          envFrom:
+            - configMapRef:
+                name: {{ include "palworld.fullname" . }}
+            - secretRef:
+                name: {{ include "palworld.secret.name" . }}
           ports:
             - name: game
               containerPort: 8211
@@ -44,7 +56,7 @@ spec:
             - name: query
               containerPort: 27015
               protocol: UDP
-            {{- if .Values.env.RCON_ENABLED }}
+            {{- if .Values.config.env.RCON_ENABLED }}
             - name: rcon
               containerPort: 25575
               protocol: TCP

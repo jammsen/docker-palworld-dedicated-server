@@ -51,24 +51,12 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Environment variables
+Name of the Secret containing sensitive environment variables
 */}}
-{{- define "palworld.environment" -}}
-- name: PUBLIC_IP
-  value: ""
-- name: PUBLIC_PORT
-  value: "8211"
-- name: QUERY_PORT
-  value: "27015"
-- name: RCON_PORT
-  value: "25575"
-{{- range $key, $value := .Values.env }}
-- name: {{ $key }}
-  value: {{ $value | quote }}
-{{- end }}
-{{- range $key, $value := .Values.envFrom }}
-- name: {{ $key }}
-  valueFrom: 
-    {{- toYaml $value | nindent 4 }}
+{{- define "palworld.secret.name" -}}
+{{- if .Values.config.secretEnv.name }}
+  {{- .Values.config.secretEnv.name }}
+{{- else }}
+  {{- include "palworld.fullname" . }}
 {{- end }}
 {{- end }}

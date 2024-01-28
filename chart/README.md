@@ -44,38 +44,27 @@ Note: Port-Forwarding or NAT may be required for the configured ports.
 
 ### Environment variables
 
-To configure the server, add the [environment variables](https://github.com/jammsen/docker-palworld-dedicated-server#environment-variables) to `env`:
+To configure the server, add the [environment variables](https://github.com/jammsen/docker-palworld-dedicated-server#environment-variables) to `config`:
 
 ```yaml
-env:
-  TZ: UTC # Change this for logging and backup
-  ALWAYS_UPDATE_ON_START: true
-  MAX_PLAYERS: 16
-  MULTITHREAD_ENABLED: true
-  COMMUNITY_SERVER: false
-  RCON_ENABLED: true
-  SERVER_NAME: "serverNameHere"
-  SERVER_DESCRIPTION: ""
-  BACKUP_ENABLED: true
-  BACKUP_CRON_EXPRESSION: 0 * * * *
-  SERVER_PASSWORD: "serverPasswordHere"
-  ADMIN_PASSWORD: "adminPasswordHere"
+config:
+  env:
+    TZ: UTC # Change this for logging and backup
+    ALWAYS_UPDATE_ON_START: true
+    MAX_PLAYERS: 16
+    MULTITHREAD_ENABLED: true
+    COMMUNITY_SERVER: false
+    RCON_ENABLED: true
+    SERVER_NAME: "serverNameHere"
+    SERVER_DESCRIPTION: ""
+    BACKUP_ENABLED: true
+    BACKUP_CRON_EXPRESSION: 0 * * * *
+  
+  secretEnv:
+    create: true
+    env:
+      SERVER_PASSWORD: "serverPasswordHere"
+      ADMIN_PASSWORD: "adminPasswordHere"
 ```
 
 Note: This Chart configures the settings for `PUBLIC_IP`, `PUBLIC_PORT`, `QUERY_PORT`, and `RCON_PORT`. The external ports for these services can be set in [Networking](#networking).
-
-### Environment variables from secret
-
-Environment variables can optionally be sourced from an existing [secret](https://kubernetes.io/docs/concepts/configuration/secret/) using `envFrom`:
-
-```yaml
-envFrom:
-  SERVER_PASSWORD:
-    secretKeyRef:
-      name: palworld-config
-      key: serverPassword
-  ADMIN_PASSWORD:
-    secretKeyRef:
-      name: palworld-config
-      key: adminPassword
-```

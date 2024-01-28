@@ -19,7 +19,7 @@ spec:
       targetPort: query
       protocol: UDP
       name: query
-    {{- if .Values.env.RCON_ENABLED }}
+    {{- if .Values.config.env.RCON_ENABLED }}
     - port: {{ .Values.service.rconPort }}
       targetPort: rcon
       protocol: TCP
