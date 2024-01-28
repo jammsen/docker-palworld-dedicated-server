@@ -627,6 +627,9 @@ You can run this `docker exec -ti palworld-dedicated-server cat /palworld/Pal/Sa
 ### Im seeing S_API errors in my logs when i start the container
 Errors like `[S_API FAIL] Tried to access Steam interface SteamUser021 before SteamAPI_Init succeeded.` are safe to ignore.
 
+### Im using Apple XYZ/MX, can i run this?
+You can try to insert in your docker-compose file this parameter `platform: linux/amd64` at the palworld service. This isnt a special fix for Apple silicon, but to run on other than x86 hosts. The support for arm exists only by enforcing x86 emulation, if that isnt to host already. Rosetta is doing the translation/emulation.
+
 ## Planned features in the future
 
 - Feel free to suggest something
