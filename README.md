@@ -70,7 +70,7 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 
 These settings control the behavior of the Docker container:
 
-| Variable               | Description                                                         | Default value                  | Allowed value                         |
+| Variable               | Description                                                         | Default value                  | Allowed values                        |
 | ---------------------- | ------------------------------------------------------------------- | ------------------------------ | ------------------------------------- |
 | TZ                     | Timezone used for time stamping server backups                      | Europe/Berlin                  | See [TZ identifiers](#tz-identifiers) |
 | ALWAYS_UPDATE_ON_START | Updates the server on startup                                       | true                           | false/true                            |
@@ -95,7 +95,17 @@ Information sources and credits to the following websites:
 * [Palworld Tech Guide](https://tech.palworldgame.com/optimize-game-balance) for the game server documentation
 * [PalworldSettingGenerator](https://dysoncheng.github.io/PalWorldSettingGenerator/setting.html) for variable descriptions
 
-**Important:** Please note that all of this is subject to change. **The game is still in early access.**
+**Importtant:** Please note that all of this is subject to change. **The game is still in early access.**
+
+ > If you want to change the server settings via environment variables use the default value (`auto`) fot the environment variable `SETTINGS_MODE`, otherwise change it to `manual` and edit the config file directly.
+
+| Env Variable           | Description                                                                                    | Default value | Allowed values                                                                                                                    |
+| ---------------------- | ---------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| SETTINGS_MODE          | Determines whether settings can be modified via environment variables or directly on the file. | `auto`        | `auto` -> Settings are modified by env vars / `manual` -> settings are read-only and only changeable by editing the file directly |
+
+
+To change a setting, you can set the environment variable to the value you want. If the environment variable is not set or is blank, the default value will be used. 
+
 
 | Variable                                  | Game setting                         | Description                                                                                                                                                       | Default Value                                          | Allowed Value |
 | ----------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------- |
@@ -106,10 +116,10 @@ Information sources and credits to the following websites:
 | EXP_RATE                                  | ExpRate                              | EXP rate                                                                                                                                                          | 1.000000                                               | Float         |
 | PAL_CAPTURE_RATE                          | PalCaptureRate                       | Pal capture rate                                                                                                                                                  | 1.000000                                               | Float         |
 | PAL_SPAWN_NUM_RATE                        | PalSpawnNumRate                      | Pal appearance rate                                                                                                                                               | 1.000000                                               | Float         |
-| PAL_DAMAGE_RATE_ATTACK                    | PalDamageRateAttack                  | Damage from pals multipiler                                                                                                                                       | 1.000000                                               | Float         |
-| PAL_DAMAGE_RATE_DEFENSE                   | PalDamageRateDefense                 | Damage to pals multipiler                                                                                                                                         | 1.000000                                               | Float         |
-| PLAYER_DAMAGE_RATE_ATTACK                 | PlayerDamageRateAttack               | Damage from player multipiler                                                                                                                                     | 1.000000                                               | Float         |
-| PLAYER_DAMAGE_RATE_DEFENSE                | PlayerDamageRateDefense              | Damage to  player multipiler                                                                                                                                      | 1.000000                                               | Float         |
+| PAL_DAMAGE_RATE_ATTACK                    | PalDamageRateAttack                  | Damage from pals multiplier                                                                                                                                       | 1.000000                                               | Float         |
+| PAL_DAMAGE_RATE_DEFENSE                   | PalDamageRateDefense                 | Damage to pals multiplier                                                                                                                                         | 1.000000                                               | Float         |
+| PLAYER_DAMAGE_RATE_ATTACK                 | PlayerDamageRateAttack               | Damage from player multiplier                                                                                                                                     | 1.000000                                               | Float         |
+| PLAYER_DAMAGE_RATE_DEFENSE                | PlayerDamageRateDefense              | Damage to  player multiplier                                                                                                                                      | 1.000000                                               | Float         |
 | PLAYER_STOMACH_DECREASE_RATE              | PlayerStomachDecreaceRate            | Player hunger depletion rate                                                                                                                                      | 1.000000                                               | Float         |
 | PLAYER_STAMINA_DECREACE_RATE              | PlayerStaminaDecreaceRate            | Player stamina reduction rate                                                                                                                                     | 1.000000                                               | Float         |
 | PLAYER_AUTO_HP_REGENE_RATE                | PlayerAutoHPRegeneRate               | Player auto HP regeneration rate                                                                                                                                  | 1.000000                                               | Float         |
@@ -118,12 +128,12 @@ Information sources and credits to the following websites:
 | PAL_STAMINA_DECREACE_RATE                 | PalStaminaDecreaceRate               | Pal stamina reduction rate                                                                                                                                        | 1.000000                                               | Float         |
 | PAL_AUTO_HP_REGENE_RATE                   | PalAutoHPRegeneRate                  | Pal auto HP regeneration rate                                                                                                                                     | 1.000000                                               | Float         |
 | PAL_AUTO_HP_REGENE_RATE_IN_SLEEP          | PalAutoHpRegeneRateInSleep           | Pal sleep health regeneration rate (in Palbox)                                                                                                                    | 1.000000                                               | Float         |
-| BUILD_OBJECT_DAMAGE_RATE                  | BuildObjectDamageRate                | Damage to structure multipiler                                                                                                                                    | 1.000000                                               | Float         |
+| BUILD_OBJECT_DAMAGE_RATE                  | BuildObjectDamageRate                | Damage to structure multiplier                                                                                                                                    | 1.000000                                               | Float         |
 | BUILD_OBJECT_DETERIORATION_DAMAGE_RATE    | PalAutoHpRegeneRateInSleep           | Structure determination rate                                                                                                                                      | 1.000000                                               | Float         |
-| COLLECTION_DROP_RATE                      | CollectionDropRate                   | Getherable items multipiler                                                                                                                                       | 1.000000                                               | Float         |
-| COLLECTION_OBJECT_HP_RATE                 | CollectionObjectHpRate               | Getherable objects HP multipiler                                                                                                                                  | 1.000000                                               | Float         |
-| COLLECTION_OBJECT_RESPAWN_SPEED_RATE      | CollectionObjectRespawnSpeedRate     | Getherable objects respawn interval                                                                                                                               | 1.000000                                               | Float         |
-| ENEMY_DROP_ITEM_RATE                      | EnemyDropItemRate                    | Dropped Items Multipiler                                                                                                                                          | 1.000000                                               | Float         |
+| COLLECTION_DROP_RATE                      | CollectionDropRate                   | Gatherable items multiplier                                                                                                                                       | 1.000000                                               | Float         |
+| COLLECTION_OBJECT_HP_RATE                 | CollectionObjectHpRate               | Gatherable objects HP multiplier                                                                                                                                  | 1.000000                                               | Float         |
+| COLLECTION_OBJECT_RESPAWN_SPEED_RATE      | CollectionObjectRespawnSpeedRate     | Gatherable objects respawn interval                                                                                                                               | 1.000000                                               | Float         |
+| ENEMY_DROP_ITEM_RATE                      | EnemyDropItemRate                    | Dropped Items Multiplier                                                                                                                                          | 1.000000                                               | Float         |
 | DEATH_PENALTY                             | DeathPenalty                         | `None` : No lost<br> `Item` : Lost item without equipment<br>`ItemAndEquipment` : Lost item and equipment<br>`All`: Lost All item,   equipment, pal(in inventory) | All                                                    | Enum          |
 | ENABLE_PLAYER_TO_PLAYER_DAMAGE            | bEnablePlayerToPlayerDamage          | Allows players to cause damage to players                                                                                                                         | false                                                  | Boolean       |
 | ENABLE_FRIENDLY_FIRE                      | bEnableFriendlyFire                  | Allow friendly fire                                                                                                                                               | false                                                  | Boolean       |
@@ -140,7 +150,7 @@ Information sources and credits to the following websites:
 | AUTO_RESET_GUILD_TIME_NO_ONLINE_PLAYERS   | AutoResetGuildTimeNoOnlinePlayers    | Time to automatically reset guild when no players are online                                                                                                      | 72.000000                                              | Float         |
 | GUILD_PLAYER_MAX_NUM                      | GuildPlayerMaxNum                    | Max player of Guild                                                                                                                                               | 20                                                     | Integer       |
 | PAL_EGG_DEFAULT_HATCHING_TIME             | PalEggDefaultHatchingTime            | Time(h) to incubate massive egg                                                                                                                                   | 72.000000                                              | Float         |
-| WORK_SPEED_RATE                           | WorkSpeedRate                        | Work speed muliplier                                                                                                                                              | 1.000000                                               | Float         |
+| WORK_SPEED_RATE                           | WorkSpeedRate                        | Work speed multiplier                                                                                                                                              | 1.000000                                               | Float         |
 | IS_MULTIPLAY                              | bIsMultiplay                         | Enable multiplayer                                                                                                                                                | false                                                  | Boolean       |
 | IS_PVP                                    | bIsPvP                               | Enable PVP                                                                                                                                                        | false                                                  | Boolean       |
 | CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP | bCanPickupOtherGuildDeathPenaltyDrop | Allow players from other guilds to pick up death penalty items                                                                                                    | false                                                  | Boolean       |
@@ -187,6 +197,7 @@ services:
     environment:
       - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
       - ALWAYS_UPDATE_ON_START=true
+      - SETTINGS_MODE=auto # Change this to manual if you want to edit the config yourself
       - MULTITHREAD_ENABLED=true
       - COMMUNITY_SERVER=true
       - BACKUP_ENABLED=true
@@ -280,6 +291,7 @@ services:
     environment:
       - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
       - ALWAYS_UPDATE_ON_START=true
+      - SETTINGS_MODE=auto # Change this to manual if you want to edit the config yourself
       - MULTITHREAD_ENABLED=true
       - COMMUNITY_SERVER=true
       - BACKUP_ENABLED=true
@@ -358,6 +370,123 @@ services:
 
 *Note: The profiles defintion, prevents the container from starting with the server, this is on purpose, because of Docker-Compose's ability to run container over the CLI, after the start*
 
+#### Run RCON commands
+
+In your shell, you can now run commands against the gameserver via Docker-Compose and RCON
+```shell
+$ docker compose run --rm rcon ShowPlayers
+name,playeruid,steamid
+$ docker compose run --rm rcon info
+Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
+$ docker compose run --rm rcon save
+Complete Save
+```
+**Important:**
+- Keep the `--rm` in the command line, or you will have many exited containers in your list. 
+- All RCON-Commands can be research here: https://tech.palworldgame.com/server-commands
+
+### Gameserver with Portainer
+For Portainer it is recommended to use the Stacks feature, which allows you to deploy a stack from a docker-compose.yml file. The following configuration will allow you to use the one-click console access feature.
+
+```yaml
+version: "3.9"
+services:
+  palworld-dedicated-server:
+    #build: .
+    container_name: palworld-dedicated-server
+    image: jammsen/palworld-dedicated-server:latest
+    restart: unless-stopped
+    ports:
+      - target: 8211 # Gamerserver port inside of the container
+        published: 8211 # Gamerserver port on your host
+        protocol: udp
+        mode: host
+      - target: 25575 # RCON port inside of the container
+        published: 25575 # RCON port on your host
+        protocol: tcp
+        mode: host
+    environment:
+      - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
+      - ALWAYS_UPDATE_ON_START=true
+      - SETTINGS_MODE=auto # Change this to manual if you want to edit the config yourself
+      - MULTITHREAD_ENABLED=true
+      - COMMUNITY_SERVER=true
+      - BACKUP_ENABLED=true
+      - BACKUP_CRON_EXPRESSION=0 * * * *
+      - NETSERVERMAXTICKRATE=120
+      - DIFFICULTY=None
+      - DAYTIME_SPEEDRATE=1.000000
+      - NIGHTTIME_SPEEDRATE=1.000000
+      - EXP_RATE=1.000000
+      - PAL_CAPTURE_RATE=1.000000
+      - PAL_SPAWN_NUM_RATE=1.000000
+      - PAL_DAMAGE_RATE_ATTACK=1.000000
+      - PAL_DAMAGE_RATE_DEFENSE=1.000000
+      - PLAYER_DAMAGE_RATE_ATTACK=1.000000
+      - PLAYER_DAMAGE_RATE_DEFENSE=1.000000
+      - PLAYER_STOMACH_DECREASE_RATE=1.000000
+      - PLAYER_STAMINA_DECREACE_RATE=1.000000
+      - PLAYER_AUTO_HP_REGENE_RATE=1.000000
+      - PLAYER_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
+      - PAL_STOMACH_DECREACE_RATE=1.000000
+      - PAL_STAMINA_DECREACE_RATE=1.000000
+      - PAL_AUTO_HP_REGENE_RATE=1.000000
+      - PAL_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
+      - BUILD_OBJECT_DAMAGE_RATE=1.000000
+      - BUILD_OBJECT_DETERIORATION_DAMAGE_RATE=1.000000
+      - COLLECTION_DROP_RATE=1.000000
+      - COLLECTION_OBJECT_HP_RATE=1.000000
+      - COLLECTION_OBJECT_RESPAWN_SPEED_RATE=1.000000
+      - ENEMY_DROP_ITEM_RATE=1.000000
+      - DEATH_PENALTY=All
+      - ENABLE_PLAYER_TO_PLAYER_DAMAGE=false
+      - ENABLE_FRIENDLY_FIRE=false
+      - ENABLE_INVADER_ENEMY=true
+      - ACTIVE_UNKO=false
+      - ENABLE_AIM_ASSIST_PAD=true
+      - ENABLE_AIM_ASSIST_KEYBOARD=false
+      - DROP_ITEM_MAX_NUM=3000
+      - DROP_ITEM_MAX_NUM_UNKO=100
+      - BASE_CAMP_MAX_NUM=128
+      - BASE_CAMP_WORKER_MAXNUM=15
+      - DROP_ITEM_ALIVE_MAX_HOURS=1.000000 
+      - AUTO_RESET_GUILD_NO_ONLINE_PLAYERS=false
+      - AUTO_RESET_GUILD_TIME_NO_ONLINE_PLAYERS=72.000000
+      - GUILD_PLAYER_MAX_NUM=20
+      - PAL_EGG_DEFAULT_HATCHING_TIME=72.000000
+      - WORK_SPEED_RATE=1.000000 
+      - IS_MULTIPLAY=false
+      - IS_PVP=false
+      - CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP=false
+      - ENABLE_NON_LOGIN_PENALTY=true
+      - ENABLE_FAST_TRAVEL=true
+      - IS_START_LOCATION_SELECT_BY_MAP=true
+      - EXIST_PLAYER_AFTER_LOGOUT=false
+      - ENABLE_DEFENSE_OTHER_GUILD_PLAYER=false
+      - COOP_PLAYER_MAX_NUM=4
+      - MAX_PLAYERS=32
+      - SERVER_NAME=jammsen-docker-generated-###RANDOM###
+      - SERVER_DESCRIPTION=Palworld-Dedicated-Server running in Docker by jammsen
+      - ADMIN_PASSWORD=adminPasswordHere
+      - SERVER_PASSWORD=serverPasswordHere
+      - PUBLIC_PORT=8211
+      - PUBLIC_IP=
+      - RCON_ENABLED=false
+      - RCON_PORT=25575
+      - REGION=
+      - USEAUTH=true
+      - BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
+    volumes:
+      - /path/to/your/game/directory:/palworld
+
+  rcon:
+    image: outdead/rcon:latest
+    entrypoint: ['/rcon', '-a', '10.0.0.5:25575', '-p', 'adminPasswordHere']
+    profiles: ['rcon'] 
+```
+
+*Note: The profiles defintion, prevents the container from starting with the server, this is on purpose, because of Docker-Compose's ability to run container over the CLI, after the start*
+
 #### What do the parameters in the entrypoint for RCON mean
 
 - "/rcon" is the command to start the RCON client
@@ -377,7 +506,7 @@ Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
 $ docker compose run --rm rcon save
 Complete Save
 ```
-**Imporant:**
+**Important:**
 - Keep the `--rm` in the command line, or you will have many exited containers in your list. 
 - All RCON-Commands can be research here: https://tech.palworldgame.com/server-commands
 

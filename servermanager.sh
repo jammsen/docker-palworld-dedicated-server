@@ -17,34 +17,8 @@ function updateServer() {
     /home/steam/steamcmd/steamcmd.sh +force_install_dir "$GAME_PATH" +login anonymous +app_update 2394010 validate +quit
 }
 
-function startServer() {
-    # IF Bash extendion usaged:
-    # https://stackoverflow.com/a/13864829
-    # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02
-
-    echo ">>> Starting the gameserver"
-    cd $GAME_PATH
-
-    echo ">>> Setting up Engine.ini ..."
-    config_file="${GAME_PATH}/Pal/Saved/Config/LinuxServer/Engine.ini"
-    pattern1="OnlineSubsystemUtils.IpNetDriver"
-    pattern2="^NetServerMaxTickRate=[0-9]*"
-
-    if grep -qE "$pattern1" "$config_file"; then
-        echo "Found [/Script/OnlineSubsystemUtils.IpNetDriver] section"
-    else
-        echo "Found no [/Script/OnlineSubsystemUtils.IpNetDriver], adding it"
-        echo -e "\n[/Script/OnlineSubsystemUtils.IpNetDriver]" >> "$config_file"
-    fi
-    if grep -qE "$pattern2" "$config_file"; then
-        echo "Found NetServerMaxTickRate parameter, chaning it to $NETSERVERMAXTICKRATE"
-        sed -E -i "s/$pattern2/NetServerMaxTickRate=$NETSERVERMAXTICKRATE/" "$config_file"
-    else
-        echo "Found no NetServerMaxTickRate parameter, adding it to $NETSERVERMAXTICKRATE"
-        echo "NetServerMaxTickRate=$NETSERVERMAXTICKRATE" >> "$config_file"
-    fi
-    echo ">>> Finished setting up Engine.ini ..."
-
+function setupServerConfig( {
+    # setup the server config file
     echo ">>> Setting up PalWorldSettings.ini ..."
     echo "Checking if config exists"
     if [ ! -f ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini ]; then
@@ -54,6 +28,9 @@ function startServer() {
         fi
         # Copy default-config, which comes with the server to gameserver-save location
         cp ${GAME_PATH}/DefaultPalWorldSettings.ini ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+    else if [ "$SETTINGS_MODE" = "auto" ]; then
+        echo ">>> File PalWorldSettings.ini manually set by user..."
+        return
     fi
 
     if [[ ! -z ${DIFFICULTY+x} ]]; then
@@ -316,6 +293,38 @@ function startServer() {
         # sed -E -i 's/BanListURL=(((ftp|http|https):\/\/)|(\/)|(..\/))(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/BanListURL=$BAN_LIST_URL/g' ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
     fi
     echo ">>> Finished setting up PalWorldSettings.ini ..."
+
+})
+
+function startServer() {
+    # IF Bash extension used:
+    # https://stackoverflow.com/a/13864829
+    # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02
+
+    echo ">>> Starting the gameserver"
+    cd $GAME_PATH
+
+    echo ">>> Setting up Engine.ini ..."
+    config_file="${GAME_PATH}/Pal/Saved/Config/LinuxServer/Engine.ini"
+    pattern1="OnlineSubsystemUtils.IpNetDriver"
+    pattern2="^NetServerMaxTickRate=[0-9]*"
+
+    if grep -qE "$pattern1" "$config_file"; then
+        echo "Found [/Script/OnlineSubsystemUtils.IpNetDriver] section"
+    else
+        echo "Found no [/Script/OnlineSubsystemUtils.IpNetDriver], adding it"
+        echo -e "\n[/Script/OnlineSubsystemUtils.IpNetDriver]" >> "$config_file"
+    fi
+    if grep -qE "$pattern2" "$config_file"; then
+        echo "Found NetServerMaxTickRate parameter, changing it to $NETSERVERMAXTICKRATE"
+        sed -E -i "s/$pattern2/NetServerMaxTickRate=$NETSERVERMAXTICKRATE/" "$config_file"
+    else
+        echo "Found no NetServerMaxTickRate parameter, adding it to $NETSERVERMAXTICKRATE"
+        echo "NetServerMaxTickRate=$NETSERVERMAXTICKRATE" >> "$config_file"
+    fi
+    echo ">>> Finished setting up Engine.ini ..."
+
+    setupServerConfig
 
     START_OPTIONS=""
     if [[ -n $COMMUNITY_SERVER ]] && [[ $COMMUNITY_SERVER == "true" ]]; then
