@@ -12,36 +12,42 @@ ___
 
 ## Table of Contents
 
-- [Support for this Docker Image](#do-you-need-support-for-this-docker-image)
-- [Requirements](#what-you-need-to-run-this)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-  - [Container Settings](#container-settings)
-    - [Timezone Identifiers](#tz-identifiers)
-    - [Cron Expressions](#cron-expression)  
-  - [Game Server Settings](#gameserver-settings)
-- [Docker-Compose Examples](#docker-compose-examples)
-  - [Standalone Game Server](#standalone-gameserver)
-  - [Game Server with RCON](#gameserver-with-rcon)
-    - [Running RCON Commands](#run-rcon-commands)
-  - [Usage with Portainer](#usage-with-portainer)
-- [Frequently Asked Questions](#faq)
-- [Future Plans](#planned-features-in-the-future)
-- [Software Used](#software-used)
+- [Docker - Palworld Dedicated Server](#docker---palworld-dedicated-server)
+  - [Table of Contents](#table-of-contents)
+  - [How to ask for support for this Docker image](#how-to-ask-for-support-for-this-docker-image)
+  - [Requirements](#requirements)
+  - [Getting started](#getting-started)
+  - [Environment-Variables](#environment-variables)
+    - [Container-Settings](#container-settings)
+      - [TZ identifiers](#tz-identifiers)
+      - [Cron expression](#cron-expression)
+    - [Gameserver-Settings](#gameserver-settings)
+  - [Docker-Compose examples](#docker-compose-examples)
+    - [Gameserver Standalone](#gameserver-standalone)
+    - [Gameserver with RCON](#gameserver-with-rcon)
+      - [What do the parameters in the entrypoint for RCON mean](#what-do-the-parameters-in-the-entrypoint-for-rcon-mean)
+      - [Run RCON commands](#run-rcon-commands)
+    - [Gameserver with Portainer](#gameserver-with-portainer)
+  - [FAQ](#faq)
+    - [How can i look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
+    - [Im seeing S\_API errors in my logs when i start the container](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
+  - [Planned features in the future](#planned-features-in-the-future)
+  - [Software used](#software-used)
 
-## Support for this Docker Image
+## How to ask for support for this Docker image
 
 If you need support for this Docker image:
 
-- Feel free to create a new issue. You can reference other issues if you're experiencing a similar problem.
+- Feel free to create a new issue. 
+  - You can reference other issues if you're experiencing a similar problem via #issue-number.
 - Follow the instructions and answer the questions of people who are willing to help you.
-- Once your issue is resolved, close it. Please consider giving this repo and the [Docker-Hub repository](https://hub.docker.com/repository/docker/jammsen/palworld-dedicated-server) a star.
+- Once your issue is resolved, please close it and please consider giving this repo and the [Docker-Hub repository](https://hub.docker.com/repository/docker/jammsen/palworld-dedicated-server) a star.
 - Please note that any issue that has been inactive for a week will be closed due to inactivity.
 
 Please avoid:
 
 - Reusing or necroing issues. This can lead to spam and may harass participants who didn't agree to be part of your new problem.
-- If this happens, we reserve the right to lock the issue or delete the comments.
+- If this happens, we reserve the right to lock the issue or delete the comments, you have been warned!
 
 ## Requirements
 
@@ -54,13 +60,13 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 3. Pull the latest version of the image with `docker pull jammsen/palworld-dedicated-server:latest`.
 4. Set up your own docker-compose.yml as per your requirements. Refer to the [Docker-Compose examples](#examples) section and the [Environment-Variables](#examples) section for more information.
 5. Start the container via `docker-compose up -d && docker-compose logs -f`. Watch the log, if no errors occur you can close the logs with ctrl+c.
-6. Enjoy your game!
+6. Happy gaming!
 
 ## Environment Variables
 
-**Important:** This section contains numerous environment variables to control your container behavior and game server settings. Due to the extensive control options, the settings are split into two parts for documentation: **Container Settings** and **Game Server Settings**.
+**Important:** In this section you will find a lot of environment variables to control your container-behavior and gameserver-settings. Due to the extensive control options, the settings are split into two parts for documentation: **Container-Settings** and **Gameserver-Settings**.
 
-## Container Settings
+## Container-Settings
 
 These settings control the behavior of the Docker container:
 
@@ -73,15 +79,15 @@ These settings control the behavior of the Docker container:
 | BACKUP_ENABLED         | Backup function, creates backups in your `game` directory           | true                           | false/true                            |
 | BACKUP_CRON_EXPRESSION | Needs a Cron-Expression - See [Cron expression](#cron-expression)   | 0 * * * * (meaning every hour) | Cron-Expression                       |
 
-### TZ Identifiers
+### TZ identifiers
 
 The `TZ` setting affects logging output and the backup function. [TZ identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#Time_Zone_abbreviations) are a format for defining a timezone near you.
 
-### Cron Expression
+### Cron expression
 
-The `BACKUP_CRON_EXPRESSION` setting affects the backup function. In a Cron-Expression, you define an interval for jobs to run. This image uses Supercronic for crons, see https://github.com/aptible/supercronic#crontab-format or https://crontab-generator.org
+The `BACKUP_CRON_EXPRESSION` setting affects the backup function. In a Cron-Expression, you define an interval for when to run jobs. This image uses Supercronic for crons, see https://github.com/aptible/supercronic#crontab-format or https://crontab-generator.org
 
-## Game Server Settings
+##  Gameserver-Settings
 
 This section lists all the settings currently adjustable via Docker environment variables, based on the **order** and **contents of the DefaultPalWorldSettings.ini**.
 
@@ -159,7 +165,7 @@ Information sources and credits to the following websites:
 
 ## Docker-Compose examples
 
-### Standalone gameserver
+### Gameserver standalone
 
 ```yml
 version: '3.9'
@@ -168,8 +174,7 @@ services:
     #build: .
     container_name: palworld-dedicated-server
     image: jammsen/palworld-dedicated-server:latest
-    restart: always
-    network_mode: bridge
+    restart: unless-stopped
     ports:
       - target: 8211 # Gamerserver port inside of the container
         published: 8211 # Gamerserver port on your host
@@ -262,8 +267,7 @@ services:
     #build: .
     container_name: palworld-dedicated-server
     image: jammsen/palworld-dedicated-server:latest
-    restart: always
-    network_mode: bridge
+    restart: unless-stopped
     ports:
       - target: 8211 # Gamerserver port inside of the container
         published: 8211 # Gamerserver port on your host
@@ -348,11 +352,19 @@ services:
   
   rcon:
     image: outdead/rcon:latest
-    entrypoint: ['/rcon', '-a', '10.0.0.5:25575', '-p', 'adminPasswordHere']
+    entrypoint: ["/rcon", "-a", "RCON_ADDRESS:RCON_PORT", "-p", "RCON_PASSWORD"]
     profiles: ['rcon'] 
 ```
 
 *Note: The profiles defintion, prevents the container from starting with the server, this is on purpose, because of Docker-Compose's ability to run container over the CLI, after the start*
+
+#### What do the parameters in the entrypoint for RCON mean
+
+- "/rcon" is the command to start the RCON client
+- "-a" is used to specify the address of the RCON server in the format "IP:PORT"
+- "RCON_ADDRESS:RCON_PORT" should be replaced with the actual address and port of the RCON server
+- "-p" is used to specify the password for the RCON server
+- "RCON_PASSWORD" should be replaced with the actual RCON password
 
 #### Run RCON commands
 
@@ -361,7 +373,7 @@ In your shell, you can now run commands against the gameserver via Docker-Compos
 $ docker compose run --rm rcon ShowPlayers
 name,playeruid,steamid
 $ docker compose run --rm rcon info
-Welcome to Pal Server[v0.1.2.0] jammsen-docker-generated-20384
+Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
 $ docker compose run --rm rcon save
 Complete Save
 ```
@@ -369,26 +381,24 @@ Complete Save
 - Keep the `--rm` in the command line, or you will have many exited containers in your list. 
 - All RCON-Commands can be research here: https://tech.palworldgame.com/server-commands
 
-### Gameserver running from Portainer
-For Portainer it is recommended to use the Portainer-Stacks feature, which allows you to deploy a stack from a docker-compose.yml file.
-This configuration will allow you to use the one-click console access feature of Portainer.
+### Gameserver with Portainer
+For Portainer it is recommended to use the Stacks feature, which allows you to deploy a stack from a docker-compose.yml file. The following configuration will allow you to use the one-click console access feature.
 
 ```yaml
 version: "3.9"
 services:
   palworld-dedicated-server:
-    build: .
+    #build: .
     container_name: palworld-dedicated-server
     image: jammsen/palworld-dedicated-server:latest
     restart: unless-stopped
-    network_mode: bridge
     ports:
-      - target: 8211 # The port inside the container where the game server is running
-        published: 8211 # The port on your host machine that maps to the game server port in the container
+      - target: 8211 # Gamerserver port inside of the container
+        published: 8211 # Gamerserver port on your host
         protocol: udp
         mode: host
-      - target: 25575 # The port inside the container where the RCON server is running
-        published: 25575 # The port on your host machine that maps to the RCON server port in the container
+      - target: 25575 # RCON port inside of the container
+        published: 25575 # RCON port on your host
         protocol: tcp
         mode: host
     environment:
@@ -469,16 +479,14 @@ services:
     container_name: palworld-rcon
     restart: unless-stopped
     entrypoint: ["/rcon", "-a", "RCON_ADDRESS:RCON_PORT", "-p", "RCON_PASSWORD"]
-    # "/rcon" is the command to start the RCON client
-    # "-a" is used to specify the address of the RCON server in the format "IP:PORT"
-    # "RCON_ADDRESS:RCON_PORT" should be replaced with the actual address and port of the RCON server
-    # "-p" is used to specify the password for the RCON server
-    # "RCON_PASSWORD" should be replaced with the actual RCON password
     tty: true
     stdin_open: true
     depends_on:
       - palworld-dedicated-server
 ```
+Questions? See [What do the parameters in the entrypoint for RCON mean](#what-do-the-parameters-in-the-entrypoint-for-rcon-mean)
+
+
 
 ## FAQ
 
