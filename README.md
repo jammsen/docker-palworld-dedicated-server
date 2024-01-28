@@ -353,7 +353,7 @@ services:
       - SERVER_PASSWORD=serverPasswordHere
       - PUBLIC_PORT=8211
       - PUBLIC_IP=
-      - RCON_ENABLED=false
+      - RCON_ENABLED=true
       - RCON_PORT=25575
       - REGION=
       - USEAUTH=true
@@ -471,7 +471,7 @@ services:
       - SERVER_PASSWORD=serverPasswordHere
       - PUBLIC_PORT=8211
       - PUBLIC_IP=
-      - RCON_ENABLED=false
+      - RCON_ENABLED=true
       - RCON_PORT=25575
       - REGION=
       - USEAUTH=true
