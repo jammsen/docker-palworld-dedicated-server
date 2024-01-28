@@ -78,6 +78,7 @@ These settings control the behavior of the Docker container:
 | COMMUNITY_SERVER       | Set to enabled, the server will appear in the Community-Serverlist. | true                           | false/true                            |
 | BACKUP_ENABLED         | Backup function, creates backups in your `game` directory           | true                           | false/true                            |
 | BACKUP_CRON_EXPRESSION | Needs a Cron-Expression - See [Cron expression](#cron-expression)   | 0 * * * * (meaning every hour) | Cron-Expression                       |
+| SKIP_SERVER_SETUP      | keep PalWorldSettings.ini unchanged                                 | false                          | false/true                            |
 
 ### TZ identifiers
 
