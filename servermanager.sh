@@ -45,7 +45,7 @@ function startServer() {
     fi
     echo ">>> Finished setting up Engine.ini ..."
 
-    if [[ -n $SKIP_SERVER_SETUP ]] && [[ $SKIP_SERVER_SETUP == "true" ]];
+    if [[ -n $SKIP_SERVER_SETUP ]] && [[ $SKIP_SERVER_SETUP == "true" ]]; then
         echo ">>> Skip server setup"
     else
         echo ">>> Setting up PalWorldSettings.ini ..."
