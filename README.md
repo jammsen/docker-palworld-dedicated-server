@@ -27,6 +27,7 @@ ___
       - [What do the parameters in the entrypoint for RCON mean](#what-do-the-parameters-in-the-entrypoint-for-rcon-mean)
       - [Run RCON commands](#run-rcon-commands)
   - [FAQ](#faq)
+    - [How can I use the interactive console in Portainer with this image?](#how-can-i-use-the-interactive-console-in-portainer-with-this-image)
     - [How can i look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
     - [Im seeing S\_API errors in my logs when i start the container](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
   - [Planned features in the future](#planned-features-in-the-future)
