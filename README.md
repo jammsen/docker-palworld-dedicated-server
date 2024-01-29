@@ -30,6 +30,7 @@ ___
     - [How can I use the interactive console in Portainer with this image?](#how-can-i-use-the-interactive-console-in-portainer-with-this-image)
     - [How can i look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
     - [Im seeing S\_API errors in my logs when i start the container](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
+    - [I have changed the setting but seems like not affect the server.](#i-have-changed-the-setting-but-seems-like-not-affect-the-server)
   - [Planned features in the future](#planned-features-in-the-future)
   - [Software used](#software-used)
 
@@ -295,6 +296,10 @@ Errors like `[S_API FAIL] Tried to access Steam interface SteamUser021 before St
 
 ### Im using Apple XYZ/MX, can I run this?
 You can try to insert in your docker-compose file this parameter `platform: linux/amd64` at the palworld service. This isnt a special fix for Apple silicon, but to run on other than x86 hosts. The support for arm exists only by enforcing x86 emulation, if that isnt to host already. Rosetta is doing the translation/emulation.
+
+### I have changed the setting but seems like not affect the server.
+
+It is a known bug, for some setting options like `BaseCampWorkerMaxNum`, changing `PalWorldSettings.ini` will not affect the server. Here is a workaround: https://github.com/legoduded/palworld-worldoptions
 
 ## Planned features in the future
 
