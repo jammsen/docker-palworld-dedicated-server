@@ -183,14 +183,8 @@ services:
     image: jammsen/palworld-dedicated-server:latest
     restart: unless-stopped
     ports:
-      - target: 8211 # Gamerserver port inside of the container
-        published: 8211 # Gamerserver port on your host
-        protocol: udp
-        mode: host
-      - target: 25575 # RCON port inside of the container
-        published: 25575 # RCON port on your host
-        protocol: tcp
-        mode: host
+      - "8211:8211/udp" # Gamerserver port, published port on your host is the left one
+      - "25575:25575/tcp" # RCON port, published port on your host is the left one
     environment:
       - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
       - ALWAYS_UPDATE_ON_START=true
