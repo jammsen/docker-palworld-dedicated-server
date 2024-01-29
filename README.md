@@ -6,6 +6,9 @@
 ![Docker Stars](https://img.shields.io/docker/stars/jammsen/palworld-dedicated-server)
 ![Image Size](https://img.shields.io/docker/image-size/jammsen/palworld-dedicated-server/latest)
 
+> [!TIP]
+> Do you want to chat with the community? [Join us on Discord](https://discord.gg/7tacb9Q6tj)
+
 This Docker image includes a Palworld Dedicated Server based on Linux and Docker.
 
 ___
@@ -16,6 +19,7 @@ ___
   - [Table of Contents](#table-of-contents)
   - [How to ask for support for this Docker image](#how-to-ask-for-support-for-this-docker-image)
   - [Requirements](#requirements)
+  - [Minimum system requirements](#minimum-system-requirements)
   - [Getting started](#getting-started)
   - [Environment-Variables](#environment-variables)
     - [Container-Settings](#container-settings)
@@ -52,6 +56,14 @@ Please avoid:
 ## Requirements
 
 To run this Docker image, you need a basic understanding of Docker, Docker-Compose, Linux, and Networking (Port-Forwarding/NAT).
+
+## Minimum system requirements
+
+| Resource | 1-8 players                   | 8-12+ players                  |
+| -------- | ----------------------------- | ------------------------------ |
+| CPU      | 4 CPU-Cores @ High GHz        | 6-8 CPU Cores @ High GHz       |
+| RAM      | 8GB RAM Base + 2GB per player | 12GB RAM Base + 2GB per player |
+| Storage  | 30GB                          | 30GB+                          |
 
 ## Getting Started
 
