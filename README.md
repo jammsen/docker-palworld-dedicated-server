@@ -7,7 +7,9 @@
 ![Image Size](https://img.shields.io/docker/image-size/jammsen/palworld-dedicated-server/latest)
 
 > [!TIP]
-> Do you want to chat with the community? [Join us on Discord](https://discord.gg/7tacb9Q6tj)
+> Do you want to chat with the community? 
+> 
+> **[Join us on Discord](https://discord.gg/7tacb9Q6tj)**
 
 This Docker image includes a Palworld Dedicated Server based on Linux and Docker.
 
