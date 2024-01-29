@@ -310,6 +310,9 @@ function setupPalWorldSettingsIni() {
         if [[ ! -z ${RCON_ENABLED+x} ]]; then
             echo "> Setting rcon-enabled to $RCON_ENABLED"
             sed -E -i "s/RCONEnabled=[a-zA-Z]*/RCONEnabled=$RCON_ENABLED/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+            echo "> Because rcon is enabled, setting rcon.yml config file"
+            sed -i "s/###RCON_PORT###/$RCON_PORT/" ~/steamcmd/rcon.yaml
+            sed -i "s/###ADMIN_PASSWORD###/$ADMIN_PASSWORD/" ~/steamcmd/rcon.yaml
         fi
         if [[ ! -z ${RCON_PORT+x} ]]; then
             echo "> Setting RCONPort to $RCON_PORT"
@@ -389,6 +392,11 @@ function startMain() {
 }
 
 term_handler() {
+    rconcli 'broadcast Server_Shutdown_requested'
+    rconcli 'broadcast Saving...'
+    rconcli 'save'
+    rconcli 'broadcast Done...'
+    sleep 3
 	kill -SIGTERM $(pidof PalServer-Linux-Test)
 	tail --pid=$(pidof PalServer-Linux-Test) -f 2>/dev/null
 	exit 143;

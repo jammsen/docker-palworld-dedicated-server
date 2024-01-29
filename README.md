@@ -23,12 +23,11 @@ ___
       - [Cron expression](#cron-expression)
     - [Gameserver-Settings](#gameserver-settings)
   - [Docker-Compose examples](#docker-compose-examples)
-    - [Gameserver Standalone](#gameserver-standalone)
-    - [Gameserver with RCON](#gameserver-with-rcon)
+    - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
       - [What do the parameters in the entrypoint for RCON mean](#what-do-the-parameters-in-the-entrypoint-for-rcon-mean)
       - [Run RCON commands](#run-rcon-commands)
-    - [Gameserver with Portainer](#gameserver-with-portainer)
   - [FAQ](#faq)
+    - [How can I use the interactive console in Portainer with this image?](#how-can-i-use-the-interactive-console-in-portainer-with-this-image)
     - [How can i look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
     - [Im seeing S\_API errors in my logs when i start the container](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
   - [Planned features in the future](#planned-features-in-the-future)
@@ -172,102 +171,7 @@ Information sources and credits to the following websites:
 
 ## Docker-Compose examples
 
-### Gameserver standalone
-
-```yml
-version: '3.9'
-services:
-  palworld-dedicated-server:
-    #build: .
-    container_name: palworld-dedicated-server
-    image: jammsen/palworld-dedicated-server:latest
-    restart: unless-stopped
-    ports:
-      - target: 8211 # Gamerserver port inside of the container
-        published: 8211 # Gamerserver port on your host
-        protocol: udp
-        mode: host
-      - target: 25575 # RCON port inside of the container
-        published: 25575 # RCON port on your host
-        protocol: tcp
-        mode: host
-    environment:
-      - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
-      - ALWAYS_UPDATE_ON_START=true
-      - MULTITHREAD_ENABLED=true
-      - COMMUNITY_SERVER=true
-      - BACKUP_ENABLED=true
-      - BACKUP_CRON_EXPRESSION=0 * * * *
-      - STEAMCMD_VALIDATE_FILES=true
-      - SERVER_SETTINGS_MODE=auto # Change this to manual if you want to edit the config yourself
-      - NETSERVERMAXTICKRATE=120
-      - DIFFICULTY=None
-      - DAYTIME_SPEEDRATE=1.000000
-      - NIGHTTIME_SPEEDRATE=1.000000
-      - EXP_RATE=1.000000
-      - PAL_CAPTURE_RATE=1.000000
-      - PAL_SPAWN_NUM_RATE=1.000000
-      - PAL_DAMAGE_RATE_ATTACK=1.000000
-      - PAL_DAMAGE_RATE_DEFENSE=1.000000
-      - PLAYER_DAMAGE_RATE_ATTACK=1.000000
-      - PLAYER_DAMAGE_RATE_DEFENSE=1.000000
-      - PLAYER_STOMACH_DECREASE_RATE=1.000000
-      - PLAYER_STAMINA_DECREACE_RATE=1.000000
-      - PLAYER_AUTO_HP_REGENE_RATE=1.000000
-      - PLAYER_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
-      - PAL_STOMACH_DECREACE_RATE=1.000000
-      - PAL_STAMINA_DECREACE_RATE=1.000000
-      - PAL_AUTO_HP_REGENE_RATE=1.000000
-      - PAL_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
-      - BUILD_OBJECT_DAMAGE_RATE=1.000000
-      - BUILD_OBJECT_DETERIORATION_DAMAGE_RATE=1.000000
-      - COLLECTION_DROP_RATE=1.000000
-      - COLLECTION_OBJECT_HP_RATE=1.000000
-      - COLLECTION_OBJECT_RESPAWN_SPEED_RATE=1.000000
-      - ENEMY_DROP_ITEM_RATE=1.000000
-      - DEATH_PENALTY=All
-      - ENABLE_PLAYER_TO_PLAYER_DAMAGE=false
-      - ENABLE_FRIENDLY_FIRE=false
-      - ENABLE_INVADER_ENEMY=true
-      - ACTIVE_UNKO=false
-      - ENABLE_AIM_ASSIST_PAD=true
-      - ENABLE_AIM_ASSIST_KEYBOARD=false
-      - DROP_ITEM_MAX_NUM=3000
-      - DROP_ITEM_MAX_NUM_UNKO=100
-      - BASE_CAMP_MAX_NUM=128
-      - BASE_CAMP_WORKER_MAXNUM=15
-      - DROP_ITEM_ALIVE_MAX_HOURS=1.000000 
-      - AUTO_RESET_GUILD_NO_ONLINE_PLAYERS=false
-      - AUTO_RESET_GUILD_TIME_NO_ONLINE_PLAYERS=72.000000
-      - GUILD_PLAYER_MAX_NUM=20
-      - PAL_EGG_DEFAULT_HATCHING_TIME=72.000000
-      - WORK_SPEED_RATE=1.000000 
-      - IS_MULTIPLAY=false
-      - IS_PVP=false
-      - CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP=false
-      - ENABLE_NON_LOGIN_PENALTY=true
-      - ENABLE_FAST_TRAVEL=true
-      - IS_START_LOCATION_SELECT_BY_MAP=true
-      - EXIST_PLAYER_AFTER_LOGOUT=false
-      - ENABLE_DEFENSE_OTHER_GUILD_PLAYER=false
-      - COOP_PLAYER_MAX_NUM=4
-      - MAX_PLAYERS=32
-      - SERVER_NAME=jammsen-docker-generated-###RANDOM###
-      - SERVER_DESCRIPTION=Palworld-Dedicated-Server running in Docker by jammsen
-      - ADMIN_PASSWORD=adminPasswordHere
-      - SERVER_PASSWORD=serverPasswordHere
-      - PUBLIC_PORT=8211
-      - PUBLIC_IP=
-      - RCON_ENABLED=false
-      - RCON_PORT=25575
-      - REGION=
-      - USEAUTH=true
-      - BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
-    volumes:
-      - ./game:/palworld
-```
-
-### Gameserver with RCON
+### Gameserver with RCON-CLI-Tool
 
 ```yml
 version: '3.9'
@@ -360,274 +264,36 @@ services:
       - BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
     volumes:
       - ./game:/palworld
-  
-  rcon:
-    image: outdead/rcon:latest
-    entrypoint: ["/rcon", "-a", "RCON_ADDRESS:RCON_PORT", "-p", "RCON_PASSWORD"]
-    profiles: ['rcon'] 
 ```
-
-*Note: The profiles definition, prevents the container from starting with the server, this is on purpose, because of Docker-Compose's ability to run container over the CLI, after the start*
 
 #### Run RCON commands
 
-In your shell, you can now run commands against the gameserver via Docker-Compose and RCON
+Open a shell into your container via `docker exec -ti palworld-dedicated-server bash`, then you can run commands against the gameserver via the command `rcon` or `rconcli`
 ```shell
-$ docker compose run --rm rcon ShowPlayers
+$:~/steamcmd$ rcon showplayers
 name,playeruid,steamid
-$ docker compose run --rm rcon info
+$:~/steamcmd$ rcon info
 Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
-$ docker compose run --rm rcon save
+$:~/steamcmd$ rcon save
 Complete Save
 ```
 **Important:**
-- Keep the `--rm` in the command line, or you will have many exited containers in your list. 
 - All RCON-Commands can be research here: https://tech.palworldgame.com/server-commands
 
-### Gameserver with Portainer
-For Portainer it is recommended to use the Stacks feature, which allows you to deploy a stack from a docker-compose.yml file. The following configuration will allow you to use the one-click console access feature.
-
-```yaml
-version: "3.9"
-services:
-  palworld-dedicated-server:
-    #build: .
-    container_name: palworld-dedicated-server
-    image: jammsen/palworld-dedicated-server:latest
-    restart: unless-stopped
-    ports:
-      - target: 8211 # Gamerserver port inside of the container
-        published: 8211 # Gamerserver port on your host
-        protocol: udp
-        mode: host
-      - target: 25575 # RCON port inside of the container
-        published: 25575 # RCON port on your host
-        protocol: tcp
-        mode: host
-    environment:
-      - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
-      - ALWAYS_UPDATE_ON_START=true
-      - MULTITHREAD_ENABLED=true
-      - COMMUNITY_SERVER=true
-      - BACKUP_ENABLED=true
-      - BACKUP_CRON_EXPRESSION=0 * * * *
-      - STEAMCMD_VALIDATE_FILES=true
-      - SERVER_SETTINGS_MODE=auto # Change this to manual if you want to edit the config yourself
-      - NETSERVERMAXTICKRATE=120
-      - DIFFICULTY=None
-      - DAYTIME_SPEEDRATE=1.000000
-      - NIGHTTIME_SPEEDRATE=1.000000
-      - EXP_RATE=1.000000
-      - PAL_CAPTURE_RATE=1.000000
-      - PAL_SPAWN_NUM_RATE=1.000000
-      - PAL_DAMAGE_RATE_ATTACK=1.000000
-      - PAL_DAMAGE_RATE_DEFENSE=1.000000
-      - PLAYER_DAMAGE_RATE_ATTACK=1.000000
-      - PLAYER_DAMAGE_RATE_DEFENSE=1.000000
-      - PLAYER_STOMACH_DECREASE_RATE=1.000000
-      - PLAYER_STAMINA_DECREACE_RATE=1.000000
-      - PLAYER_AUTO_HP_REGENE_RATE=1.000000
-      - PLAYER_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
-      - PAL_STOMACH_DECREACE_RATE=1.000000
-      - PAL_STAMINA_DECREACE_RATE=1.000000
-      - PAL_AUTO_HP_REGENE_RATE=1.000000
-      - PAL_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
-      - BUILD_OBJECT_DAMAGE_RATE=1.000000
-      - BUILD_OBJECT_DETERIORATION_DAMAGE_RATE=1.000000
-      - COLLECTION_DROP_RATE=1.000000
-      - COLLECTION_OBJECT_HP_RATE=1.000000
-      - COLLECTION_OBJECT_RESPAWN_SPEED_RATE=1.000000
-      - ENEMY_DROP_ITEM_RATE=1.000000
-      - DEATH_PENALTY=All
-      - ENABLE_PLAYER_TO_PLAYER_DAMAGE=false
-      - ENABLE_FRIENDLY_FIRE=false
-      - ENABLE_INVADER_ENEMY=true
-      - ACTIVE_UNKO=false
-      - ENABLE_AIM_ASSIST_PAD=true
-      - ENABLE_AIM_ASSIST_KEYBOARD=false
-      - DROP_ITEM_MAX_NUM=3000
-      - DROP_ITEM_MAX_NUM_UNKO=100
-      - BASE_CAMP_MAX_NUM=128
-      - BASE_CAMP_WORKER_MAXNUM=15
-      - DROP_ITEM_ALIVE_MAX_HOURS=1.000000 
-      - AUTO_RESET_GUILD_NO_ONLINE_PLAYERS=false
-      - AUTO_RESET_GUILD_TIME_NO_ONLINE_PLAYERS=72.000000
-      - GUILD_PLAYER_MAX_NUM=20
-      - PAL_EGG_DEFAULT_HATCHING_TIME=72.000000
-      - WORK_SPEED_RATE=1.000000 
-      - IS_MULTIPLAY=false
-      - IS_PVP=false
-      - CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP=false
-      - ENABLE_NON_LOGIN_PENALTY=true
-      - ENABLE_FAST_TRAVEL=true
-      - IS_START_LOCATION_SELECT_BY_MAP=true
-      - EXIST_PLAYER_AFTER_LOGOUT=false
-      - ENABLE_DEFENSE_OTHER_GUILD_PLAYER=false
-      - COOP_PLAYER_MAX_NUM=4
-      - MAX_PLAYERS=32
-      - SERVER_NAME=jammsen-docker-generated-###RANDOM###
-      - SERVER_DESCRIPTION=Palworld-Dedicated-Server running in Docker by jammsen
-      - ADMIN_PASSWORD=adminPasswordHere
-      - SERVER_PASSWORD=serverPasswordHere
-      - PUBLIC_PORT=8211
-      - PUBLIC_IP=
-      - RCON_ENABLED=true
-      - RCON_PORT=25575
-      - REGION=
-      - USEAUTH=true
-      - BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
-    volumes:
-      - /path/to/your/game/directory:/palworld
-
-  rcon:
-    image: outdead/rcon:latest
-    entrypoint: ['/rcon', '-a', '10.0.0.5:25575', '-p', 'adminPasswordHere']
-    profiles: ['rcon'] 
-```
-
-*Note: The profiles defintion, prevents the container from starting with the server, this is on purpose, because of Docker-Compose's ability to run container over the CLI, after the start*
-
-#### What do the parameters in the entrypoint for RCON mean
-
-- "/rcon" is the command to start the RCON client
-- "-a" is used to specify the address of the RCON server in the format "IP:PORT"
-- "RCON_ADDRESS:RCON_PORT" should be replaced with the actual address and port of the RCON server
-- "-p" is used to specify the password for the RCON server
-- "RCON_PASSWORD" should be replaced with the actual RCON password
-
-#### Run RCON commands
-
-In your shell, you can now run commands against the gameserver via Docker-Compose and RCON
-```shell
-$ docker compose run --rm rcon ShowPlayers
-name,playeruid,steamid
-$ docker compose run --rm rcon info
-Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
-$ docker compose run --rm rcon save
-Complete Save
-```
-**Important:**
-- Keep the `--rm` in the command line, or you will have many exited containers in your list. 
-- All RCON-Commands can be research here: https://tech.palworldgame.com/server-commands
-
-### Gameserver with Portainer
-For Portainer it is recommended to use the Stacks feature, which allows you to deploy a stack from a docker-compose.yml file. The following configuration will allow you to use the one-click console access feature.
-
-```yaml
-version: "3.9"
-services:
-  palworld-dedicated-server:
-    #build: .
-    container_name: palworld-dedicated-server
-    image: jammsen/palworld-dedicated-server:latest
-    restart: unless-stopped
-    ports:
-      - target: 8211 # Gamerserver port inside of the container
-        published: 8211 # Gamerserver port on your host
-        protocol: udp
-        mode: host
-      - target: 25575 # RCON port inside of the container
-        published: 25575 # RCON port on your host
-        protocol: tcp
-        mode: host
-    environment:
-      - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
-      - ALWAYS_UPDATE_ON_START=true
-      - MULTITHREAD_ENABLED=true
-      - COMMUNITY_SERVER=true
-      - BACKUP_ENABLED=true
-      - BACKUP_CRON_EXPRESSION=0 * * * *
-      - STEAMCMD_VALIDATE_FILES=true
-      - SERVER_SETTINGS_MODE=auto
-      - NETSERVERMAXTICKRATE=120
-      - DIFFICULTY=None
-      - DAYTIME_SPEEDRATE=1.000000
-      - NIGHTTIME_SPEEDRATE=1.000000
-      - EXP_RATE=1.000000
-      - PAL_CAPTURE_RATE=1.000000
-      - PAL_SPAWN_NUM_RATE=1.000000
-      - PAL_DAMAGE_RATE_ATTACK=1.000000
-      - PAL_DAMAGE_RATE_DEFENSE=1.000000
-      - PLAYER_DAMAGE_RATE_ATTACK=1.000000
-      - PLAYER_DAMAGE_RATE_DEFENSE=1.000000
-      - PLAYER_STOMACH_DECREASE_RATE=1.000000
-      - PLAYER_STAMINA_DECREACE_RATE=1.000000
-      - PLAYER_AUTO_HP_REGENE_RATE=1.000000
-      - PLAYER_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
-      - PAL_STOMACH_DECREACE_RATE=1.000000
-      - PAL_STAMINA_DECREACE_RATE=1.000000
-      - PAL_AUTO_HP_REGENE_RATE=1.000000
-      - PAL_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
-      - BUILD_OBJECT_DAMAGE_RATE=1.000000
-      - BUILD_OBJECT_DETERIORATION_DAMAGE_RATE=1.000000
-      - COLLECTION_DROP_RATE=1.000000
-      - COLLECTION_OBJECT_HP_RATE=1.000000
-      - COLLECTION_OBJECT_RESPAWN_SPEED_RATE=1.000000
-      - ENEMY_DROP_ITEM_RATE=1.000000
-      - DEATH_PENALTY=All
-      - ENABLE_PLAYER_TO_PLAYER_DAMAGE=false
-      - ENABLE_FRIENDLY_FIRE=false
-      - ENABLE_INVADER_ENEMY=true
-      - ACTIVE_UNKO=false
-      - ENABLE_AIM_ASSIST_PAD=true
-      - ENABLE_AIM_ASSIST_KEYBOARD=false
-      - DROP_ITEM_MAX_NUM=3000
-      - DROP_ITEM_MAX_NUM_UNKO=100
-      - BASE_CAMP_MAX_NUM=128
-      - BASE_CAMP_WORKER_MAXNUM=15
-      - DROP_ITEM_ALIVE_MAX_HOURS=1.000000 
-      - AUTO_RESET_GUILD_NO_ONLINE_PLAYERS=false
-      - AUTO_RESET_GUILD_TIME_NO_ONLINE_PLAYERS=72.000000
-      - GUILD_PLAYER_MAX_NUM=20
-      - PAL_EGG_DEFAULT_HATCHING_TIME=72.000000
-      - WORK_SPEED_RATE=1.000000 
-      - IS_MULTIPLAY=false
-      - IS_PVP=false
-      - CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP=false
-      - ENABLE_NON_LOGIN_PENALTY=true
-      - ENABLE_FAST_TRAVEL=true
-      - IS_START_LOCATION_SELECT_BY_MAP=true
-      - EXIST_PLAYER_AFTER_LOGOUT=false
-      - ENABLE_DEFENSE_OTHER_GUILD_PLAYER=false
-      - COOP_PLAYER_MAX_NUM=4
-      - MAX_PLAYERS=32
-      - SERVER_NAME=jammsen-docker-generated-###RANDOM###
-      - SERVER_DESCRIPTION=Palworld-Dedicated-Server running in Docker by jammsen
-      - ADMIN_PASSWORD=adminPasswordHere
-      - SERVER_PASSWORD=serverPasswordHere
-      - PUBLIC_PORT=8211
-      - PUBLIC_IP=
-      - RCON_ENABLED=false
-      - RCON_PORT=25575
-      - REGION=
-      - USEAUTH=true
-      - BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
-    volumes:
-      - /path/to/your/game/directory:/palworld
-
-  rcon:
-    image: outdead/rcon:latest
-    container_name: palworld-rcon
-    restart: unless-stopped
-    entrypoint: ["/rcon", "-a", "RCON_ADDRESS:RCON_PORT", "-p", "RCON_PASSWORD"]
-    tty: true
-    stdin_open: true
-    depends_on:
-      - palworld-dedicated-server
-```
 Questions? See [What do the parameters in the entrypoint for RCON mean](#what-do-the-parameters-in-the-entrypoint-for-rcon-mean)
-
-
 
 ## FAQ
 
-### How can i look into the config of my Palworld container?
+### How can I use the interactive console in Portainer with this image?
+You can run this `docker exec -ti palworld-dedicated-server bash' or you could navigate to the **"Stacks"** tab in Portainer, select your stack, and click on the container name. Then click on the **"Exec console"** button.
+
+### How can I look into the config of my Palworld container?
 You can run this `docker exec -ti palworld-dedicated-server cat /palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini` and it will show you the config inside the container.
 
-### Im seeing S_API errors in my logs when i start the container
+### Im seeing S_API errors in my logs when I start the container
 Errors like `[S_API FAIL] Tried to access Steam interface SteamUser021 before SteamAPI_Init succeeded.` are safe to ignore.
 
-### Im using Apple XYZ/MX, can i run this?
+### Im using Apple XYZ/MX, can I run this?
 You can try to insert in your docker-compose file this parameter `platform: linux/amd64` at the palworld service. This isnt a special fix for Apple silicon, but to run on other than x86 hosts. The support for arm exists only by enforcing x86 emulation, if that isnt to host already. Rosetta is doing the translation/emulation.
 
 ## Planned features in the future
@@ -638,4 +304,5 @@ You can try to insert in your docker-compose file this parameter `platform: linu
 
 - CM2Network SteamCMD - Debian-based (Officially recommended by Valve - https://developer.valvesoftware.com/wiki/SteamCMD#Docker)
 - Supercronic - https://github.com/aptible/supercronic
+- rcon-cli - https://github.com/gorcon/rcon-cli
 - Palworld Dedicated Server (APP-ID: 2394010 - https://steamdb.info/app/2394010/config/)

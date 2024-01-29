@@ -1,5 +1,6 @@
 FROM --platform=linux/amd64 cm2network/steamcmd:root
 
+LABEL maintainer="Sebastian Schmidt - https://github.com/jammsen/docker-palworld-dedicated-server"
 LABEL org.opencontainers.image.authors="Sebastian Schmidt"
 LABEL org.opencontainers.image.source="https://github.com/jammsen/docker-palworld-dedicated-server"
 
@@ -20,6 +21,20 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
+# Latest releases available at https://github.com/gorcon/rcon-cli/releases
+ENV RCON_URL=https://github.com/gorcon/rcon-cli/releases/download/v0.10.3/rcon-0.10.3-amd64_linux.tar.gz \
+    RCON_TGZ=rcon-0.10.3-amd64_linux.tar.gz \
+    RCON_TGZ_MD5SUM=8601c70dcab2f90cd842c127f700e398 \
+    RCON_BINARY=rcon
+
+RUN curl -fsSLO "$RCON_URL" \
+    && echo "${RCON_TGZ_MD5SUM} ${RCON_TGZ}" | md5sum -c - \
+    && tar xfz rcon-0.10.3-amd64_linux.tar.gz \
+    && chmod +x "rcon-0.10.3-amd64_linux/$RCON_BINARY" \
+    && mv "rcon-0.10.3-amd64_linux/$RCON_BINARY" "/usr/local/bin/${RCON_BINARY}" \
+    && ln -s "/usr/local/bin/${RCON_BINARY}" /usr/local/bin/rconcli \
+    && rm -Rf rcon-0.10.3-amd64_linux rcon-0.10.3-amd64_linux.tar.gz
+
 ADD --chown=steam:steam --chmod=755 servermanager.sh /servermanager.sh
 ADD --chown=steam:steam --chmod=755 backupmanager.sh /backupmanager.sh
 
@@ -33,6 +48,7 @@ VOLUME [ "/palworld" ]
 
 USER steam
 
+ADD --chown=steam:steam --chmod=440 rcon.yaml ./rcon.yaml
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PUID=0 \
