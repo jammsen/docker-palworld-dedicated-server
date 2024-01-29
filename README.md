@@ -20,20 +20,19 @@ ___
   - [How to ask for support for this Docker image](#how-to-ask-for-support-for-this-docker-image)
   - [Requirements](#requirements)
   - [Minimum system requirements](#minimum-system-requirements)
-  - [Getting started](#getting-started)
-  - [Environment-Variables](#environment-variables)
-    - [Container-Settings](#container-settings)
-      - [TZ identifiers](#tz-identifiers)
-      - [Cron expression](#cron-expression)
-    - [Gameserver-Settings](#gameserver-settings)
+  - [Getting Started](#getting-started)
+  - [Environment Variables](#environment-variables)
+  - [Container-Settings](#container-settings)
+    - [TZ identifiers](#tz-identifiers)
+    - [Cron expression](#cron-expression)
+  - [Gameserver-Settings](#gameserver-settings)
   - [Docker-Compose examples](#docker-compose-examples)
     - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
-      - [What do the parameters in the entrypoint for RCON mean](#what-do-the-parameters-in-the-entrypoint-for-rcon-mean)
       - [Run RCON commands](#run-rcon-commands)
   - [FAQ](#faq)
     - [How can I use the interactive console in Portainer with this image?](#how-can-i-use-the-interactive-console-in-portainer-with-this-image)
-    - [How can i look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
-    - [Im seeing S\_API errors in my logs when i start the container?](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
+    - [How can I look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
+    - [Im seeing S\_API errors in my logs when I start the container?](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
     - [Im using Apple silicon type of hardware, can I run this?](#im-using-apple-silicon-type-of-hardware-can-i-run-this)
   - [Planned features in the future](#planned-features-in-the-future)
   - [Software used](#software-used)
@@ -303,7 +302,7 @@ You can run this `docker exec -ti palworld-dedicated-server bash' or you could n
 ### How can I look into the config of my Palworld container?
 You can run this `docker exec -ti palworld-dedicated-server cat /palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini` and it will show you the config inside the container.
 
-### Im seeing S_API errors in my logs when I start the container
+### Im seeing S_API errors in my logs when I start the container?
 Errors like `[S_API FAIL] Tried to access Steam interface SteamUser021 before SteamAPI_Init succeeded.` are safe to ignore.
 
 ### Im using Apple silicon type of hardware, can I run this?
