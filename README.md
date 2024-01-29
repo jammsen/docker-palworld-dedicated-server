@@ -5,6 +5,12 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/jammsen/palworld-dedicated-server)
 ![Docker Stars](https://img.shields.io/docker/stars/jammsen/palworld-dedicated-server)
 ![Image Size](https://img.shields.io/docker/image-size/jammsen/palworld-dedicated-server/latest)
+[![Discord](https://img.shields.io/discord/532141442731212810?logo=discord&label=Discord&link=https%3A%2F%2Fdiscord.gg%2F7tacb9Q6tj)](https://discord.gg/7tacb9Q6tj)
+
+> [!TIP]
+> Do you want to chat with the community? 
+> 
+> **[Join us on Discord](https://discord.gg/7tacb9Q6tj)**
 
 This Docker image includes a Palworld Dedicated Server based on Linux and Docker.
 
@@ -16,20 +22,20 @@ ___
   - [Table of Contents](#table-of-contents)
   - [How to ask for support for this Docker image](#how-to-ask-for-support-for-this-docker-image)
   - [Requirements](#requirements)
-  - [Getting started](#getting-started)
-  - [Environment-Variables](#environment-variables)
-    - [Container-Settings](#container-settings)
-      - [TZ identifiers](#tz-identifiers)
-      - [Cron expression](#cron-expression)
-    - [Gameserver-Settings](#gameserver-settings)
+  - [Minimum system requirements](#minimum-system-requirements)
+  - [Getting Started](#getting-started)
+  - [Environment Variables](#environment-variables)
+  - [Container-Settings](#container-settings)
+    - [TZ identifiers](#tz-identifiers)
+    - [Cron expression](#cron-expression)
+  - [Gameserver-Settings](#gameserver-settings)
   - [Docker-Compose examples](#docker-compose-examples)
     - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
-      - [What do the parameters in the entrypoint for RCON mean](#what-do-the-parameters-in-the-entrypoint-for-rcon-mean)
       - [Run RCON commands](#run-rcon-commands)
   - [FAQ](#faq)
     - [How can I use the interactive console in Portainer with this image?](#how-can-i-use-the-interactive-console-in-portainer-with-this-image)
-    - [How can i look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
-    - [Im seeing S\_API errors in my logs when i start the container?](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
+    - [How can I look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
+    - [Im seeing S\_API errors in my logs when I start the container?](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
     - [Im using Apple silicon type of hardware, can I run this?](#im-using-apple-silicon-type-of-hardware-can-i-run-this)
   - [Planned features in the future](#planned-features-in-the-future)
   - [Software used](#software-used)
@@ -52,6 +58,14 @@ Please avoid:
 ## Requirements
 
 To run this Docker image, you need a basic understanding of Docker, Docker-Compose, Linux, and Networking (Port-Forwarding/NAT).
+
+## Minimum system requirements
+
+| Resource | 1-8 players                   | 8-12+ players                  |
+| -------- | ----------------------------- | ------------------------------ |
+| CPU      | 4 CPU-Cores @ High GHz        | 6-8 CPU Cores @ High GHz       |
+| RAM      | 8GB RAM Base + 2GB per player | 12GB RAM Base + 2GB per player |
+| Storage  | 30GB                          | 30GB+                          |
 
 ## Getting Started
 
@@ -291,7 +305,7 @@ You can run this `docker exec -ti palworld-dedicated-server bash' or you could n
 ### How can I look into the config of my Palworld container?
 You can run this `docker exec -ti palworld-dedicated-server cat /palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini` and it will show you the config inside the container.
 
-### Im seeing S_API errors in my logs when I start the container
+### Im seeing S_API errors in my logs when I start the container?
 Errors like `[S_API FAIL] Tried to access Steam interface SteamUser021 before SteamAPI_Init succeeded.` are safe to ignore.
 
 ### Im using Apple silicon type of hardware, can I run this?
