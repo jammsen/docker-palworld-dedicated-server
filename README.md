@@ -100,8 +100,6 @@ Complete Save
 **Important:**
 - All RCON-Commands can be research here: https://tech.palworldgame.com/server-commands
 
-Questions? See [What do the parameters in the entrypoint for RCON mean](#what-do-the-parameters-in-the-entrypoint-for-rcon-mean)
-
 ## FAQ
 
 ### How can I use the interactive console in Portainer with this image?
