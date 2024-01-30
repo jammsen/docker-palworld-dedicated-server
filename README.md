@@ -37,6 +37,7 @@ ___
     - [How can I look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
     - [Im seeing S\_API errors in my logs when I start the container?](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
     - [Im using Apple silicon type of hardware, can I run this?](#im-using-apple-silicon-type-of-hardware-can-i-run-this)
+    - [I have changed the BaseCampWorkerMaxNum settings, why are changes un-affected on the server?](#i-have-changed-the-basecampworkermaxnum-settings-why-are-changes-un-affected-on-the-server)
   - [Planned features in the future](#planned-features-in-the-future)
   - [Software used](#software-used)
 
@@ -310,6 +311,12 @@ Errors like `[S_API FAIL] Tried to access Steam interface SteamUser021 before St
 
 ### Im using Apple silicon type of hardware, can I run this?
 You can try to insert in your docker-compose file this parameter `platform: linux/amd64` at the palworld service. This isnt a special fix for Apple silicon, but to run on other than x86 hosts. The support for arm exists only by enforcing x86 emulation, if that isnt to host already. Rosetta is doing the translation/emulation.
+
+### I have changed the `BaseCampWorkerMaxNum` settings, why are changes un-affected on the server?
+
+It is a confirm bug, that changing `BaseCampWorkerMaxNum` in the `PalWorldSettings.ini` has no affect on the server. There are tools out there to help with this, like this one: <https://github.com/legoduded/palworld-worldoption>
+
+**PLEASE NOTE** that adding `WorldOption.sav` will breaking `PalWorldSetting.ini` and if that happens all the other settings won't be changeable anymore unless that specific tool is used everytime.
 
 ## Planned features in the future
 
