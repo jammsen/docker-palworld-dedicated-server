@@ -149,10 +149,6 @@ function setupPalWorldSettingsIni() {
             echo "> Setting BuildObjectDeteriorationDamageRate to $BUILD_OBJECT_DETERIORATION_DAMAGE_RATE"
             sed -E -i "s/BuildObjectDeteriorationDamageRate=[+-]?([0-9]*[.])?[0-9]+/BuildObjectDeteriorationDamageRate=$BUILD_OBJECT_DETERIORATION_DAMAGE_RATE/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
         fi
-        if [[ ! -z ${BUILD_OBJECT_DETERIORATION_DAMAGE_RATE+x} ]]; then
-            echo "> Setting PalAutoHpRegeneRateInSleep to $BUILD_OBJECT_DETERIORATION_DAMAGE_RATE"
-            sed -E -i "s/PalAutoHpRegeneRateInSleep=[+-]?([0-9]*[.])?[0-9]+/PalAutoHpRegeneRateInSleep=$BUILD_OBJECT_DETERIORATION_DAMAGE_RATE/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
-        fi
         if [[ ! -z ${COLLECTION_DROP_RATE+x} ]]; then
             echo "> Setting CollectionDropRate to $COLLECTION_DROP_RATE"
             sed -E -i "s/CollectionDropRate=[+-]?([0-9]*[.])?[0-9]+/CollectionDropRate=$COLLECTION_DROP_RATE/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
