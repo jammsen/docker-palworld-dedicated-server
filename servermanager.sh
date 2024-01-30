@@ -149,10 +149,6 @@ function setupPalWorldSettingsIni() {
             echo "> Setting BuildObjectDeteriorationDamageRate to $BUILD_OBJECT_DETERIORATION_DAMAGE_RATE"
             sed -E -i "s/BuildObjectDeteriorationDamageRate=[+-]?([0-9]*[.])?[0-9]+/BuildObjectDeteriorationDamageRate=$BUILD_OBJECT_DETERIORATION_DAMAGE_RATE/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
         fi
-        if [[ ! -z ${BUILD_OBJECT_DETERIORATION_DAMAGE_RATE+x} ]]; then
-            echo "> Setting PalAutoHpRegeneRateInSleep to $BUILD_OBJECT_DETERIORATION_DAMAGE_RATE"
-            sed -E -i "s/PalAutoHpRegeneRateInSleep=[+-]?([0-9]*[.])?[0-9]+/PalAutoHpRegeneRateInSleep=$BUILD_OBJECT_DETERIORATION_DAMAGE_RATE/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
-        fi
         if [[ ! -z ${COLLECTION_DROP_RATE+x} ]]; then
             echo "> Setting CollectionDropRate to $COLLECTION_DROP_RATE"
             sed -E -i "s/CollectionDropRate=[+-]?([0-9]*[.])?[0-9]+/CollectionDropRate=$COLLECTION_DROP_RATE/" ${GAME_PATH}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
@@ -392,11 +388,13 @@ function startMain() {
 }
 
 term_handler() {
-    rconcli 'broadcast Server_Shutdown_requested'
-    rconcli 'broadcast Saving...'
-    rconcli 'save'
-    rconcli 'broadcast Done...'
-    sleep 3
+    if [[ ! -z ${RCON_ENABLED+x} ]]; then
+        rconcli 'broadcast Server_Shutdown_requested'
+        rconcli 'broadcast Saving...'
+        rconcli 'save'
+        rconcli 'broadcast Done...'
+        sleep 3
+    fi
 	kill -SIGTERM $(pidof PalServer-Linux-Test)
 	tail --pid=$(pidof PalServer-Linux-Test) -f 2>/dev/null
 	exit 143;
