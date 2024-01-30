@@ -66,4 +66,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: peterevans/dockerhub-description
           readme-filepath: ./README.md
-          enable-url-completion: true
+          # enable-url-completion: true
