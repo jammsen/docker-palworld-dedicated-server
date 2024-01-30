@@ -23,12 +23,8 @@ ___
   - [How to ask for support for this Docker image](#how-to-ask-for-support-for-this-docker-image)
   - [Requirements](#requirements)
   - [Minimum system requirements](#minimum-system-requirements)
-  - [Getting Started](#getting-started)
-  - [Environment Variables](#environment-variables)
-  - [Container-Settings](#container-settings)
-    - [TZ identifiers](#tz-identifiers)
-    - [Cron expression](#cron-expression)
-  - [Gameserver-Settings](#gameserver-settings)
+  - [Getting started](#getting-started)
+  - [Environment variables](#environment-variables)
   - [Docker-Compose examples](#docker-compose-examples)
     - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
       - [Run RCON commands](#run-rcon-commands)
@@ -67,223 +63,28 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 | RAM      | 8GB RAM Base + 2GB per player | 12GB RAM Base + 2GB per player |
 | Storage  | 30GB                          | 30GB+                          |
 
-## Getting Started
+## Getting started
 
-1. Create a `game` sub-directory on your Docker node in your game-server-directory (Example: `/srv/palworld`). Give it full permissions with `chmod 777 game` or use `chown -R 1000:1000 game/`.
+1. Create a `game` sub-directory on your Docker-Node in your game-server-directory (Example: `/srv/palworld`). Give it full ownership with `chown -R 1000:1000 game/` or permissions with `chmod 777 game`.
 2. Set up Port-Forwarding or NAT for the ports in the Docker-Compose file.
 3. Pull the latest version of the image with `docker pull jammsen/palworld-dedicated-server:latest`.
-4. Set up your own docker-compose.yml as per your requirements. Refer to the [Docker-Compose examples](#examples) section and the [Environment-Variables](#examples) section for more information.
-5. Start the container via `docker-compose up -d && docker-compose logs -f`. Watch the log, if no errors occur you can close the logs with ctrl+c.
-6. Happy gaming!
+4. Download the [docker-compose.yml](docker-compose.yml) and [default.env](default.env).
+5. Set up the `docker-compose.yml` and `default.env` to your liking. 
+   1. Refer to the [Environment-Variables](#environment-variables) section for more information.
+6. Start the container via `docker-compose up -d && docker-compose logs -f`. 
+   1. Watch the log, if no errors occur you can close the logs with ctrl+c.
+7. Now have fun and happy gaming!
 
-## Environment Variables
+## Environment variables
 
-**Important:** In this section you will find a lot of environment variables to control your container-behavior and gameserver-settings. Due to the extensive control options, the settings are split into two parts for documentation: **Container-Settings** and **Gameserver-Settings**.
+See [this file](README_ENV.md) for the documentation
 
-## Container-Settings
-
-These settings control the behavior of the Docker container:
-
-> If you want to change the server settings via environment variables use the default value (`auto`) for the environment variable `SERVER_SETTINGS_MODE`, otherwise change it to `manual` and edit the config file directly.
-
-| Variable                        | Description                                                                                                                                                                                                                     | Default value                  | Allowed values                                                                                                                                                                                    |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| TZ                              | Timezone used for time stamping server backups                                                                                                                                                                                  | Europe/Berlin                  | See [TZ identifiers](#tz-identifiers)                                                                                                                                                             |
-| ALWAYS_UPDATE_ON_START          | Updates the server on startup                                                                                                                                                                                                   | true                           | false/true                                                                                                                                                                                        |
-| MULTITHREAD_ENABLED             | Sets options for "Improved multi-threaded CPU performance"                                                                                                                                                                      | true                           | false/true                                                                                                                                                                                        |
-| COMMUNITY_SERVER                | Set to enabled, the server will appear in the Community-Serverlist.                                                                                                                                                             | true                           | false/true                                                                                                                                                                                        |
-| BACKUP_ENABLED                  | Backup function, creates backups in your `game` directory                                                                                                                                                                       | true                           | false/true                                                                                                                                                                                        |
-| BACKUP_CRON_EXPRESSION          | Needs a Cron-Expression - See [Cron expression](#cron-expression)                                                                                                                                                               | 0 * * * * (meaning every hour) | Cron-Expression                                                                                                                                                                                   |
-| BACKUP_RETENTION_POLICY         | Set to enabled, will cleanup old backups                                                                                                                                                                                        | false                          | false/true                                                                                                                                                                                        |
-| BACKUP_RETENTION_AMOUNT_TO_KEEP | Defines how many backups in numbers to keep                                                                                                                                                                                     | 30                             | Integer                                                                                                                                                                                           |
-| SERVER_SETTINGS_MODE            | Determines whether settings can be modified via environment variables or via file, except `COMMUNITY_SERVER` and `MULTITHREAD_ENABLED`!                                                                                         | `auto`                         | `auto`: Settings are modified only by environment variables, manual edits will be ignored<br>`manual`: Settings are modified only by editing the file directly, environment variables are ignored |
-| STEAMCMD_VALIDATE_FILES         | Set to enabled SteamCMD will also validate the gameserver files, making sure nothing is corrupted and also overwrite any file changes of the source<br>See https://developer.valvesoftware.com/wiki/SteamCMD#Downloading_an_App | true                           | false/true                                                                                                                                                                                        |
-
-### TZ identifiers
-
-The `TZ` setting affects logging output and the backup function. [TZ identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#Time_Zone_abbreviations) are a format for defining a timezone near you.
-
-### Cron expression
-
-The `BACKUP_CRON_EXPRESSION` setting affects the backup function. In a Cron-Expression, you define an interval for when to run jobs. This image uses Supercronic for crons, see https://github.com/aptible/supercronic#crontab-format or https://crontab-generator.org
-
-##  Gameserver-Settings
-
-This section lists all the settings currently adjustable via Docker environment variables, based on the **order** and **contents of the DefaultPalWorldSettings.ini**.
-
-Information sources and credits to the following websites:
-* [Palworld Tech Guide](https://tech.palworldgame.com/optimize-game-balance) for the game server documentation
-* [PalworldSettingGenerator](https://dysoncheng.github.io/PalWorldSettingGenerator/setting.html) for variable descriptions
-
-**Importtant:** Please note that all of this is subject to change. **The game is still in early access.**
-
-> To change a setting, you can set the environment variable to the value you want. If the environment variable is not set or is blank, the default value will be used. 
-
-
-| Variable                                  | Game setting                         | Description                                                                                                                                                       | Default value                                          | Allowed value |
-| ----------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------- |
-| NETSERVERMAXTICKRATE                      | NetServerMaxTickRate                 | Changes the TickRate of the server, be very careful with this setting!                                                                                            | 120                                                    | 30-120        |
-| DIFFICULTY                                | Difficulty                           | Choose one of the following:<br>`None`<br>`Normal`<br>`Difficult`                                                                                                 | None                                                   | Enum          |
-| DAYTIME_SPEEDRATE                         | DayTimeSpeedRate                     | Day time speed - Smaller number means shorter days                                                                                                                | 1.000000                                               | Float         |
-| NIGHTTIME_SPEEDRATE                       | NightTimeSpeedRate                   | Night time speed - Smaller number means shorter nights                                                                                                            | 1.000000                                               | Float         |
-| EXP_RATE                                  | ExpRate                              | EXP rate                                                                                                                                                          | 1.000000                                               | Float         |
-| PAL_CAPTURE_RATE                          | PalCaptureRate                       | Pal capture rate                                                                                                                                                  | 1.000000                                               | Float         |
-| PAL_SPAWN_NUM_RATE                        | PalSpawnNumRate                      | Pal appearance rate                                                                                                                                               | 1.000000                                               | Float         |
-| PAL_DAMAGE_RATE_ATTACK                    | PalDamageRateAttack                  | Damage from pals multiplier                                                                                                                                       | 1.000000                                               | Float         |
-| PAL_DAMAGE_RATE_DEFENSE                   | PalDamageRateDefense                 | Damage to pals multiplier                                                                                                                                         | 1.000000                                               | Float         |
-| PLAYER_DAMAGE_RATE_ATTACK                 | PlayerDamageRateAttack               | Damage from player multiplier                                                                                                                                     | 1.000000                                               | Float         |
-| PLAYER_DAMAGE_RATE_DEFENSE                | PlayerDamageRateDefense              | Damage to  player multiplier                                                                                                                                      | 1.000000                                               | Float         |
-| PLAYER_STOMACH_DECREASE_RATE              | PlayerStomachDecreaceRate            | Player hunger depletion rate                                                                                                                                      | 1.000000                                               | Float         |
-| PLAYER_STAMINA_DECREACE_RATE              | PlayerStaminaDecreaceRate            | Player stamina reduction rate                                                                                                                                     | 1.000000                                               | Float         |
-| PLAYER_AUTO_HP_REGENE_RATE                | PlayerAutoHPRegeneRate               | Player auto HP regeneration rate                                                                                                                                  | 1.000000                                               | Float         |
-| PLAYER_AUTO_HP_REGENE_RATE_IN_SLEEP       | PlayerAutoHpRegeneRateInSleep        | Player sleep HP regeneration rate                                                                                                                                 | 1.000000                                               | Float         |
-| PAL_STOMACH_DECREACE_RATE                 | PalStomachDecreaceRate               | Pal hunger depletion rate                                                                                                                                         | 1.000000                                               | Float         |
-| PAL_STAMINA_DECREACE_RATE                 | PalStaminaDecreaceRate               | Pal stamina reduction rate                                                                                                                                        | 1.000000                                               | Float         |
-| PAL_AUTO_HP_REGENE_RATE                   | PalAutoHPRegeneRate                  | Pal auto HP regeneration rate                                                                                                                                     | 1.000000                                               | Float         |
-| PAL_AUTO_HP_REGENE_RATE_IN_SLEEP          | PalAutoHpRegeneRateInSleep           | Pal sleep health regeneration rate (in Palbox)                                                                                                                    | 1.000000                                               | Float         |
-| BUILD_OBJECT_DAMAGE_RATE                  | BuildObjectDamageRate                | Damage to structure multiplier                                                                                                                                    | 1.000000                                               | Float         |
-| BUILD_OBJECT_DETERIORATION_DAMAGE_RATE    | BuildObjectDeteriorationDamageRate   | Structure deterioration rate                                                                                                                                      | 1.000000                                               | Float         |
-| COLLECTION_DROP_RATE                      | CollectionDropRate                   | Gatherable items multiplier                                                                                                                                       | 1.000000                                               | Float         |
-| COLLECTION_OBJECT_HP_RATE                 | CollectionObjectHpRate               | Gatherable objects HP multiplier                                                                                                                                  | 1.000000                                               | Float         |
-| COLLECTION_OBJECT_RESPAWN_SPEED_RATE      | CollectionObjectRespawnSpeedRate     | Gatherable objects respawn interval                                                                                                                               | 1.000000                                               | Float         |
-| ENEMY_DROP_ITEM_RATE                      | EnemyDropItemRate                    | Dropped Items Multiplier                                                                                                                                          | 1.000000                                               | Float         |
-| DEATH_PENALTY                             | DeathPenalty                         | `None` : No lost<br> `Item` : Lost item without equipment<br>`ItemAndEquipment` : Lost item and equipment<br>`All`: Lost All item,   equipment, pal(in inventory) | All                                                    | Enum          |
-| ENABLE_PLAYER_TO_PLAYER_DAMAGE            | bEnablePlayerToPlayerDamage          | Allows players to cause damage to players                                                                                                                         | false                                                  | Boolean       |
-| ENABLE_FRIENDLY_FIRE                      | bEnableFriendlyFire                  | Allow friendly fire                                                                                                                                               | false                                                  | Boolean       |
-| ENABLE_INVADER_ENEMY                      | bEnableInvaderEnemy                  | Enable invaders                                                                                                                                                   | true                                                   | Boolean       |
-| ACTIVE_UNKO                               | bActiveUNKO                          | Enable UNKO                                                                                                                                                       | false                                                  | Boolean       |
-| ENABLE_AIM_ASSIST_PAD                     | bEnableAimAssistPad                  | Enable controller aim assist                                                                                                                                      | true                                                   | Boolean       |
-| ENABLE_AIM_ASSIST_KEYBOARD                | bEnableAimAssistKeyboard             | Enable Keyboard aim assist                                                                                                                                        | false                                                  | Boolean       |
-| DROP_ITEM_MAX_NUM                         | DropItemMaxNum                       | Maximum number of drops in the world                                                                                                                              | 3000                                                   | Integer       |
-| DROP_ITEM_MAX_NUM_UNKO                    | DropItemMaxNum                       | Maximum number of UNKO drops in the world                                                                                                                         | 100                                                    | Integer       |
-| BASE_CAMP_MAX_NUM                         | BaseCampMaxNum                       | Maximum number of base camps                                                                                                                                      | 128                                                    | Integer       |
-| BASE_CAMP_WORKER_MAXNUM                   | BaseCampWorkerMaxNum                 | Maximum number of workers                                                                                                                                         | 15                                                     | Integer       |
-| DROP_ITEM_ALIVE_MAX_HOURS                 | DropItemAliveMaxHours                | Time it takes for items to despawn in hours                                                                                                                       | 1.000000                                               | Float         |
-| AUTO_RESET_GUILD_NO_ONLINE_PLAYERS        | bAutoResetGuildNoOnlinePlayers       | Automatically reset guild when no players are online                                                                                                              | false                                                  | Bool          |
-| AUTO_RESET_GUILD_TIME_NO_ONLINE_PLAYERS   | AutoResetGuildTimeNoOnlinePlayers    | Time to automatically reset guild when no players are online                                                                                                      | 72.000000                                              | Float         |
-| GUILD_PLAYER_MAX_NUM                      | GuildPlayerMaxNum                    | Max player of Guild                                                                                                                                               | 20                                                     | Integer       |
-| PAL_EGG_DEFAULT_HATCHING_TIME             | PalEggDefaultHatchingTime            | Time(h) to incubate massive egg                                                                                                                                   | 72.000000                                              | Float         |
-| WORK_SPEED_RATE                           | WorkSpeedRate                        | Work speed multiplier                                                                                                                                             | 1.000000                                               | Float         |
-| IS_MULTIPLAY                              | bIsMultiplay                         | Enable multiplayer                                                                                                                                                | false                                                  | Boolean       |
-| IS_PVP                                    | bIsPvP                               | Enable PVP                                                                                                                                                        | false                                                  | Boolean       |
-| CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP | bCanPickupOtherGuildDeathPenaltyDrop | Allow players from other guilds to pick up death penalty items                                                                                                    | false                                                  | Boolean       |
-| ENABLE_NON_LOGIN_PENALTY                  | bEnableNonLoginPenalty               | Enable non-login penalty                                                                                                                                          | true                                                   | Boolean       |
-| ENABLE_FAST_TRAVEL                        | bEnableFastTravel                    | Enable fast travel                                                                                                                                                | true                                                   | Boolean       |
-| IS_START_LOCATION_SELECT_BY_MAP           | bIsStartLocationSelectByMap          | Enable selecting of start location                                                                                                                                | true                                                   | Boolean       |
-| EXIST_PLAYER_AFTER_LOGOUT                 | bExistPlayerAfterLogout              | Toggle for deleting players when they log off                                                                                                                     | false                                                  | Boolean       |
-| ENABLE_DEFENSE_OTHER_GUILD_PLAYER         | bEnableDefenseOtherGuildPlayer       | Allows defense against other guild players                                                                                                                        | false                                                  | Boolean       |
-| COOP_PLAYER_MAX_NUM                       | CoopPlayerMaxNum                     | Maximum number of players in a guild                                                                                                                              | 4                                                      | Integer       |
-| MAX_PLAYERS                               | ServerPlayerMaxNum                   | Maximum number of people who can join the server                                                                                                                  | 32                                                     | Integer       |
-| SERVER_NAME                               | ServerName                           | Server name                                                                                                                                                       | jammsen-docker-generated-###RANDOM###                  | Integer       |
-| SERVER_DESCRIPTION                        | ServerDescription                    | Server description                                                                                                                                                | Palworld-Dedicated-Server running in Docker by jammsen | String        |
-| ADMIN_PASSWORD                            | server admin password                | AdminPassword                                                                                                                                                     | adminPasswordHere                                      | String        |
-| SERVER_PASSWORD                           | AdminPassword                        | Set the server password.                                                                                                                                          | serverPasswordHere                                     | String        |
-| PUBLIC_PORT                               | public port                          | Public port number                                                                                                                                                | 8211                                                   | Integer       |
-| PUBLIC_IP                                 | public ip or FQDN                    | Public IP or FQDN                                                                                                                                                 |                                                        | String        |
-| RCON_ENABLED                              | RCONEnabled                          | Enable RCON - Use ADMIN_PASSWORD to login                                                                                                                         | false                                                  | Boolean       |
-| RCON_PORT                                 | RCONPort                             | Port number for RCON                                                                                                                                              | 25575                                                  | Integer       |
-| REGION                                    | Region                               | Area                                                                                                                                                              |                                                        | String        |
-| USEAUTH                                   | bUseAuth                             | Use authentication                                                                                                                                                | true                                                   | Boolean       |
-| BAN_LIST_URL                              | BanListURL                           | Which ban list to use                                                                                                                                             | https://api.palworldgame.com/api/banlist.txt           | String        |
 
 ## Docker-Compose examples
 
 ### Gameserver with RCON-CLI-Tool
 
-```yml
-version: '3.9'
-services:
-  palworld-dedicated-server:
-    #build: .
-    container_name: palworld-dedicated-server
-    image: jammsen/palworld-dedicated-server:latest
-    restart: unless-stopped
-    ports:
-      - target: 8211 # Gamerserver port inside of the container
-        published: 8211 # Gamerserver port on your host
-        protocol: udp
-        mode: host
-      - target: 25575 # RCON port inside of the container
-        published: 25575 # RCON port on your host
-        protocol: tcp
-        mode: host
-    environment:
-      - TZ=Europe/Berlin # Change this for logging and backup, see "Environment-Variables" 
-      - ALWAYS_UPDATE_ON_START=true
-      - MULTITHREAD_ENABLED=true
-      - COMMUNITY_SERVER=true
-      - BACKUP_ENABLED=true
-      - BACKUP_CRON_EXPRESSION=0 * * * *
-      - BACKUP_RETENTION_POLICY=false
-      - BACKUP_RETENTION_AMOUNT_TO_KEEP=30
-      - STEAMCMD_VALIDATE_FILES=true
-      - SERVER_SETTINGS_MODE=auto # Change this to manual if you want to edit the config yourself
-      - NETSERVERMAXTICKRATE=120
-      - DIFFICULTY=None
-      - DAYTIME_SPEEDRATE=1.000000
-      - NIGHTTIME_SPEEDRATE=1.000000
-      - EXP_RATE=1.000000
-      - PAL_CAPTURE_RATE=1.000000
-      - PAL_SPAWN_NUM_RATE=1.000000
-      - PAL_DAMAGE_RATE_ATTACK=1.000000
-      - PAL_DAMAGE_RATE_DEFENSE=1.000000
-      - PLAYER_DAMAGE_RATE_ATTACK=1.000000
-      - PLAYER_DAMAGE_RATE_DEFENSE=1.000000
-      - PLAYER_STOMACH_DECREASE_RATE=1.000000
-      - PLAYER_STAMINA_DECREACE_RATE=1.000000
-      - PLAYER_AUTO_HP_REGENE_RATE=1.000000
-      - PLAYER_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
-      - PAL_STOMACH_DECREACE_RATE=1.000000
-      - PAL_STAMINA_DECREACE_RATE=1.000000
-      - PAL_AUTO_HP_REGENE_RATE=1.000000
-      - PAL_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000
-      - BUILD_OBJECT_DAMAGE_RATE=1.000000
-      - BUILD_OBJECT_DETERIORATION_DAMAGE_RATE=1.000000
-      - COLLECTION_DROP_RATE=1.000000
-      - COLLECTION_OBJECT_HP_RATE=1.000000
-      - COLLECTION_OBJECT_RESPAWN_SPEED_RATE=1.000000
-      - ENEMY_DROP_ITEM_RATE=1.000000
-      - DEATH_PENALTY=All
-      - ENABLE_PLAYER_TO_PLAYER_DAMAGE=false
-      - ENABLE_FRIENDLY_FIRE=false
-      - ENABLE_INVADER_ENEMY=true
-      - ACTIVE_UNKO=false
-      - ENABLE_AIM_ASSIST_PAD=true
-      - ENABLE_AIM_ASSIST_KEYBOARD=false
-      - DROP_ITEM_MAX_NUM=3000
-      - DROP_ITEM_MAX_NUM_UNKO=100
-      - BASE_CAMP_MAX_NUM=128
-      - BASE_CAMP_WORKER_MAXNUM=15
-      - DROP_ITEM_ALIVE_MAX_HOURS=1.000000
-      - AUTO_RESET_GUILD_NO_ONLINE_PLAYERS=false
-      - AUTO_RESET_GUILD_TIME_NO_ONLINE_PLAYERS=72.000000
-      - GUILD_PLAYER_MAX_NUM=20
-      - PAL_EGG_DEFAULT_HATCHING_TIME=72.000000
-      - WORK_SPEED_RATE=1.000000
-      - IS_MULTIPLAY=false
-      - IS_PVP=false
-      - CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP=false
-      - ENABLE_NON_LOGIN_PENALTY=true
-      - ENABLE_FAST_TRAVEL=true
-      - IS_START_LOCATION_SELECT_BY_MAP=true
-      - EXIST_PLAYER_AFTER_LOGOUT=false
-      - ENABLE_DEFENSE_OTHER_GUILD_PLAYER=false
-      - COOP_PLAYER_MAX_NUM=4
-      - MAX_PLAYERS=32
-      - SERVER_NAME=jammsen-docker-generated-###RANDOM###
-      - SERVER_DESCRIPTION=Palworld-Dedicated-Server running in Docker by jammsen
-      - ADMIN_PASSWORD=adminPasswordHere
-      - SERVER_PASSWORD=serverPasswordHere
-      - PUBLIC_PORT=8211
-      - PUBLIC_IP=
-      - RCON_ENABLED=true
-      - RCON_PORT=25575
-      - REGION=
-      - USEAUTH=true
-      - BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
-    volumes:
-      - ./game:/palworld
-```
+See [this file](docker-compose.yml) for the example
 
 #### Run RCON commands
 
