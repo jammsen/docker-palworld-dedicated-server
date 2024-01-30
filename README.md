@@ -84,7 +84,7 @@ See [this file](README_ENV.md) for the documentation
 
 ### Gameserver with RCON-CLI-Tool
 
-See [this file](docker-compose.yml) for the example
+See [example docker-compose.yml](docker-compose.yml).
 
 #### Run RCON commands
 
@@ -97,8 +97,7 @@ Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
 $:~/steamcmd$ rcon save
 Complete Save
 ```
-**Important:**
-- All RCON-Commands can be research here: https://tech.palworldgame.com/server-commands
+> **Important:** Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
 
 ## FAQ
 

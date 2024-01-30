@@ -2,13 +2,13 @@
 
 [Back to main](README.md#environment-variables)
 
-**Important:** In this section you will find a lot of environment variables to control your container-behavior and gameserver-settings. Due to the extensive control options, the settings are split into two parts for documentation: **Container-Settings** and **Gameserver-Settings**.
+In this section you will find a lot of environment variables to control your container-behavior and gameserver-settings. Due to the extensive control options, the settings are split into two parts for documentation: **Container-Settings** and **Gameserver-Settings**.
 
 ### Container-Settings
 
 These settings control the behavior of the Docker container:
 
-> If you want to change the server settings via environment variables use the default value (`auto`) for the environment variable `SERVER_SETTINGS_MODE`, otherwise change it to `manual` and edit the config file directly.
+> **Important:** If you want to change the server settings via environment variables use the default value (`auto`) for the environment variable `SERVER_SETTINGS_MODE`, otherwise change it to `manual` and edit the config file directly.
 
 | Variable                        | Description                                                                                                                                                                                                                     | Default value                  | Allowed values                                                                                                                                                                                    |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -39,8 +39,8 @@ Information sources and credits to the following websites:
 * [Palworld Tech Guide](https://tech.palworldgame.com/optimize-game-balance) for the game server documentation
 * [PalworldSettingGenerator](https://dysoncheng.github.io/PalWorldSettingGenerator/setting.html) for variable descriptions
 
-**Importtant:** Please note that all of this is subject to change. **The game is still in early access.**
-
+> **Important:** Please note that all of this is subject to change. **The game is still in early access.**
+> 
 > To change a setting, you can set the environment variable to the value you want. If the environment variable is not set or is blank, the default value will be used. 
 
 
