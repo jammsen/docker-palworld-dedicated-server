@@ -60,6 +60,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     COMMUNITY_SERVER=true \
     BACKUP_ENABLED=true \
     BACKUP_CRON_EXPRESSION="0 * * * *" \
+    BACKUP_RETENTION_POLICY=false \
+    BACKUP_RETENTION_AMOUNT_TO_KEEP=30 \
     STEAMCMD_VALIDATE_FILES=true \
     SERVER_SETTINGS_MODE=auto \
     # Server-setting 

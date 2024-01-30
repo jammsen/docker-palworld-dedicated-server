@@ -369,14 +369,17 @@ function checkForDefaultCredentials() {
     fi
 }
 
+function setupCrons() {
+    touch cronlist
+    if [[ -n $BACKUP_ENABLED ]] && [[ $BACKUP_ENABLED == "true" ]]; then
+        echo "$BACKUP_CRON_EXPRESSION /backupmanager.sh" >> cronlist
+    fi
+    /usr/local/bin/supercronic cronlist &
+}
+
 function startMain() {
     checkForDefaultCredentials
-    if [[ -n $BACKUP_ENABLED ]] && [[ $BACKUP_ENABLED == "true" ]]; then
-        # Preparing the cronlist file
-        echo "$BACKUP_CRON_EXPRESSION /backupmanager.sh" >> cronlist
-        # Making sure supercronic is enabled and the cronfile is loaded
-        /usr/local/bin/supercronic cronlist &
-    fi
+    setupCrons
     # Check if server is installed, if not try again
     if [ ! -f "$GAME_PATH/PalServer.sh" ]; then
         installServer
