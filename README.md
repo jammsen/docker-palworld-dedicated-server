@@ -73,7 +73,7 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 1. Create a `game` sub-directory on your Docker node in your game-server-directory (Example: `/srv/palworld`). Give it full permissions with `chmod 777 game` or use `chown -R 1000:1000 game/`.
 2. Set up Port-Forwarding or NAT for the ports in the Docker-Compose file.
 3. Pull the latest version of the image with `docker pull jammsen/palworld-dedicated-server:latest`.
-4. Set up your own docker-compose.yml as per your requirements. Refer to the [Docker-Compose examples](#examples) section and the [Environment-Variables](#examples) section for more information.
+4. Set up your own docker-compose.yml as per your requirements. Refer to the [Docker-Compose examples](#docker-compose-examples) section and the [Environment-Variables](#gameserver-settings) section for more information.
 5. Start the container via `docker-compose up -d && docker-compose logs -f`. Watch the log, if no errors occur you can close the logs with ctrl+c.
 6. Happy gaming!
 
