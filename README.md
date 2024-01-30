@@ -33,7 +33,7 @@ ___
     - [How can I look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
     - [Im seeing S\_API errors in my logs when I start the container?](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
     - [Im using Apple silicon type of hardware, can I run this?](#im-using-apple-silicon-type-of-hardware-can-i-run-this)
-    - [I have changed the BaseCampWorkerMaxNum settings, why are changes un-affected on the server?](#i-have-changed-the-basecampworkermaxnum-settings-why-are-changes-un-affected-on-the-server)
+    - [I have changed the `BaseCampWorkerMaxNum` settings, why are changes un-affected on the server?](#i-have-changed-the-basecampworkermaxnum-settings-why-are-changes-un-affected-on-the-server)
   - [Planned features in the future](#planned-features-in-the-future)
   - [Software used](#software-used)
 
@@ -66,7 +66,8 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 
 ## Getting started
 
-1. Create a `game` sub-directory on your Docker-Node in your game-server-directory (Example: `/srv/palworld`). Give it full ownership with `chown -R 1000:1000 game/` or permissions with `chmod 777 game`.
+1. Create a `game` sub-directory on your Docker-Node in your game-server-directory (Example: `/srv/palworld`).
+   1. This directory will be used to store the game-data and configuration persistently (on restart, on stop, on kill, ... ).
 2. Set up Port-Forwarding or NAT for the ports in the Docker-Compose file.
 3. Pull the latest version of the image with `docker pull jammsen/palworld-dedicated-server:latest`.
 4. Download the [docker-compose.yml](docker-compose.yml) and [default.env](default.env).

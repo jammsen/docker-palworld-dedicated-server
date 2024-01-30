@@ -37,17 +37,6 @@ RUN curl -fsSLO "$RCON_URL" \
 
 ADD --chown=steam:steam --chmod=755 servermanager.sh /servermanager.sh
 ADD --chown=steam:steam --chmod=755 backupmanager.sh /backupmanager.sh
-
-EXPOSE 8211/udp
-EXPOSE 25575/tcp
-
-RUN mkdir /palworld \
-    && chown steam:steam /palworld
-
-VOLUME [ "/palworld" ]
-
-USER steam
-
 ADD --chown=steam:steam --chmod=440 rcon.yaml ./rcon.yaml
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -129,4 +118,12 @@ ENV DEBIAN_FRONTEND=noninteractive \
     USEAUTH=true \
     BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
 
-CMD ["/servermanager.sh"]
+
+EXPOSE 8211/udp
+EXPOSE 25575/tcp
+
+VOLUME [ "/palworld" ]
+
+ADD --chmod=777 entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
