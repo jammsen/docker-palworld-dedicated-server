@@ -392,11 +392,13 @@ function startMain() {
 }
 
 term_handler() {
-    rconcli 'broadcast Server_Shutdown_requested'
-    rconcli 'broadcast Saving...'
-    rconcli 'save'
-    rconcli 'broadcast Done...'
-    sleep 3
+    if [[ ! -z ${RCON_ENABLED+x} ]]; then
+        rconcli 'broadcast Server_Shutdown_requested'
+        rconcli 'broadcast Saving...'
+        rconcli 'save'
+        rconcli 'broadcast Done...'
+        sleep 3
+    fi
 	kill -SIGTERM $(pidof PalServer-Linux-Test)
 	tail --pid=$(pidof PalServer-Linux-Test) -f 2>/dev/null
 	exit 143;
