@@ -27,13 +27,15 @@ ___
   - [Environment variables](#environment-variables)
   - [Docker-Compose examples](#docker-compose-examples)
     - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
-      - [Run RCON commands](#run-rcon-commands)
+  - [Run RCON commands](#run-rcon-commands)
+  - [Webhook integration](#webhook-integration)
+    - [Supported events](#supported-events)
   - [FAQ](#faq)
     - [How can I use the interactive console in Portainer with this image?](#how-can-i-use-the-interactive-console-in-portainer-with-this-image)
     - [How can I look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
     - [Im seeing S\_API errors in my logs when I start the container?](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
     - [Im using Apple silicon type of hardware, can I run this?](#im-using-apple-silicon-type-of-hardware-can-i-run-this)
-    - [I have changed the BaseCampWorkerMaxNum settings, why are changes un-affected on the server?](#i-have-changed-the-basecampworkermaxnum-settings-why-are-changes-un-affected-on-the-server)
+    - [I have changed the `BaseCampWorkerMaxNum` settings, why are changes un-affected on the server?](#i-have-changed-the-basecampworkermaxnum-settings-why-are-changes-un-affected-on-the-server)
   - [Planned features in the future](#planned-features-in-the-future)
   - [Software used](#software-used)
 
@@ -80,14 +82,13 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 
 See [this file](README_ENV.md) for the documentation
 
-
 ## Docker-Compose examples
 
 ### Gameserver with RCON-CLI-Tool
 
 See [example docker-compose.yml](docker-compose.yml).
 
-#### Run RCON commands
+## Run RCON commands
 
 Open a shell into your container via `docker exec -ti palworld-dedicated-server bash`, then you can run commands against the gameserver via the command `rcon` or `rconcli`
 ```shell
@@ -99,6 +100,20 @@ $:~/steamcmd$ rcon save
 Complete Save
 ```
 > **Important:** Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
+
+## Webhook integration
+
+To enable webhook integration, you need to set the following environment variables in the `default.env`:
+
+```shell
+WEBHOOK_ENABLED=true
+WEBHOOK_URL="https://your.webhook.url"
+```
+After that the server should send messages in a Discord-Compatible way to your webhook.
+
+### Supported events
+* Server starting
+* Server stopped
 
 ## FAQ
 
@@ -116,7 +131,7 @@ You can try to insert in your docker-compose file this parameter `platform: linu
 
 ### I have changed the `BaseCampWorkerMaxNum` settings, why are changes un-affected on the server?
 
-It is a confirm bug, that changing `BaseCampWorkerMaxNum` in the `PalWorldSettings.ini` has no affect on the server. There are tools out there to help with this, like this one: <https://github.com/legoduded/palworld-worldoption>
+It is a confirm bug, that changing `BaseCampWorkerMaxNum` in the `PalWorldSettings.ini` has no affect on the server. There are tools out there to help with this, like this one: <https://github.com/legoduded/palworld-worldoptions>
 
 **PLEASE NOTE** that adding `WorldOption.sav` will breaking `PalWorldSetting.ini` and if that happens all the other settings won't be changeable anymore unless that specific tool is used everytime.
 
