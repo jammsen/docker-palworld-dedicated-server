@@ -35,12 +35,12 @@ RUN curl -fsSLO "$RCON_URL" \
     && ln -s "/usr/local/bin/${RCON_BINARY}" /usr/local/bin/rconcli \
     && rm -Rf rcon-0.10.3-amd64_linux rcon-0.10.3-amd64_linux.tar.gz
 
-ADD --chown=steam:steam --chmod=755 servermanager.sh /servermanager.sh
-ADD --chown=steam:steam --chmod=755 backupmanager.sh /backupmanager.sh
+COPY --chown=steam:steam --chmod=755 backupmanager.sh servermanager.sh includes/* /
 
 EXPOSE 8211/udp
 EXPOSE 25575/tcp
 
+# Workaround for 'Named Volumes'
 RUN mkdir /palworld \
     && chown steam:steam /palworld
 
@@ -53,7 +53,7 @@ ADD --chown=steam:steam --chmod=440 rcon.yaml ./rcon.yaml
 ENV DEBIAN_FRONTEND=noninteractive \
     PUID=1000 \
     PGID=1000 \
-    # Container setttings
+    ### Container-setttings
     TZ="Europe/Berlin"   \
     ALWAYS_UPDATE_ON_START=true \
     MULTITHREAD_ENABLED=true \
@@ -63,8 +63,19 @@ ENV DEBIAN_FRONTEND=noninteractive \
     BACKUP_RETENTION_POLICY=false \
     BACKUP_RETENTION_AMOUNT_TO_KEEP=30 \
     STEAMCMD_VALIDATE_FILES=true \
-    SERVER_SETTINGS_MODE=auto \
-    # Server-setting 
+    SERVER_SETTINGS_MODE=manual \
+    WEBHOOK_ENABLED=false \
+    WEBHOOK_URL= \
+    WEBHOOK_START_TITLE="Server is starting" \
+    WEBHOOK_START_DESCRIPTION="The gameserver is starting" \
+    WEBHOOK_START_COLOR="2328576" \
+    WEBHOOK_STOP_TITLE="Server has been stopped" \
+    WEBHOOK_STOP_DESCRIPTION="The gameserver has been stopped" \
+    WEBHOOK_STOP_COLOR="7413016" \
+    WEBHOOK_INFO_TITLE="Info" \
+    WEBHOOK_INFO_DESCRIPTION="This is an info from the server" \
+    WEBHOOK_INFO_COLOR="2849520" \
+    ### Server-setting 
     NETSERVERMAXTICKRATE=120 \
     DIFFICULTY=None \
     DAYTIME_SPEEDRATE=1.000000 \
