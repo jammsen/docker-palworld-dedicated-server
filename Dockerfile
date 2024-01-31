@@ -4,8 +4,33 @@ LABEL maintainer="Sebastian Schmidt - https://github.com/jammsen/docker-palworld
 LABEL org.opencontainers.image.authors="Sebastian Schmidt"
 LABEL org.opencontainers.image.source="https://github.com/jammsen/docker-palworld-dedicated-server"
 
+# Configuration variables
+ARG STEAM_USER="steam"
+
+ARG GAME_ROOT="/palworld"
+ARG GAME_PATH="${GAME_ROOT}/Pal"
+ARG GAME_SAVE_PATH="${GAME_PATH}/Saved"
+ARG GAME_CONFIG_PATH="${GAME_SAVE_PATH}/Config/LinuxServer"
+ARG GAME_SETTINGS_PATH="${GAME_CONFIG_PATH}/PalWorldSettings.ini"
+ARG SERVER_SETTINGS_PATH="${GAME_CONFIG_PATH}/Engine.ini"
+ARG BACKUP_PATH="${GAME_ROOT}/backups"
+ARG TRIGGER_RESTART_PATH="${GAME_ROOT}/.server_restart"
+ARG TRIGGER_RESTORE_PATH="${GAME_ROOT}/.backup_restore"
+
+# Export the ARG variables to the environment
+ENV GAME_ROOT="${GAME_ROOT}" \
+    GAME_PATH="${GAME_PATH}" \
+    GAME_SAVE_PATH="${GAME_SAVE_PATH}" \
+    GAME_CONFIG_PATH="${GAME_CONFIG_PATH}" \
+    GAME_SETTINGS_PATH="${GAME_SETTINGS_PATH}" \
+    SERVER_SETTINGS_PATH="${SERVER_SETTINGS_PATH}" \
+    BACKUP_PATH="${BACKUP_PATH}" \
+    TRIGGER_RESTART_PATH="${TRIGGER_RESTART_PATH}" \
+    TRIGGER_RESTORE_PATH="${TRIGGER_RESTORE_PATH}"
+
+
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs \
+    && apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs inotify-tools \
     && apt-get clean \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -15,10 +40,10 @@ ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.
     SUPERCRONIC=supercronic-linux-amd64 \
     SUPERCRONIC_SHA1SUM=cd48d45c4b10f3f0bfdd3a57d054cd05ac96812b
 
-RUN curl -fsSLO "$SUPERCRONIC_URL" \
+RUN curl -fsSLO "${SUPERCRONIC_URL}" \
     && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
-    && chmod +x "$SUPERCRONIC" \
-    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+    && chmod +x "${SUPERCRONIC}" \
+    && mv "${SUPERCRONIC}" "/usr/local/bin/${SUPERCRONIC}" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
 # Latest releases available at https://github.com/gorcon/rcon-cli/releases
@@ -27,22 +52,24 @@ ENV RCON_URL=https://github.com/gorcon/rcon-cli/releases/download/v0.10.3/rcon-0
     RCON_TGZ_MD5SUM=8601c70dcab2f90cd842c127f700e398 \
     RCON_BINARY=rcon
 
-RUN curl -fsSLO "$RCON_URL" \
+RUN curl -fsSLO "${RCON_URL}" \
     && echo "${RCON_TGZ_MD5SUM} ${RCON_TGZ}" | md5sum -c - \
     && tar xfz rcon-0.10.3-amd64_linux.tar.gz \
-    && chmod +x "rcon-0.10.3-amd64_linux/$RCON_BINARY" \
-    && mv "rcon-0.10.3-amd64_linux/$RCON_BINARY" "/usr/local/bin/${RCON_BINARY}" \
+    && chmod +x "rcon-0.10.3-amd64_linux/${RCON_BINARY}" \
+    && mv "rcon-0.10.3-amd64_linux/${RCON_BINARY}" "/usr/local/bin/${RCON_BINARY}" \
     && ln -s "/usr/local/bin/${RCON_BINARY}" /usr/local/bin/rconcli \
     && rm -Rf rcon-0.10.3-amd64_linux rcon-0.10.3-amd64_linux.tar.gz
 
-ADD --chown=steam:steam --chmod=755 servermanager.sh /servermanager.sh
-ADD --chown=steam:steam --chmod=755 backupmanager.sh /backupmanager.sh
-ADD --chown=steam:steam --chmod=440 rcon.yaml ./rcon.yaml
 
+ADD --chown="${STEAM_USER}":"${STEAM_USER}" --chmod=755 servermanager.sh /servermanager.sh
+ADD --chown="${STEAM_USER}":"${STEAM_USER}" --chmod=755 backupmanager.sh /backupmanager.sh
+ADD --chown="${STEAM_USER}":"${STEAM_USER}" --chmod=440 rcon.yaml ./rcon.yaml
+
+# server settings to manual so if people push an image and have their own settings they won't be overwritten if they forget the environment variable on the compose or on a portainer image update
 ENV DEBIAN_FRONTEND=noninteractive \
     PUID=0 \
     PGID=0 \
-    # Container setttings
+    # Container settings
     TZ="Europe/Berlin"   \
     ALWAYS_UPDATE_ON_START=true \
     MULTITHREAD_ENABLED=true \
@@ -52,7 +79,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     BACKUP_RETENTION_POLICY=false \
     BACKUP_RETENTION_AMOUNT_TO_KEEP=30 \
     STEAMCMD_VALIDATE_FILES=true \
-    SERVER_SETTINGS_MODE=auto \
+    SERVER_SETTINGS_MODE=manual \
     # Server-setting 
     NETSERVERMAXTICKRATE=120 \
     DIFFICULTY=None \
