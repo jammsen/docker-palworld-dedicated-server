@@ -24,11 +24,11 @@ ___
   - [Requirements](#requirements)
   - [Minimum system requirements](#minimum-system-requirements)
   - [Getting started](#getting-started)
-  - [Deploy with Helm](#deploy-with-helm)
   - [Environment variables](#environment-variables)
   - [Docker-Compose examples](#docker-compose-examples)
     - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
       - [Run RCON commands](#run-rcon-commands)
+  - [Deploy with Helm](#deploy-with-helm)
   - [FAQ](#faq)
     - [How can I use the interactive console in Portainer with this image?](#how-can-i-use-the-interactive-console-in-portainer-with-this-image)
     - [How can I look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
@@ -77,10 +77,6 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
    1. Watch the log, if no errors occur you can close the logs with ctrl+c.
 7. Now have fun and happy gaming!
 
-## Deploy with Helm
-
-A Helm chart to deploy this container can be found at [palworld-helm](https://github.com/caleb-devops/palworld-helm).
-
 ## Environment variables
 
 See [this file](README_ENV.md) for the documentation
@@ -105,6 +101,10 @@ Complete Save
 ```
 
 > **Important:** Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
+
+## Deploy with Helm
+
+A Helm chart to deploy this container can be found at [palworld-helm](https://github.com/caleb-devops/palworld-helm).
 
 ## FAQ
 
