@@ -3,3 +3,4 @@
 game
 docker-compose-*.yml
 /tests
+custom.env
