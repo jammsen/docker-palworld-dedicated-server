@@ -29,7 +29,7 @@ ___
     - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
   - [Run RCON commands](#run-rcon-commands)
   - [Webhook integration](#webhook-integration)
-  - [Supported events](#supported-events)
+    - [Supported events](#supported-events)
   - [Deploy with Helm](#deploy-with-helm)
   - [FAQ](#faq)
     - [How can I use the interactive console in Portainer with this image?](#how-can-i-use-the-interactive-console-in-portainer-with-this-image)
