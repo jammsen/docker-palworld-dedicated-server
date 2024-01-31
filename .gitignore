@@ -1,3 +1,5 @@
 .idea/
+.vscode/
 game
 docker-compose-*.yml
+/tests
