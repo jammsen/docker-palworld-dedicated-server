@@ -51,8 +51,8 @@ USER steam
 ADD --chown=steam:steam --chmod=440 rcon.yaml ./rcon.yaml
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    PUID=0 \
-    PGID=0 \
+    PUID=1000 \
+    PGID=1000 \
     # Container setttings
     TZ="Europe/Berlin"   \
     ALWAYS_UPDATE_ON_START=true \
