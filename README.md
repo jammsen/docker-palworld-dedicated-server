@@ -27,7 +27,7 @@ ___
   - [Environment variables](#environment-variables)
   - [Docker-Compose examples](#docker-compose-examples)
     - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
-      - [Run RCON commands](#run-rcon-commands)
+  - [Run RCON commands](#run-rcon-commands)
   - [Webhook integration](#webhook-integration)
   - [Supported events](#supported-events)
   - [Deploy with Helm](#deploy-with-helm)
