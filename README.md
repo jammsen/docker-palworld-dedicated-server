@@ -28,6 +28,8 @@ ___
   - [Docker-Compose examples](#docker-compose-examples)
     - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
       - [Run RCON commands](#run-rcon-commands)
+  - [Webhook integration](#webhook-integration)
+  - [Supported events](#supported-events)
   - [Deploy with Helm](#deploy-with-helm)
   - [FAQ](#faq)
     - [How can I use the interactive console in Portainer with this image?](#how-can-i-use-the-interactive-console-in-portainer-with-this-image)
@@ -87,7 +89,7 @@ See [this file](README_ENV.md) for the documentation
 
 See [example docker-compose.yml](docker-compose.yml).
 
-#### Run RCON commands
+## Run RCON commands
 
 Open a shell into your container via `docker exec -ti palworld-dedicated-server bash`, then you can run commands against the gameserver via the command `rcon` or `rconcli`
 
@@ -101,6 +103,21 @@ Complete Save
 ```
 
 > **Important:** Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
+
+=======
+## Webhook integration
+
+To enable webhook integration, you need to set the following environment variables in the `default.env`:
+
+```shell
+WEBHOOK_ENABLED=true
+WEBHOOK_URL="https://your.webhook.url"
+```
+After that the server should send messages in a Discord-Compatible way to your webhook.
+
+### Supported events
+* Server starting
+* Server stopped
 
 ## Deploy with Helm
 
