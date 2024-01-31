@@ -116,7 +116,7 @@ You can try to insert in your docker-compose file this parameter `platform: linu
 
 ### I have changed the `BaseCampWorkerMaxNum` settings, why are changes un-affected on the server?
 
-It is a confirm bug, that changing `BaseCampWorkerMaxNum` in the `PalWorldSettings.ini` has no affect on the server. There are tools out there to help with this, like this one: <https://github.com/legoduded/palworld-worldoption>
+It is a confirm bug, that changing `BaseCampWorkerMaxNum` in the `PalWorldSettings.ini` has no affect on the server. There are tools out there to help with this, like this one: <https://github.com/legoduded/palworld-worldoptions>
 
 **PLEASE NOTE** that adding `WorldOption.sav` will breaking `PalWorldSetting.ini` and if that happens all the other settings won't be changeable anymore unless that specific tool is used everytime.
 
