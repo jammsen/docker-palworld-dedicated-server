@@ -104,7 +104,6 @@ Complete Save
 
 > **Important:** Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
 
-=======
 ## Webhook integration
 
 To enable webhook integration, you need to set the following environment variables in the `default.env`:
