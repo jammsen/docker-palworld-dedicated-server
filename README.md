@@ -27,6 +27,7 @@ ___
   - [Environment variables](#environment-variables)
   - [Docker-Compose examples](#docker-compose-examples)
     - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
+  - [Backup Manager](#backup-manager)
   - [Run RCON commands](#run-rcon-commands)
   - [Webhook integration](#webhook-integration)
     - [Supported events](#supported-events)
@@ -69,15 +70,25 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 
 ## Getting started
 
-1. Create a `game` sub-directory on your Docker-Node in your game-server-directory (Example: `/srv/palworld`). Give it full ownership with `chown -R 1000:1000 game/` or permissions with `chmod 777 game`.
+1. Create a `game` sub-directory on your Docker-Node in your game-server-directory (Example: `/srv/palworld`). 
+   * This directory will be used to store the game-data and configuration persistently (on restart, on stop, on kill, ... ).
+    ````shell
+    mkdir -p /srv/palworld/game
+    ````
 2. Set up Port-Forwarding or NAT for the ports in the Docker-Compose file.
-3. Pull the latest version of the image with `docker pull jammsen/palworld-dedicated-server:latest`.
+3. Pull the latest version of the image with:
+    ```shell	
+    docker pull jammsen/palworld-dedicated-server:latest
+    ```
 4. Download the [docker-compose.yml](docker-compose.yml) and [default.env](default.env).
 5. Set up the `docker-compose.yml` and `default.env` to your liking.
-   1. Refer to the [Environment-Variables](#environment-variables) section for more information.
-6. Start the container via `docker-compose up -d && docker-compose logs -f`.
-   1. Watch the log, if no errors occur you can close the logs with ctrl+c.
-7. Now have fun and happy gaming!
+   * Refer to the [Environment-Variables](#environment-variables) section for more information.
+6. Start the container with:
+    ```shell	
+    docker-compose up -d && docker-compose logs -f
+    ```
+   * Watch the log. If no errors occur, you can close the logs with `ctrl+c`.
+7. Now have fun and happy gaming! 🎮😉
 
 ## Environment variables
 
@@ -88,6 +99,65 @@ See [this file](README_ENV.md) for the documentation
 ### Gameserver with RCON-CLI-Tool
 
 See [example docker-compose.yml](docker-compose.yml).
+
+## Backup Manager
+
+Usage: `docker exec <container_name_or_id> [command] [arguments]`
+
+
+| Command        | Argument        | Required/Optional | Default Value | Values | Description                                                                                                                                       |
+| -------------- | --------------- | ----------------- | ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `backup`       | N/A             | N/A               | N/A           | N/A    | Creates a backup.                                                                                                                                 |
+| `backup_list`  | `<num_entries>` | Optional          | N/A           | >=0    | Lists all backups. If `<num_entries>` is specified, only<br>the most recent `<num_entries>` backups are listed.<br>Only accepts positive numbers. |
+| `backup_clean` | `<num_to_keep>` | Optional          | 30            | >=0    | Cleans up backups by keeping the most recent<br>`<num_to_keep>` backups.<br>Only accepts positive numbers.                                        |
+
+Examples:
+```shell
+$ docker exec <container_name_or_id> backup
+>>> Creating backup...
+
+>>> Backup created successfully!
+```
+```shell
+$ docker exec <container_name_or_id> backup_list 5
+>>> Listing backups:
+
+2024-02-01 05:03:09 | saved-20240201_050309.tar.gz
+2024-02-01 05:03:08 | saved-20240201_050308.tar.gz
+2024-02-01 05:03:07 | saved-20240201_050307.tar.gz
+2024-02-01 05:03:06 | saved-20240201_050306.tar.gz
+2024-02-01 05:03:05 | saved-20240201_050305.tar.gz
+
+> Found 10 backup file(s), but listing only 5 !
+```
+```shell
+$ docker exec <container_name_or_id> backup_clean 3
+>>> Backup cleaning started..
+
+> Keeping latest 3 backups.
+> Deleted 7 file(s).
+
+>>> Cleaning finished!
+```
+```shell
+$ docker exec <container_name_or_id> backup_list   
+>>> Listing backups:
+
+2024-02-01 05:03:09 | saved-20240201_050309.tar.gz
+2024-02-01 05:03:08 | saved-20240201_050308.tar.gz
+2024-02-01 05:03:07 | saved-20240201_050307.tar.gz
+
+> Found 3 backup file(s)!
+```
+
+> [!WARNING]
+> When RCON is disabled, the backup manager won't do saves before creating a backup.
+> This means that the backup will be created from the last save.
+> This can lead to data loss or corruption.
+>
+> **Please make sure that RCON is enabled before using the backup manager!**
+> 
+> Otherwise use it at your own risk! 🥲
 
 ## Run RCON commands
 
@@ -101,7 +171,19 @@ Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
 $:~/steamcmd$ rcon save
 Complete Save
 ```
+------ OR ------
 
+Do a `docker exec -ti palworld-dedicated-server -c "rconcli <command>"` right on your terminal/shell.
+```shell
+$ docker exec -ti palworld-dedicated-server -c "rconcli showplayers"
+name,playeruid,steamid
+
+$ docker exec -ti palworld-dedicated-server -c "rconcli info"
+Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
+
+$ docker exec -ti palworld-dedicated-server -c "rconcli save"
+Complete Save
+```
 > **Important:** Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
 
 ## Webhook integration

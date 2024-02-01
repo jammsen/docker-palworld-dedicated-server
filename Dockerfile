@@ -4,12 +4,39 @@ LABEL maintainer="Sebastian Schmidt - https://github.com/jammsen/docker-palworld
 LABEL org.opencontainers.image.authors="Sebastian Schmidt"
 LABEL org.opencontainers.image.source="https://github.com/jammsen/docker-palworld-dedicated-server"
 
+
+# Configuration variables
+ARG STEAM_USER="steam"
+
+ARG GAME_ROOT="/palworld"
+ARG GAME_PATH="${GAME_ROOT}/Pal"
+ARG GAME_SAVE_PATH="${GAME_PATH}/Saved"
+ARG GAME_CONFIG_PATH="${GAME_SAVE_PATH}/Config/LinuxServer"
+ARG GAME_SETTINGS_PATH="${GAME_CONFIG_PATH}/PalWorldSettings.ini"
+ARG GAME_ENGINE_PATH="${GAME_CONFIG_PATH}/Engine.ini"
+ARG BACKUP_PATH="${GAME_ROOT}/backups"
+ARG TRIGGER_RESTART_PATH="${GAME_ROOT}/.server_restart"
+ARG TRIGGER_RESTORE_PATH="${GAME_ROOT}/.backup_restore"
+
+# Export the ARG variables to the environment
+ENV GAME_ROOT="${GAME_ROOT}" \
+    GAME_PATH="${GAME_PATH}" \
+    GAME_SAVE_PATH="${GAME_SAVE_PATH}" \
+    GAME_CONFIG_PATH="${GAME_CONFIG_PATH}" \
+    GAME_SETTINGS_PATH="${GAME_SETTINGS_PATH}" \
+    GAME_ENGINE_PATH="${GAME_ENGINE_PATH}" \
+    BACKUP_PATH="${BACKUP_PATH}" \
+    TRIGGER_RESTART_PATH="${TRIGGER_RESTART_PATH}" \
+    TRIGGER_RESTORE_PATH="${TRIGGER_RESTORE_PATH}"
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs \
     && apt-get clean \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Latest releases available at https://github.com/aptible/supercronic/releases
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 \
     SUPERCRONIC=supercronic-linux-amd64 \
@@ -35,20 +62,19 @@ RUN curl -fsSLO "$RCON_URL" \
     && ln -s "/usr/local/bin/${RCON_BINARY}" /usr/local/bin/rconcli \
     && rm -Rf rcon-0.10.3-amd64_linux rcon-0.10.3-amd64_linux.tar.gz
 
-COPY --chown=steam:steam --chmod=755 backupmanager.sh servermanager.sh includes/* /
+COPY --chown=steam:steam --chmod=755 scripts/       /scripts
+COPY --chown=steam:steam --chmod=755 includes/      /includes
+COPY --chown=steam:steam --chmod=755 configs/       /configs
+COPY --chown=steam:steam --chmod=755 entrypoint.sh  /
 
-EXPOSE 8211/udp
-EXPOSE 25575/tcp
+RUN ln -s /scripts/backupmanager.sh /usr/local/bin/backup_manager &&  \
+    ln -s /scripts/restart.sh       /usr/local/bin/restart && \
+    ln -s /scripts/restore.sh       /usr/local/bin/restore && \
+    ln -s /scripts/create_backup.sh /usr/local/bin/backup && \
+    ln -s /scripts/list_backups.sh  /usr/local/bin/backup_list && \
+    ln -s /scripts/clean_backups.sh /usr/local/bin/backup_clean && \
+    ln -s /scripts/rcon_cmd.sh      /usr/local/bin/rc
 
-# Workaround for 'Named Volumes'
-RUN mkdir /palworld \
-    && chown steam:steam /palworld
-
-VOLUME [ "/palworld" ]
-
-USER steam
-
-ADD --chown=steam:steam --chmod=440 rcon.yaml ./rcon.yaml
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PUID=1000 \
@@ -140,4 +166,10 @@ ENV DEBIAN_FRONTEND=noninteractive \
     USEAUTH=true \
     BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
 
-CMD ["/servermanager.sh"]
+
+EXPOSE 8211/udp
+EXPOSE ${RCON_PORT}/tcp
+
+VOLUME ["${GAME_ROOT}"]
+
+ENTRYPOINT  ["/entrypoint.sh"]

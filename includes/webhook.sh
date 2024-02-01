@@ -1,3 +1,4 @@
+# shellcheck disable=SC2148
 # Function to generate JSON data for the Discord message
 # Webpage for COLOR-Calculation - https://www.spycolor.com/
 # IMPORTANT: Dont use Hex-Colors! Go to the page search for the Hex-Color.
