@@ -55,7 +55,6 @@ function setup_palworld_settings_ini() {
         pp --info "> Found existing config!\n"
     fi
 
-
     if [[ -n ${DIFFICULTY+x} ]]; then
         echo "> Setting Difficulty to '$DIFFICULTY'"
         sed -E -i "s/Difficulty=[a-zA-Z]*/Difficulty=$DIFFICULTY/" "$GAME_SETTINGS_PATH"
@@ -293,11 +292,6 @@ function setup_palworld_settings_ini() {
     if [[ -n ${RCON_ENABLED+x} ]]; then
         echo "> Setting rcon-enabled to '$RCON_ENABLED'"
         sed -E -i "s/RCONEnabled=[a-zA-Z]*/RCONEnabled=$RCON_ENABLED/" "$GAME_SETTINGS_PATH"
-        if [ "$RCON_ENABLED" == "true" ]; then
-            echo "> Because RCON is enabled, setting rcon.yaml config file"
-            sed -i "s/###RCON_PORT###/$RCON_PORT/" /configs/rcon.yaml
-            sed -i "s/###ADMIN_PASSWORD###/$ADMIN_PASSWORD/" /configs/rcon.yaml
-        fi
     fi
     if [[ -n ${RCON_PORT+x} ]]; then
         echo "> Setting RCONPort to '$RCON_PORT'"
@@ -319,6 +313,30 @@ function setup_palworld_settings_ini() {
     pp --warning ">>> Finished setting up PalWorldSettings.ini\n\n"
 }
 
+function setup_rcon_config_file () {
+    pp --success ">>> Setting up 'rcon.yaml' ...\n"
+
+    # Check if RCON is enabled
+    if [[ -n ${RCON_ENABLED+x} ]] && [ "$RCON_ENABLED" == "true" ] ; then
+        pp --info "> RCON is enabled, setting 'rcon.yaml' config file.\n"
+
+        if [[ -n ${RCON_PORT+x} ]]; then
+            sed -i "s/###RCON_PORT###/$RCON_PORT/" /configs/rcon.yaml
+        else
+            pp --error "> [ERROR] RCON_PORT is not set, please set it for RCON functionality to work!\n"
+        fi
+
+        if [[ -n ${ADMIN_PASSWORD+x} ]]; then
+            sed -i "s/###ADMIN_PASSWORD###/$ADMIN_PASSWORD/" /configs/rcon.yaml
+        else
+            pp --error "> [ERROR] RCON_PORT is not set, please set it for RCON functionality to work!\n"
+        fi
+        
+        pp --success "> Finished setting up 'rcon.yaml' config file.\n\n"
+    else
+        pp --warning "> RCON is disabled, skipping 'rcon.yaml' config file!\n"
+    fi
+}
 
 function setup_configs() {
     if [[ -n ${SERVER_SETTINGS_MODE} ]] && [[ ${SERVER_SETTINGS_MODE} == "auto" ]]; then
@@ -329,4 +347,5 @@ function setup_configs() {
         pp --warning "> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', NOT using environment variables to configure the server!\n"
         pp --warning "> File ${GAME_ENGINE_PATH} has to be manually set by user.\n\n"
     fi
+    setup_rcon_config_file
 }
