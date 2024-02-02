@@ -70,21 +70,25 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 
 ## Getting started
 
-1. Create a `game` sub-directory on your Docker-Node in your game-server-directory (Example: `/srv/palworld`). 
-   * This directory will be used to store the game server files, including configs and savegames.
+1. Create a `game` sub-directory on your Docker-Node in your game-server-directory (Example: `/srv/palworld`).
+   - This directory will be used to store the game server files, including configs and savegames.
 2. Set up Port-Forwarding or NAT for the ports in the Docker-Compose file.
 3. Pull the latest version of the image with:
-    ```shell	
+
+    ```shell
     docker pull jammsen/palworld-dedicated-server:latest
     ```
+
 4. Download the [docker-compose.yml](docker-compose.yml) and [default.env](default.env).
 5. Set up the `docker-compose.yml` and `default.env` to your liking.
-   * Refer to the [Environment-Variables](#environment-variables) section for more information.
+   - Refer to the [Environment-Variables](#environment-variables) section for more information.
 6. Start the container with:
-    ```shell	
+
+    ```shell
     docker-compose up -d && docker-compose logs -f
     ```
-   * Watch the log. If no errors occur, you can close the logs with `ctrl+c`.
+
+   - Watch the log. If no errors occur, you can close the logs with `ctrl+c`.
 7. Now have fun and happy gaming! 🎮😉
 
 ## Environment variables
@@ -111,6 +115,7 @@ Complete Save
 ```
 
 You can also use `docker exec palworld-dedicated-server rconcli <command>` right on your terminal/shell.
+
 ```shell
 $ docker exec palworld-dedicated-server rconcli showplayers
 name,playeruid,steamid
@@ -121,24 +126,26 @@ Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
 $ docker exec palworld-dedicated-server rconcli save
 Complete Save
 ```
+
 > **Important:** Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
 
 ## Backup Manager
 
-Usage: `docker exec palworld-dedicated-server [command] [arguments]`
+Usage: `docker exec palworld-dedicated-server backup [command] [arguments]`
 
-
-| Command        | Argument              | Required/Optional | Default Value | Values | Description                                                                                                                                                   |
-| -------------- | --------------------- | ----------------- | ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `backup`       | N/A                   | N/A               | N/A           | N/A    | Creates a backup.                                                                                                                                             |
-| `backup_list`  | `<number_of_entries>` | Optional          | N/A           | >=0    | Lists all backups. If `<number_of_entries>` is specified, only<br>the most recent `<number_of_entries>` backups are listed.<br>Only accepts positive numbers. |
-| `backup_clean` | `<number_to_keep>`    | Optional          | 30            | >=0    | Cleans up backups by keeping the most recent<br>`<number_to_keep>` backups.<br>Only accepts positive numbers.                                                 |
+| Command | Argument           | Required/Optional | Default Value                     | Values           | Description                                                                                                                                                                          |
+| ------- | ------------------ | ----------------- | --------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| create  | N/A                | N/A               | N/A                               | N/A              | Creates a backup.                                                                                                                                                                    |
+| list    | `<number_to_list>` | Optional          | N/A                               | Positive numbers | Lists all backups.<br>If `<number_to_list>` is specified, only the most<br>recent `<number_to_list>` backups are listed.                                                             |
+| clean   | `<number_to_keep>` | Optional          | `BACKUP_RETENTION_AMOUNT_TO_KEEP` | Positive numbers | Cleans up backups.<br>If `<number_to_list>` is specified, cleans and keeps<br>the most recent`<number_to_keep>` backups.<br>If not, default to `BACKUP_RETENTION_AMOUNT_TO_KEEP` var |
 
 Examples:
+
 ```shell
 $ docker exec palworld-dedicated-server backup
 >>> Backup 'saved-20240201_050309.tar.gz' created successfully.
 ```
+
 ```shell
 $ docker exec palworld-dedicated-server backup_list 5
 >>> Listing 5 out of 20 backup(s):
@@ -148,10 +155,12 @@ $ docker exec palworld-dedicated-server backup_list 5
 2024-02-01 05:03:06 | saved-20240201_050306.tar.gz
 2024-02-01 05:03:05 | saved-20240201_050305.tar.gz
 ```
+
 ```shell
 $ docker exec palworld-dedicated-server backup_clean 3
 >>> Backups were cleaned, 3 most recent.
 ```
+
 ```shell
 $ docker exec palworld-dedicated-server backup_list   
 >>> Listing 3 out of 3 backup(s):
@@ -166,49 +175,6 @@ $ docker exec palworld-dedicated-server backup_list
 > This can lead to data-loss and/or savegame corruption.
 >
 > **Recommendation:** Please make sure that RCON is enabled before using the backup manager.
-
-Usage: `docker exec palworld-dedicated-server [command] [arguments]`
-
-
-| Command        | Argument              | Required/Optional | Default Value | Values | Description                                                                                                                                                   |
-| -------------- | --------------------- | ----------------- | ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `backup`       | N/A                   | N/A               | N/A           | N/A    | Creates a backup.                                                                                                                                             |
-| `backup_list`  | `<number_of_entries>` | Optional          | N/A           | >=0    | Lists all backups. If `<number_of_entries>` is specified, only<br>the most recent `<number_of_entries>` backups are listed.<br>Only accepts positive numbers. |
-| `backup_clean` | `<number_to_keep>`    | Optional          | 30            | >=0    | Cleans up backups by keeping the most recent<br>`<number_to_keep>` backups.<br>Only accepts positive numbers.                                                 |
-
-Examples:
-```shell
-$ docker exec palworld-dedicated-server backup
->>> Backup 'saved-20240201_050309.tar.gz' created successfully.
-```
-```shell
-$ docker exec palworld-dedicated-server backup_list 5
->>> Listing 5 out of 20 backup(s):
-2024-02-01 05:03:09 | saved-20240201_050309.tar.gz
-2024-02-01 05:03:08 | saved-20240201_050308.tar.gz
-2024-02-01 05:03:07 | saved-20240201_050307.tar.gz
-2024-02-01 05:03:06 | saved-20240201_050306.tar.gz
-2024-02-01 05:03:05 | saved-20240201_050305.tar.gz
-```
-```shell
-$ docker exec palworld-dedicated-server backup_clean 3
->>> Backups were cleaned, 3 most recent.
-```
-```shell
-$ docker exec palworld-dedicated-server backup_list   
->>> Listing 3 out of 3 backup(s):
-2024-02-01 05:03:09 | saved-20240201_050309.tar.gz
-2024-02-01 05:03:08 | saved-20240201_050308.tar.gz
-2024-02-01 05:03:07 | saved-20240201_050307.tar.gz
-```
-
-> [!WARNING]
-> If RCON is disabled, the backup manager won't do saves via RCON before creating a backup.
-> This means that the backup will be created from the last auto-save of the server.
-> This can lead to data-loss and/or savegame corruption.
->
-> **Recommendation:** Please make sure that RCON is enabled before using the backup manager.
-
 
 ## Webhook integration
 
@@ -218,11 +184,13 @@ To enable webhook integration, you need to set the following environment variabl
 WEBHOOK_ENABLED=true
 WEBHOOK_URL="https://your.webhook.url"
 ```
+
 After that the server should send messages in a Discord-Compatible way to your webhook.
 
 ### Supported events
-* Server starting
-* Server stopped
+
+- Server starting
+- Server stopped
 
 ## Deploy with Helm
 
@@ -231,15 +199,19 @@ A Helm chart to deploy this container can be found at [palworld-helm](https://gi
 ## FAQ
 
 ### How can I use the interactive console in Portainer with this image?
+
 > You can run this `docker exec -ti palworld-dedicated-server bash' or you could navigate to the **"Stacks"** tab in Portainer, select your stack, and click on the container name. Then click on the **"Exec console"** button.
 
 ### How can I look into the config of my Palworld container?
+
 > You can run this `docker exec -ti palworld-dedicated-server cat /palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini` and it will show you the config inside the container.
 
 ### I'm seeing S_API errors in my logs when I start the container?
+
 > Errors like `[S_API FAIL] Tried to access Steam interface SteamUser021 before SteamAPI_Init succeeded.` are safe to ignore.
 
 ### I'm using Apple silicon type of hardware, can I run this?
+
 > You can try to insert in your docker-compose file this parameter `platform: linux/amd64` at the palworld service. This isn't a special fix for Apple silicon, but to run on other than x86 hosts. The support for arm exists only by enforcing x86 emulation, if that isn't to host already. Rosetta is doing the translation/emulation.
 
 ### I changed the `BaseCampWorkerMaxNum` setting, why didn't this update the server?
