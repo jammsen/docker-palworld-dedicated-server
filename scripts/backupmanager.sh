@@ -19,7 +19,7 @@ function print_usage() {
     echo ""
     echo "Options:"
     echo "  --create                        Create a backup"
-    echo "  --list [number_of_entries]      List the backup files. If number_of_entries isn't"
+    echo "  --list [number_to_list]         List the backup files. If number_to_list isn't"
     echo "                                  provided, all backup files will be listed"
     echo "  --clean [number_to_keep]        Deletes old backups keeping the number_to_keep"
     echo "                                  most recent backups. If number_to_keep isn't"
@@ -27,12 +27,12 @@ function print_usage() {
     echo "  --help                          Display this help message"
     echo ""
     echo "Arguments:"
-    echo "  number_of_entries (optional)    The number of backup files to list."
+    echo "  number_to_list (optional)       The number of backup files to list."
     echo "                                  If not provided, all backup files will be listed"
     echo "  number_to_keep (optional)       The number of the most recent backup files to keep."
     echo "                                  If not provided, the value of the BACKUP_RETENTION_AMOUNT_TO_KEEP"
-    echo "                                  environment variable will be used if it exists and is not empty."
-    echo "                                  Defaults to the 5 most recent backups otherwise."
+    echo "                                  environment variable will be used if it exists."
+    echo "                                  Defaults to the 30 most recent backups otherwise."
 }
 
 function parse_arguments() {
@@ -58,7 +58,15 @@ function parse_arguments() {
                 print_usage
                 exit 1
             fi
-            list_backups "${2:-}"
+
+            local number_to_list=${2:-""}
+
+            if [[ -n "${number_to_list}" ]] && [[ ! "${number_to_list}" =~ ^[0-9]+$ ]]; then
+                ew "> Invalid argument '${number_to_list}'. Please provide a positive integer.\n"
+                exit 1
+            fi
+
+            list_backups "${number_to_list}"
             ;;
         --clean)
             if [ ${#} -gt 2 ]; then
@@ -67,12 +75,14 @@ function parse_arguments() {
                 exit 1
             fi
 
-            if ! [[ "$2" =~ ^[0-9]+$ ]]; then
-                ew "> Invalid argument '${2}'. Please provide a positive integer.\n"
-                ew "> Defaulting to ${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP}.\n"
+            local num_backup_entries=${2:-${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP}}
+
+            if ! [[ "${num_backup_entries}" =~ ^[0-9]+$ ]]; then
+                ew "> Invalid argument '${num_backup_entries}'. Please provide a positive integer.\n"
+                exit 1
             fi
 
-            clean_backups "${reger}"eg
+            clean_backups "${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP}"
             ;;
         --help)
             if [ ${#} -ne 1 ]; then
@@ -91,21 +101,17 @@ function parse_arguments() {
 }
 
 function check_required_directories() {
-    # Exit if backup dir or game save dir don't exist
-    # Check if env vars set as default to local vars exist
     if [ -z "${LOCAL_BACKUP_PATH}" ]; then
-        ee "> BACKUP_PATH environment variable not set.\n"
-        ee "> Please provide the backup directory as an argument or set the BACKUP_PATH environment variable.\n"
-        ee "> Exiting...\n"
+        ee "> BACKUP_PATH environment variable not set. Exitting...\n"
         exit 1
-    elif [ -z "${LOCAL_GAME_SAVE_PATH}" ]; then
-        ee "> GAME_SAVE_PATH environment variable not set.\n"
-        ee "> Exiting...\n"
+    fi
+    if [ -z "${LOCAL_GAME_SAVE_PATH}" ]; then
+        ee "> GAME_SAVE_PATH environment variable not set.\n Exiting...\n"
         exit 1
     fi
 
-    # If vars are set, check if the directories exist
     mkdir -p "${LOCAL_BACKUP_PATH}"
+
     if [ ! -d "${LOCAL_GAME_SAVE_PATH}" ]; then
             ee "> Game save directory '${LOCAL_GAME_SAVE_PATH}' does not exist yet.\n"
             exit 1
@@ -117,151 +123,116 @@ function check_required_directories() {
 
 function create_backup() {
 
-    if [[ -n $BACKUP_RETENTION_POLICY ]] && [[ $BACKUP_RETENTION_POLICY == "true" ]]; then
+    if [[ -n ${LOCAL_BACKUP_RETENTION_POLICY} ]] && [[ ${LOCAL_BACKUP_RETENTION_POLICY} == "true" ]] && [[ ${LOCAL_BACKUP_RETENTION_POLICY} =~ ^[0-9]+$ ]]; then
         clean_backups   
     fi
 
-    es ">>> Creating backup...\n\n"
-
-
-    if [ -z "${GAME_PATH}" ]; then
-        ee "> RESTORE_FILE_PATH environment variable not set. Exiting...\n"
+    if [ -z "${LOCAL_GAME_SAVE_PATH}" ]; then
+        ee "> LOCAL_GAME_SAVE_PATH environment variable not set. Exiting...\n"
         exit 1
     fi
     
     DATE=$(date +%Y%m%d_%H%M%S)
     TIME=$(date +%H-%M-%S)
 
+    backup_file_name="saved-${DATE}.tar.gz"
 
-    rcon 'broadcast $TIME-Saving-in-5-seconds'
-    sleep 5
-
-    # Create backup dir if it doesn't exist
     mkdir -p "${LOCAL_BACKUP_PATH}"
 
-    #Send message to gameserver via RCON if enabled
-    rcon 'broadcast Saving world...'
-    rcon 'save'
-    sleep 1
-    rcon 'broadcast Saving-done'
-    rcon 'broadcast Creating-backup'
-    sleep 1
+    if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
+        rcon "broadcast ${TIME}-Saving-in-5-seconds"
+        sleep 5
+        rcon 'broadcast Saving-world...'
+        rcon 'save'
+        sleep 1
+        rcon 'broadcast Saving-done'
+        rcon 'broadcast Creating-backup'
+        sleep 1
+    fi
+
     # Create backup
-    tar cfz "${LOCAL_BACKUP_PATH}/saved-${DATE}.tar.gz" -C "${GAME_PATH}" Saved/
-    rcon 'broadcast Backup-done'
+    tar cfz "${LOCAL_BACKUP_PATH}/${backup_file_name}" -C "${LOCAL_GAME_SAVE_PATH}" Saved/
+    
+    if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
+        sleep 1
+        rcon 'broadcast Backup-done'
+    fi
     es ">>> Backup created successfully!\n"
 }
 
 function list_backups() {
-    local num_backup_entries=${1:-""}
+    local num_backup_entries=${1}
 
-    es ">>> Listing backups:\n"
-
-    # Check num_backup_entries argument
-    # if argument exists and is not a positive integer, print usage message and exit
-    if [[ -n "$num_backup_entries" && ! "$num_backup_entries" =~ ^[0-9]+$ ]]; then
-        ee "[ERROR] Invalid argument. Please provide a positive integer.\n"
+    if [ ! -d "${LOCAL_BACKUP_PATH}" ]; then
+        ee "> Backup directory ${LOCAL_BACKUP_PATH} does not exist.\n"
         exit 1
     fi
 
-    # Check if backup directory exists
-    if [ ! -d "$LOCAL_BACKUP_PATH" ]; then
-        ee "[ERROR] Backup directory $LOCAL_BACKUP_PATH does not exist.\n"
-        exit 1
-    fi
-
-    # Check if there are any files in the backup directory
-    if [ -z "$(ls -A "$LOCAL_BACKUP_PATH")" ]; then
-        ei "No backups in the backup directory $LOCAL_BACKUP_PATH.\n"
+    if [ -z "$(ls -A "${LOCAL_BACKUP_PATH}")" ]; then
+        ei "> No backups in the backup directory ${LOCAL_BACKUP_PATH}.\n"
         exit 0
     fi
 
-    # get file list
-    files=$(find "$LOCAL_BACKUP_PATH" -maxdepth 1 -type f -name "*.tar.gz" | sort -r)
-    total_file_count=$(echo "$files" | wc -l)
+    files=$(ls -1t saved-*.tar.gz | tail -n +"$(num_backup_entries + 1)")
+    total_file_count=$(echo "${files}" | wc -l)
 
-    if [ -z "$num_backup_entries" ]; then
-        # if num_backup_entries is not set, use all files
-        file_list=$files
+    if [ -z "${num_backup_entries}" ]; then
+        file_list=${files}
+        ei ">>> Listing all ${total_file_count} backup file(s)!\n"
     else
-        # if num_backup_entries is set, use the first num_backup_entries files
-        file_list=$(echo "$files" | head -n "$num_backup_entries")
+        file_list=$(echo "${files}" | head -n "${num_backup_entries}")
+        ei ">>> Listing ${num_backup_entries} out of backup file(s).\n"
     fi
 
-    # print file list (currently using date from file name but can use creation date from 'stat')
     for file in $file_list; do
-        filename=$(basename "$file")
-        # get date from creation date
-        #creation_date=$(stat -c %w "$file")
-
-        # Reformat the date string
-        #date=$(date -d "$creation_date" +'%Y-%m-%d %H:%M:%S')
+        filename=$(basename "${file}")
 
         # get date from filename
-        date_str=${filename#saved-}    # Remove 'saved- or restore-' prefix
+        date_str=${filename#saved-}    # Remove 'saved-' prefix
         date_str=${date_str%.tar.gz}   # Remove '.tar.gz' suffix
 
         # Reformat the date string
         date=$(date -d "${date_str:0:8} ${date_str:9:2}:${date_str:11:2}:${date_str:13:2}" +'%Y-%m-%d %H:%M:%S')
 
-        ei "${date} | "
-        e "${filename}\n"
+        ei "${date} | " && e "${filename}\n"
     done
-
-    if [ -z "$num_backup_entries" ]; then
-        # if num_backup_entries is not set, use all files
-        ei "\n> Found ${total_file_count} backup file(s)!\n"
-    else
-        # if num_backup_entries is set, use the first num_backup_entries files
-        ei "\n> Found ${total_file_count} backup file(s), but listing only ${num_backup_entries} file(s)!\n"
-    fi
 }
 
 function clean_backups() {
-    local num_files_to_keep=${1:-${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP}}
-
-    es ">>> Backup cleaning started..\n\n"
+    local num_files_to_keep=${1}
 
     if [[ -z "$num_files_to_keep" ]]; then
-        ew "> Number of backups to keep is empty. Using default value of 30.\n"
+        ew "> Number of backups to keep is empty. Using default value of ${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP}.\n"
     fi
 
     if ! [[ "$num_files_to_keep" =~ ^[0-9]+$ ]]; then
-        ee "> [ERROR] Invalid argument '${num_files_to_keep}'. Please provide a positive integer.\n\n"
-        print_usage
+        ee "> Invalid argument '${num_files_to_keep}'. Please provide a positive integer.\n\n"
         exit 1
     fi
 
-    # Check if there are any files in the backup directory
     if [ -z "$(ls -A "${LOCAL_BACKUP_PATH}")" ]; then
-        ei "> No files in the backup directory ${LOCAL_BACKUP_PATH}. Exiting...\n\n"
+        ei "> No files in the backup directory ${LOCAL_BACKUP_PATH}. Exiting...\n"
         exit 0
     fi
 
     ei "> Keeping latest ${num_files_to_keep} backups.\n"
     
-    files_to_delete=$(ls -1t saved-*.tar.gz | tail -n +$($num_files_to_keep + 1))
+    files=$(ls -1t saved-*.tar.gz | tail -n +"$(num_files_to_keep + 1)")
 
-    num_files_to_delete=0
-    if [ -n "$files_to_delete" ]; then
-        num_files_to_delete=$(echo -e "$files_to_delete" | wc -l)
-    fi
+    num_files_to_delete=$(echo -e "${files}" | wc -l)
 
     if [[ num_files_to_delete -gt 0 ]]; then
-        echo "$files_to_delete" | xargs -d '\n' rm -f --
-        ew "> Deleted ${num_files_to_delete} file(s).\n"
+        echo "$files" | xargs -d '\n' rm -f --
+        ew "> Backups cleaned, keeping the ${num_files_to_delete} backups(s).\n"
     else
         ei "> No files to delete.\n"
     fi
-
-    es "\n>>> Cleaning finished!\n"
 }
 
 
 ### Backup Manager Initialization
 
 function initializeBackupManager() {
-
     parse_arguments "${@}"
     # Check if the backup directory exists, if not create it
     if [ ! -d "${LOCAL_BACKUP_PATH}" ]; then
