@@ -27,8 +27,8 @@ ___
   - [Environment variables](#environment-variables)
   - [Docker-Compose examples](#docker-compose-examples)
     - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
-  - [Backup Manager](#backup-manager)
   - [Run RCON commands](#run-rcon-commands)
+  - [Backup Manager](#backup-manager)
   - [Webhook integration](#webhook-integration)
     - [Supported events](#supported-events)
   - [Deploy with Helm](#deploy-with-helm)
@@ -71,10 +71,7 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 ## Getting started
 
 1. Create a `game` sub-directory on your Docker-Node in your game-server-directory (Example: `/srv/palworld`). 
-   * This directory will be used to store the game-data and configuration persistently (on restart, on stop, on kill, ... ).
-    ````shell
-    mkdir -p /srv/palworld/game
-    ````
+   * This directory will be used to store the game server files, including configs and savegames.
 2. Set up Port-Forwarding or NAT for the ports in the Docker-Compose file.
 3. Pull the latest version of the image with:
     ```shell	
@@ -92,7 +89,7 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 
 ## Environment variables
 
-See [this file](README_ENV.md) for the documentation
+See [this file](/docs/ENV_VARS.md.md) for the documentation
 
 ## Docker-Compose examples
 
@@ -100,91 +97,118 @@ See [this file](README_ENV.md) for the documentation
 
 See [example docker-compose.yml](docker-compose.yml).
 
+## Run RCON commands
+
+Open a shell into your container via `docker exec -ti palworld-dedicated-server bash`, then you can run commands against the gameserver via the command `rconcli`
+
+```shell
+$:~/steamcmd$ rconcli showplayers
+name,playeruid,steamid
+$:~/steamcmd$ rconcli info
+Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
+$:~/steamcmd$ rconcli save
+Complete Save
+```
+
+You can also use `docker exec palworld-dedicated-server rconcli <command>` right on your terminal/shell.
+```shell
+$ docker exec palworld-dedicated-server rconcli showplayers
+name,playeruid,steamid
+
+$ docker exec palworld-dedicated-server rconcli info
+Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
+
+$ docker exec palworld-dedicated-server rconcli save
+Complete Save
+```
+> **Important:** Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
+
 ## Backup Manager
 
-Usage: `docker exec <container_name_or_id> [command] [arguments]`
+Usage: `docker exec palworld-dedicated-server [command] [arguments]`
 
 
-| Command        | Argument        | Required/Optional | Default Value | Values | Description                                                                                                                                       |
-| -------------- | --------------- | ----------------- | ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `backup`       | N/A             | N/A               | N/A           | N/A    | Creates a backup.                                                                                                                                 |
-| `backup_list`  | `<num_entries>` | Optional          | N/A           | >=0    | Lists all backups. If `<num_entries>` is specified, only<br>the most recent `<num_entries>` backups are listed.<br>Only accepts positive numbers. |
-| `backup_clean` | `<num_to_keep>` | Optional          | 30            | >=0    | Cleans up backups by keeping the most recent<br>`<num_to_keep>` backups.<br>Only accepts positive numbers.                                        |
+| Command        | Argument              | Required/Optional | Default Value | Values | Description                                                                                                                                                   |
+| -------------- | --------------------- | ----------------- | ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `backup`       | N/A                   | N/A               | N/A           | N/A    | Creates a backup.                                                                                                                                             |
+| `backup_list`  | `<number_of_entries>` | Optional          | N/A           | >=0    | Lists all backups. If `<number_of_entries>` is specified, only<br>the most recent `<number_of_entries>` backups are listed.<br>Only accepts positive numbers. |
+| `backup_clean` | `<number_to_keep>`    | Optional          | 30            | >=0    | Cleans up backups by keeping the most recent<br>`<number_to_keep>` backups.<br>Only accepts positive numbers.                                                 |
 
 Examples:
 ```shell
-$ docker exec <container_name_or_id> backup
->>> Creating backup...
-
->>> Backup created successfully!
+$ docker exec palworld-dedicated-server backup
+>>> Backup 'saved-20240201_050309.tar.gz' created successfully.
 ```
 ```shell
-$ docker exec <container_name_or_id> backup_list 5
->>> Listing backups:
-
+$ docker exec palworld-dedicated-server backup_list 5
+>>> Listing 5 out of 20 backup(s):
 2024-02-01 05:03:09 | saved-20240201_050309.tar.gz
 2024-02-01 05:03:08 | saved-20240201_050308.tar.gz
 2024-02-01 05:03:07 | saved-20240201_050307.tar.gz
 2024-02-01 05:03:06 | saved-20240201_050306.tar.gz
 2024-02-01 05:03:05 | saved-20240201_050305.tar.gz
-
-> Found 10 backup file(s), but listing only 5 !
 ```
 ```shell
-$ docker exec <container_name_or_id> backup_clean 3
->>> Backup cleaning started..
-
-> Keeping latest 3 backups.
-> Deleted 7 file(s).
-
->>> Cleaning finished!
+$ docker exec palworld-dedicated-server backup_clean 3
+>>> Backups were cleaned, 3 most recent.
 ```
 ```shell
-$ docker exec <container_name_or_id> backup_list   
->>> Listing backups:
-
+$ docker exec palworld-dedicated-server backup_list   
+>>> Listing 3 out of 3 backup(s):
 2024-02-01 05:03:09 | saved-20240201_050309.tar.gz
 2024-02-01 05:03:08 | saved-20240201_050308.tar.gz
 2024-02-01 05:03:07 | saved-20240201_050307.tar.gz
-
-> Found 3 backup file(s)!
 ```
 
 > [!WARNING]
-> When RCON is disabled, the backup manager won't do saves before creating a backup.
-> This means that the backup will be created from the last save.
-> This can lead to data loss or corruption.
+> If RCON is disabled, the backup manager won't do saves via RCON before creating a backup.
+> This means that the backup will be created from the last auto-save of the server.
+> This can lead to data-loss and/or savegame corruption.
 >
-> **Please make sure that RCON is enabled before using the backup manager!**
-> 
-> Otherwise use it at your own risk! 🥲
+> **Recommendation:** Please make sure that RCON is enabled before using the backup manager.
 
-## Run RCON commands
+Usage: `docker exec palworld-dedicated-server [command] [arguments]`
 
-Open a shell into your container via `docker exec -ti palworld-dedicated-server bash`, then you can run commands against the gameserver via the command `rcon` or `rconcli`
 
+| Command        | Argument              | Required/Optional | Default Value | Values | Description                                                                                                                                                   |
+| -------------- | --------------------- | ----------------- | ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `backup`       | N/A                   | N/A               | N/A           | N/A    | Creates a backup.                                                                                                                                             |
+| `backup_list`  | `<number_of_entries>` | Optional          | N/A           | >=0    | Lists all backups. If `<number_of_entries>` is specified, only<br>the most recent `<number_of_entries>` backups are listed.<br>Only accepts positive numbers. |
+| `backup_clean` | `<number_to_keep>`    | Optional          | 30            | >=0    | Cleans up backups by keeping the most recent<br>`<number_to_keep>` backups.<br>Only accepts positive numbers.                                                 |
+
+Examples:
 ```shell
-$:~/steamcmd$ rcon showplayers
-name,playeruid,steamid
-$:~/steamcmd$ rcon info
-Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
-$:~/steamcmd$ rcon save
-Complete Save
+$ docker exec palworld-dedicated-server backup
+>>> Backup 'saved-20240201_050309.tar.gz' created successfully.
 ```
------- OR ------
-
-Do a `docker exec -ti palworld-dedicated-server -c "rconcli <command>"` right on your terminal/shell.
 ```shell
-$ docker exec -ti palworld-dedicated-server -c "rconcli showplayers"
-name,playeruid,steamid
-
-$ docker exec -ti palworld-dedicated-server -c "rconcli info"
-Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
-
-$ docker exec -ti palworld-dedicated-server -c "rconcli save"
-Complete Save
+$ docker exec palworld-dedicated-server backup_list 5
+>>> Listing 5 out of 20 backup(s):
+2024-02-01 05:03:09 | saved-20240201_050309.tar.gz
+2024-02-01 05:03:08 | saved-20240201_050308.tar.gz
+2024-02-01 05:03:07 | saved-20240201_050307.tar.gz
+2024-02-01 05:03:06 | saved-20240201_050306.tar.gz
+2024-02-01 05:03:05 | saved-20240201_050305.tar.gz
 ```
-> **Important:** Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
+```shell
+$ docker exec palworld-dedicated-server backup_clean 3
+>>> Backups were cleaned, 3 most recent.
+```
+```shell
+$ docker exec palworld-dedicated-server backup_list   
+>>> Listing 3 out of 3 backup(s):
+2024-02-01 05:03:09 | saved-20240201_050309.tar.gz
+2024-02-01 05:03:08 | saved-20240201_050308.tar.gz
+2024-02-01 05:03:07 | saved-20240201_050307.tar.gz
+```
+
+> [!WARNING]
+> If RCON is disabled, the backup manager won't do saves via RCON before creating a backup.
+> This means that the backup will be created from the last auto-save of the server.
+> This can lead to data-loss and/or savegame corruption.
+>
+> **Recommendation:** Please make sure that RCON is enabled before using the backup manager.
+
 
 ## Webhook integration
 

@@ -1,19 +1,39 @@
 # shellcheck disable=SC2148
-# https://colors.sh/
+# Idea from https://colors.sh/
 
-# Pretty print messages with colors 
-function pp() {
+# Aliases
+
+function e() { 
+    colorful_echos --base "${@}"
+}
+
+function ee() { 
+    colorful_echos --error "${@}"
+}
+
+function ei() { 
+    colorful_echos --info "${@}"
+}
+
+function es() { 
+    colorful_echos --success "${@}"
+}
+
+function ew() { 
+    colorful_echos --warning "${@}"
+}
+
+# This creates a wrapper for echo to add colors
+function colorful_echos() {
     # Set color constants
-    BASE="\e[0m"        # Base color
-    SUCCESS="\e[0;32m"  # Green color for success
-    ERROR="\e[0;31m"    # Red color for error
-    INFO="\e[0;34m"     # Blue color for info
-    WARNING="\e[0;33m"  # Yellow color for warning
-    CLEAN="\e[0m"       # Clean color
+    CLEAN="\e[0m"              # Clean color
+    ERROR="\e[38;5;196m"       # Red color for error
+    INFO="\e[38;5;14m"         # Blue color for info
+    SUCCESS="\e[38;5;10m"      # Green color for success
+    WARNING="\e[38;5;11m"      # Yellow color for warning
 
-    # Check if the required arguments are provided
-    if [ $# -ne 2 ]; then
-        echo "Usage: $0 [--success|--error|--info|--warning] <message>"
+    if [ $# -gt 2 ]; then
+        echo "Usage: $0 [--success|--error|--info|--warning|--base] <message>"
         exit 1
     fi
 
@@ -31,9 +51,8 @@ function pp() {
     elif [ "$arg1" == "--warning" ]; then
         color="$WARNING"
     elif [ "$arg1" == "--base" ]; then
-        color="$BASE"
-    else
-        echo -ne "$arg1"
+        echo -ne "$message"
+        return 0
     fi
 
     # print the newlines in the beggining of the message

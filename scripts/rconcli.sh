@@ -1,11 +1,13 @@
+#!/bin/bash
+
 # shellcheck disable=SC2148,SC1091
 source /includes/colors.sh
 
 # Function to run RCON commands
 # Arguments: <command>
-# Example: run_rcon "showplayers"
+# Example: run_rcon_cli "showplayers"
 
-run_rcon() {
+run_rcon_cli() {
     local cmd=$1
     local message=$2
 
@@ -23,3 +25,4 @@ run_rcon() {
     fi
 }
 
+run_rcon_cli "$@"
