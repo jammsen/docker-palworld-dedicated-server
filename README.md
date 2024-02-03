@@ -143,30 +143,25 @@ Examples:
 
 ```shell
 $ docker exec palworld-dedicated-server backup
->>> Backup 'saved-20240201_050309.tar.gz' created successfully.
+>> Backup 'saved-20240203_032855.tar.gz' created successfully.
 ```
 
 ```shell
-$ docker exec palworld-dedicated-server backup_list 5
->>> Listing 5 out of 20 backup(s):
-2024-02-01 05:03:09 | saved-20240201_050309.tar.gz
-2024-02-01 05:03:08 | saved-20240201_050308.tar.gz
-2024-02-01 05:03:07 | saved-20240201_050307.tar.gz
-2024-02-01 05:03:06 | saved-20240201_050306.tar.gz
-2024-02-01 05:03:05 | saved-20240201_050305.tar.gz
+$ docker exec palworld-dedicated-server backup list
+>> Listing 2 backup file(s)!
+2024-02-03 03:28:55 | saved-20240203_032855.tar.gz
+2024-02-03 03:28:00 | saved-20240203_032800.tar.gz
 ```
 
 ```shell
 $ docker exec palworld-dedicated-server backup_clean 3
->>> Backups were cleaned, 3 most recent.
+>> 1 backup(s) cleaned, keeping 2 backups(s).
 ```
 
 ```shell
 $ docker exec palworld-dedicated-server backup_list   
->>> Listing 3 out of 3 backup(s):
-2024-02-01 05:03:09 | saved-20240201_050309.tar.gz
-2024-02-01 05:03:08 | saved-20240201_050308.tar.gz
-2024-02-01 05:03:07 | saved-20240201_050307.tar.gz
+>> Listing 1 out of backup 2 file(s).
+2024-02-03 03:30:00 | saved-20240203_033000.tar.gz
 ```
 
 > [!WARNING]
