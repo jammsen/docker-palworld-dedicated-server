@@ -6,7 +6,7 @@ function setup_crons() {
         echo "${BACKUP_CRON_EXPRESSION} backup_manager --create" >> cronlist
     fi
 
-    /usr/local/bin/supercronic cronlist &
+    /usr/local/bin/supercronic -passthrough-logs cronlist &
 
     ei "> Cron jobs started.\n"
 }

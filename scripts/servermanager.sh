@@ -8,12 +8,9 @@
 source /includes/install.sh
 source /includes/config.sh
 source /includes/cron.sh
-source /includes/rcon.sh
 source /includes/security.sh
 source /includes/webhook.sh
 source /includes/colors.sh
-
-steamcmd_dir="/home/steam/steamcmd"
 
 ### Server Functions
 
@@ -22,7 +19,7 @@ function start_server() {
     # https://stackoverflow.com/a/13864829
     # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02
 
-    es "\n>>> Starting the gameserver\n"
+    es ">>> Starting the gameserver\n"
     cd "$GAME_ROOT" || exit
 
     setup_configs
@@ -43,12 +40,15 @@ function start_server() {
 }
 
 function stop_server() {
-    ew ">>> Stopping server...\n\n"
+    ew ">>> Stopping server...\n"
 
-    rcon 'broadcast Server_Shutdown_requested'
-    rcon 'broadcast Saving...'
-    rcon 'save'
-    rcon 'broadcast Done...'
+    if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
+        rcon 'broadcast Server_Shutdown_requested'
+        rcon 'broadcast Saving...'
+        rcon 'save'
+        rcon 'broadcast Done...'
+        sleep 1
+    fi
 
 	kill -SIGTERM "$(pidof PalServer-Linux-Test)"
 	tail --pid="$(pidof PalServer-Linux-Test)" -f 2>/dev/null
@@ -56,7 +56,9 @@ function stop_server() {
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
         send_webhook_notification "$WEBHOOK_STOP_TITLE" "$WEBHOOK_STOP_DESCRIPTION" "$WEBHOOK_STOP_COLOR"
     fi
-	
+
+    ew "> Server stopped gracefully.\n\n"
+
     exit 143;
 }
 
@@ -64,14 +66,14 @@ function stop_server() {
 ### Signal Handling (Handlers & Traps)
 
 # Handler for SIGTERM from docker stop command
-function termHandler() {
+function term_handler() {
     stopServer
 }
 
 function start_handlers() {
 
-    # If SIGTERM is sent to the process, call termHandler function
-    trap 'kill ${!}; termHandler' SIGTERM
+    # If SIGTERM is sent to the process, call term_handler function
+    trap 'kill ${!}; term_handler' SIGTERM
 
     es "> Handlers started.\n"
 }
@@ -102,7 +104,7 @@ function start_main() {
 # Server manager is running in a loop, so we can restart the server
 while true
 do
-    es ">>> Starting server manager <<<\n"
+    es ">>>> Starting server manager <<<<\n"
     start_handlers
 
     # Start the server manager

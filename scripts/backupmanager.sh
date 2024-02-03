@@ -1,11 +1,12 @@
 #!/bin/bash
-# shellcheck disable=SC1091,SC2012
+# shellcheck disable=SC1091,SC2012,SC2004
 
 source /includes/colors.sh
 
 # Default values if the environment variables exist
 LOCAL_BACKUP_PATH=${BACKUP_PATH} # Dir where the backup files are stored
 LOCAL_GAME_SAVE_PATH=${GAME_SAVE_PATH} # Dir where the game save files are stored
+LOCAL_BACKUP_RETENTION_POLICY=${BACKUP_RETENTION_POLICY} # Number of backup files to keep
 LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP=${BACKUP_RETENTION_AMOUNT_TO_KEEP} # Number of backup files to keep
 
 function print_usage() {
@@ -81,7 +82,7 @@ function parse_arguments() {
                 exit 1
             fi
 
-            clean_backups "${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP}"
+            clean_backups "${num_backup_entries}"
             ;;
         --help)
             if [ ${#} -ne 1 ]; then
@@ -122,12 +123,8 @@ function check_required_directories() {
 
 function create_backup() {
 
-    if [[ -n ${LOCAL_BACKUP_RETENTION_POLICY} ]] && [[ ${LOCAL_BACKUP_RETENTION_POLICY} == "true" ]] && [[ ${LOCAL_BACKUP_RETENTION_POLICY} =~ ^[0-9]+$ ]]; then
-        clean_backups   
-    fi
-
     if [ -z "${LOCAL_GAME_SAVE_PATH}" ]; then
-        ee "> LOCAL_GAME_SAVE_PATH environment variable not set. Exiting...\n"
+        ee ">> LOCAL_GAME_SAVE_PATH environment variable not set. Exiting...\n"
         exit 1
     fi
     
@@ -156,31 +153,36 @@ function create_backup() {
         sleep 1
         rcon 'broadcast Backup-done'
     fi
-    es ">>> Backup created successfully!\n"
+    es ">> Backup '${backup_file_name}' created successfully.\n"
+
+    if [[ -n ${LOCAL_BACKUP_RETENTION_POLICY} ]] && [[ ${LOCAL_BACKUP_RETENTION_POLICY} == "true" ]] && [[ ${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP} =~ ^[0-9]+$ ]]; then
+        #clean_backups
+        ls -1t "${LOCAL_BACKUP_PATH}"/saved-*.tar.gz | tail -n +"$(($LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP + 1))" | xargs -d '\n' rm -f --
+    fi
 }
 
 function list_backups() {
     local num_backup_entries=${1}
 
     if [ ! -d "${LOCAL_BACKUP_PATH}" ]; then
-        ee "> Backup directory ${LOCAL_BACKUP_PATH} does not exist.\n"
+        ee ">> Backup directory ${LOCAL_BACKUP_PATH} does not exist.\n"
         exit 1
     fi
 
     if [ -z "$(ls -A "${LOCAL_BACKUP_PATH}")" ]; then
-        ei "> No backups in the backup directory ${LOCAL_BACKUP_PATH}.\n"
+        ei ">> No backups in the backup directory ${LOCAL_BACKUP_PATH}.\n"
         exit 0
     fi
 
-    files=$(ls -1t saved-*.tar.gz | tail -n +"$(num_backup_entries + 1)")
+    files=$(ls -1t "${LOCAL_BACKUP_PATH}"/saved-*.tar.gz)
     total_file_count=$(echo "${files}" | wc -l)
 
     if [ -z "${num_backup_entries}" ]; then
         file_list=${files}
-        ei ">>> Listing all ${total_file_count} backup file(s)!\n"
+        es ">> Listing ${total_file_count} backup file(s)!\n"
     else
         file_list=$(echo "${files}" | head -n "${num_backup_entries}")
-        ei ">>> Listing ${num_backup_entries} out of backup file(s).\n"
+        es ">> Listing ${num_backup_entries} out of backup ${total_file_count} file(s).\n"
     fi
 
     for file in $file_list; do
@@ -201,11 +203,11 @@ function clean_backups() {
     local num_files_to_keep=${1}
 
     if [[ -z "$num_files_to_keep" ]]; then
-        ew "> Number of backups to keep is empty. Using default value of ${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP}.\n"
+        ew ">> Number of backups to keep is empty. Using default value of ${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP}.\n"
     fi
 
     if ! [[ "$num_files_to_keep" =~ ^[0-9]+$ ]]; then
-        ee "> Invalid argument '${num_files_to_keep}'. Please provide a positive integer.\n\n"
+        ee ">> Invalid argument '${num_files_to_keep}'. Please provide a positive integer.\n\n"
         exit 1
     fi
 
@@ -213,18 +215,20 @@ function clean_backups() {
         ei "> No files in the backup directory ${LOCAL_BACKUP_PATH}. Exiting...\n"
         exit 0
     fi
-
-    ei "> Keeping latest ${num_files_to_keep} backups.\n"
     
-    files=$(ls -1t saved-*.tar.gz | tail -n +"$(num_files_to_keep + 1)")
+    files=$(ls -1t "${LOCAL_BACKUP_PATH}"/saved-*.tar.gz)
+    files_to_delete=$(echo "${files}" | tail -n +"$(($num_files_to_keep + 1))")
+    num_files=$(echo -n "${files}" | grep -c '^')
+    num_files_to_delete=$(echo -ne "${files_to_delete}" | grep -c '^')
 
-    num_files_to_delete=$(echo -e "${files}" | wc -l)
-
-    if [[ num_files_to_delete -gt 0 ]]; then
-        echo "$files" | xargs -d '\n' rm -f --
-        ew "> Backups cleaned, keeping the ${num_files_to_delete} backups(s).\n"
+    if [[ ${num_files_to_delete} -gt 0 ]]; then
+        echo "$files_to_delete" | xargs -d '\n' rm -f --
+        if [[ ${num_files} -lt ${num_files_to_keep} ]]; then
+            num_files_to_keep="${num_files}"
+        fi
+        es ">> ${num_files_to_delete} backup(s) cleaned, keeping ${num_files_to_keep} backups(s).\n"
     else
-        ei "> No files to delete.\n"
+        ei "> No backups to clean.\n"
     fi
 }
 

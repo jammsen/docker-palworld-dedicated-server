@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Wrapper for backup_manager usage
+# Wrapper for backup_manager
 
-# Strip the first two characters from the first argument ('--clean' becomes 'clean', ...)
-arg1=${1:2}
+# Add '--' to the beginning of the first argument
+arg1="--${1}"
 
-# Pass the rest of the arguments to the backup_manager command
+# Remove the first argument from the list of arguments
 shift
 
 backup_manager "${arg1}" "$@"
