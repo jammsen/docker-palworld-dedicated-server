@@ -1,0 +1,12 @@
+[
+  {
+    "id": "start",
+    "execute-command": "/remotestart.sh",
+    "command-working-directory": "/home/steam/steamcmd"
+  },
+  {
+    "id": "stop",
+    "execute-command": "/remotestop.sh",
+    "command-working-directory": "/home/steam/steamcmd"
+  }
+]

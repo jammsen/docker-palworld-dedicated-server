@@ -156,3 +156,4 @@ This is a confirmed bug. Changing `BaseCampWorkerMaxNum` in the `PalWorldSetting
 - Supercronic - https://github.com/aptible/supercronic
 - rcon-cli - https://github.com/gorcon/rcon-cli
 - Palworld Dedicated Server (APP-ID: 2394010 - https://steamdb.info/app/2394010/config/)
+- Webhook (https://github.com/adnanh/webhook)

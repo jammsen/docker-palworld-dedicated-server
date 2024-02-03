@@ -17,14 +17,16 @@ EOF
 
 # Function to send a notification to a webhook
 send_webhook_notification() {
-  local title="$1"
-  local description="$2"
-  local color="$3"
-  
-  # Debug Curl
-  #curl --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
-  # Prod Curl
-  curl --silent --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
+  if [ ${WEBHOOK_ENABLED:false} == "true" ]; then
+    local title="$1"
+    local description="$2"
+    local color="$3"
+
+    # Debug Curl
+    #curl --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
+    # Prod Curl
+    curl --silent --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
+  fi
 }
 
 #Aliases to use in scripts

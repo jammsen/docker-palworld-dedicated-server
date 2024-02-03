@@ -1,3 +1,17 @@
+FROM golang:alpine AS build
+
+# Set the working directory
+WORKDIR /go/src/github.com/adnanh/webhook
+ENV WEBHOOK_VERSION=2.8.1
+
+RUN apk add --update -t build-deps curl libc-dev gcc libgcc
+
+RUN curl -L --silent -o webhook.tar.gz https://github.com/adnanh/webhook/archive/${WEBHOOK_VERSION}.tar.gz && \
+    tar -xzf webhook.tar.gz --strip 1
+
+RUN go get -d -v
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /usr/local/bin/webhook
+
 FROM --platform=linux/amd64 cm2network/steamcmd:root
 
 LABEL maintainer="Sebastian Schmidt - https://github.com/jammsen/docker-palworld-dedicated-server"
@@ -37,6 +51,10 @@ RUN curl -fsSLO "$RCON_URL" \
 
 COPY --chown=steam:steam --chmod=755 backupmanager.sh servermanager.sh includes/* /
 
+COPY --from=build /usr/local/bin/webhook /usr/local/bin/webhook
+COPY remotehooks.json /remotehooks.json
+
+EXPOSE 9000/tcp
 EXPOSE 8211/udp
 EXPOSE 25575/tcp
 
@@ -65,7 +83,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     STEAMCMD_VALIDATE_FILES=true \
     SERVER_SETTINGS_MODE=manual \
     WEBHOOK_ENABLED=false \
-    WEBHOOK_URL= \
+    WEBHOOK_URL="" \
     WEBHOOK_START_TITLE="Server is starting" \
     WEBHOOK_START_DESCRIPTION="The gameserver is starting" \
     WEBHOOK_START_COLOR="2328576" \
@@ -133,10 +151,10 @@ ENV DEBIAN_FRONTEND=noninteractive \
     ADMIN_PASSWORD=adminPasswordHere \
     SERVER_PASSWORD=serverPasswordHere \
     PUBLIC_PORT=8211 \
-    PUBLIC_IP= \
+    PUBLIC_IP="" \
     RCON_ENABLED=false \
     RCON_PORT=25575 \
-    REGION= \
+    REGION="" \
     USEAUTH=true \
     BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
 
