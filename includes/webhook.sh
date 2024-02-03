@@ -27,8 +27,10 @@ send_webhook_notification() {
   curl --silent --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
 }
 
+#Aliases to use in scripts
+send_start_notification() {
+  send_webhook_notification "$WEBHOOK_START_TITLE" "$WEBHOOK_START_DESCRIPTION" "$WEBHOOK_START_COLOR"
+}
 send_stop_notification() {
-  if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-    send_webhook_notification "$WEBHOOK_STOP_TITLE" "$WEBHOOK_STOP_DESCRIPTION" "$WEBHOOK_STOP_COLOR"
-  fi
+  send_webhook_notification "$WEBHOOK_STOP_TITLE" "$WEBHOOK_STOP_DESCRIPTION" "$WEBHOOK_STOP_COLOR"
 }
