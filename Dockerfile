@@ -11,16 +11,16 @@ ARG STEAM_USER="steam"
 ARG GAME_ROOT="/palworld"
 ARG GAME_PATH="${GAME_ROOT}/Pal"
 ARG GAME_SAVE_PATH="${GAME_PATH}/Saved"
-ARG GAME_CONFIG_FILE="${GAME_SAVE_PATH}/Config/LinuxServer"
-ARG GAME_SETTINGS_FILE="${GAME_CONFIG_FILE}/PalWorldSettings.ini"
-ARG GAME_ENGINE_FILE="${GAME_CONFIG_FILE}/Engine.ini"
+ARG GAME_CONFIG_PATH="${GAME_SAVE_PATH}/Config/LinuxServer"
+ARG GAME_SETTINGS_FILE="${GAME_CONFIG_PATH}/PalWorldSettings.ini"
+ARG GAME_ENGINE_FILE="${GAME_CONFIG_PATH}/Engine.ini"
 ARG BACKUP_PATH="${GAME_ROOT}/backups"
 
 # Export the ARG variables to the environment
 ENV GAME_ROOT="${GAME_ROOT}" \
     GAME_PATH="${GAME_PATH}" \
     GAME_SAVE_PATH="${GAME_SAVE_PATH}" \
-    GAME_CONFIG_FILE="${GAME_CONFIG_FILE}" \
+    GAME_CONFIG_PATH="${GAME_CONFIG_PATH}" \
     GAME_SETTINGS_FILE="${GAME_SETTINGS_FILE}" \
     GAME_ENGINE_FILE="${GAME_ENGINE_FILE}" \
     BACKUP_PATH="${BACKUP_PATH}"
@@ -57,14 +57,15 @@ RUN curl -fsSLO "$RCON_URL" \
     && mv "rcon-0.10.3-amd64_linux/$RCON_BINARY" "/usr/local/bin/${RCON_BINARY}" \
     && rm -Rf rcon-0.10.3-amd64_linux rcon-0.10.3-amd64_linux.tar.gz
 
-COPY --chown=steam:steam --chmod=755 scripts/       /scripts
-COPY --chown=steam:steam --chmod=755 includes/      /includes
-COPY --chown=steam:steam --chmod=755 configs/       /configs
-COPY --chown=steam:steam --chmod=755 entrypoint.sh  /
+COPY --chown=steam:steam --chmod=755 scripts/ /scripts
+COPY --chown=steam:steam --chmod=755 includes/ /includes
+COPY --chown=steam:steam --chmod=755 configs/ /configs
+COPY --chown=steam:steam --chmod=755 entrypoint.sh /
 
-RUN ln -s /scripts/backupmanager.sh /usr/local/bin/backup_manager &&  \
-    ln -s /scripts/backup.sh        /usr/local/bin/backup && \
-    ln -s /scripts/rconcli.sh       /usr/local/bin/rconcli
+RUN ln -s /scripts/backupmanager.sh /usr/local/bin/backup_manager \
+    && ln -s /scripts/backup.sh /usr/local/bin/backup \
+    && ln -s /scripts/rconcli.sh /usr/local/bin/rconcli \
+    && ln -s /configs/rcon.yaml /home/steam/steamcmd/rcon.yaml
 
 
 ENV DEBIAN_FRONTEND=noninteractive \
