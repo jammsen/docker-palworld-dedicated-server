@@ -8,7 +8,6 @@ LOCAL_BACKUP_PATH=${BACKUP_PATH} # Dir where the backup files are stored
 LOCAL_GAME_SAVE_PATH=${GAME_SAVE_PATH} # Dir where the game save files are stored
 LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP=${BACKUP_RETENTION_AMOUNT_TO_KEEP} # Number of backup files to keep
 
-
 function print_usage() {
     script_name=$(basename "$0")
     echo "Usage:"

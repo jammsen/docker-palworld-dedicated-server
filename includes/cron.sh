@@ -7,4 +7,6 @@ function setup_crons() {
     fi
 
     /usr/local/bin/supercronic cronlist &
+
+    ei "> Cron jobs started.\n"
 }

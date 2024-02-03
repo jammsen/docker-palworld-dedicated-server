@@ -3,7 +3,7 @@ source /includes/colors.sh
 
 # Function to check if the default passwords are replaced
 function check_for_default_credentials() {
-    ei ">>> Checking for existence of default credentials\n"
+    ei "> Checking for existence of default credentials\n"
     if [[ -n $ADMIN_PASSWORD ]] && [[ $ADMIN_PASSWORD == "adminPasswordHere" ]]; then
         ee "> ERROR: Security thread detected: Please change the default admin password. Aborting server start ...\n"
         exit 1

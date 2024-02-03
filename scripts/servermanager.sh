@@ -5,6 +5,7 @@
 #set -e
 
 ### Includes
+source /includes/install.sh
 source /includes/config.sh
 source /includes/cron.sh
 source /includes/rcon.sh
@@ -29,7 +30,7 @@ function start_server() {
     START_OPTIONS=""
     if [[ -n $COMMUNITY_SERVER ]] && [[ $COMMUNITY_SERVER == "true" ]]; then
         ei "> Setting Community-Mode to enabled\n"
-        START_OPTIONS="$START_OPTIONS EpicAcolorful_echos=PalServer"
+        START_OPTIONS="$START_OPTIONS EpicApp=PalServer"
     fi
     if [[ -n $MULTITHREAD_ENABLED ]] && [[ $MULTITHREAD_ENABLED == "true" ]]; then
         ei "> Setting Multi-Core-Enhancements to enabled\n"
@@ -59,36 +60,6 @@ function stop_server() {
     exit 143;
 }
 
-function install_server() {
-    # Force a fresh install of all
-    es "\n>>> Doing a fresh install of the gameserver...\n\n"
-    if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-        send_webhook_notification "Installing server" "Server is beeing installed" "$WEBHOOK_INFO_COLOR"
-    fi
-    ${steamcmd_dir}/steamcmd.sh +force_install_dir "$GAME_ROOT" +login anonymous +app_update 2394010 validate +quit
-    es ">>> Done installing the gameserver.\n"
-}
-
-function update_server() {
-    # Force an update and validation
-    if [[ -n $STEAMCMD_VALIDATE_FILES ]] && [[ $STEAMCMD_VALIDATE_FILES == "true" ]]; then
-        es "\n>>> Doing an update and validate of the gameserver files...\n\n"
-        if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-            send_webhook_notification "Updating server" "Server is beeing updated and validated" "$WEBHOOK_INFO_COLOR"
-        fi
-        ${steamcmd_dir}/steamcmd.sh +force_install_dir "$GAME_ROOT" +login anonymous +app_update 2394010 validate +quit
-        es ">>> Done updating and validating the gameserver files.\n"
-
-    else
-        es "\n>>> Doing an update of the gameserver files...\n\n"
-        if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-            send_webhook_notification "Updating server" "Server is beeing updated" "$WEBHOOK_INFO_COLOR"
-        fi
-        ${steamcmd_dir}/steamcmd.sh +force_install_dir "$GAME_ROOT" +login anonymous +app_update 2394010 +quit
-        es ">>> Done updating the gameserver files.\n"
-    fi
-}
-
 
 ### Signal Handling (Handlers & Traps)
 
@@ -98,20 +69,17 @@ function termHandler() {
 }
 
 function start_handlers() {
-    es "\n>>> Starting handlers...\n"
 
-    es "> Starting termination handler...\n"
     # If SIGTERM is sent to the process, call termHandler function
     trap 'kill ${!}; termHandler' SIGTERM
 
-    es "> Termination handler started!\n"
+    es "> Handlers started.\n"
 }
 
 
 ### Main Function
 
 function start_main() {
-    es "\n>>> Starting main thread <<<\n"
 
     check_for_default_credentials
 
@@ -141,7 +109,7 @@ do
     start_main &
 
     killpid="$!"
-    es "\n>>> Server main thread started with pid ${killpid}\n"
+    ei "> Server main thread started with pid ${killpid}\n"
     wait ${killpid}
     
     ew "\n\n>>> Exiting server...\n"

@@ -3,7 +3,7 @@ source /includes/colors.sh
 
 # Function to setup the Engine.ini
 function setup_engine_ini() {
-    es ">>> Setting up Engine.ini ...\n"
+    ew "> Setting up Engine.ini ...\n"
 
     pattern1="OnlineSubsystemUtils.IpNetDriver"
     pattern2="^NetServerMaxTickRate=[0-9]*"
@@ -36,13 +36,13 @@ function setup_engine_ini() {
         echo "NetServerMaxTickRate=${NETSERVERMAXTICKRATE}" >> "${GAME_ENGINE_PATH}"
     fi
 
-    ew ">>> Finished setting up Engine.ini!\n\n"
+    es "> Finished setting up Engine.ini!\n\n"
 }
 
 # Function to setup the PalWorldSettings.ini
 function setup_palworld_settings_ini() {
     # setup the server config file
-    es ">>> Setting up PalWorldSettings.ini ...\n"
+    ew "> Setting up PalWorldSettings.ini ...\n"
     ei "> Checking if config already exists...\n"
     if [ ! -f "${GAME_SETTINGS_PATH}" ]; then
         ew "> No config found, generating one!"
@@ -310,11 +310,11 @@ function setup_palworld_settings_ini() {
         sed -E -i "s~BanListURL=\"[^\"]*\"~BanListURL=\"$BAN_LIST_URL\"~" "$GAME_SETTINGS_PATH"
     fi
 
-    ew ">>> Finished setting up PalWorldSettings.ini\n\n"
+    es "> Finished setting up PalWorldSettings.ini\n\n"
 }
 
 function setup_rcon_config_file () {
-    es ">>> Setting up 'rcon.yaml' ...\n"
+    ew "> Setting up 'rcon.yaml' ...\n"
 
     # Check if RCON is enabled
     if [[ -n ${RCON_ENABLED+x} ]] && [ "$RCON_ENABLED" == "true" ] ; then
@@ -334,7 +334,7 @@ function setup_rcon_config_file () {
         
         es "> Finished setting up 'rcon.yaml' config file.\n\n"
     else
-        ew "> RCON is disabled, skicolorful_echosing 'rcon.yaml' config file!\n"
+        ew "> RCON is disabled, skipping 'rcon.yaml' config file!\n"
     fi
 }
 
