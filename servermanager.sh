@@ -59,9 +59,7 @@ term_handler() {
     fi
 	kill -SIGTERM $(pidof PalServer-Linux-Test)
 	tail --pid=$(pidof PalServer-Linux-Test) -f 2>/dev/null
-    if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-        send_webhook_notification "$WEBHOOK_STOP_TITLE" "$WEBHOOK_STOP_DESCRIPTION" "$WEBHOOK_STOP_COLOR"
-    fi
+    send_stop_notification
 	exit 143;
 }
 
@@ -72,5 +70,6 @@ killpid="$!"
 while true
 do
     wait $killpid
+    send_stop_notification
     exit 0;
 done
