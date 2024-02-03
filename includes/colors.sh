@@ -1,8 +1,10 @@
 # shellcheck disable=SC2148
 # Idea from https://colors.sh/
+# ANSI Color Codes - https://www.shellhacks.com/bash-colors/
+# Ansi Default Color Codes https://hyperskill.org/learn/step/18193#terminal-support
+# Use ANSI whenever possible. Makes logs compatible with almost all systems.
 
-# Aliases
-
+# Aliases for colorful echos
 function e() { 
     colorful_echos --base "${@}"
 }
@@ -26,11 +28,12 @@ function ew() {
 # This creates a wrapper for echo to add colors
 function colorful_echos() {
     # Set color constants
+    BASE="\e[97m"              # Clean color
     CLEAN="\e[0m"              # Clean color
-    ERROR="\e[38;5;196m"       # Red color for error
-    INFO="\e[38;5;14m"         # Blue color for info
-    SUCCESS="\e[38;5;10m"      # Green color for success
-    WARNING="\e[38;5;11m"      # Yellow color for warning
+    ERROR="\e[91m"       # Red color for error
+    INFO="\e[94m"         # Blue color for info
+    SUCCESS="\e[92m"      # Green color for success
+    WARNING="\e[93m"      # Yellow color for warning
 
     if [ $# -gt 2 ]; then
         echo "Usage: $0 [--success|--error|--info|--warning|--base] <message>"
@@ -51,6 +54,8 @@ function colorful_echos() {
     elif [ "$arg1" == "--warning" ]; then
         color="$WARNING"
     elif [ "$arg1" == "--base" ]; then
+        color="$BASE"
+    else
         echo -ne "$message"
         return 0
     fi
