@@ -13,6 +13,9 @@ if [ ${REMOTE_CONTROL:false} == "true" ]; then
 else
   start_main &
   killpid="$!"
+  wait "$killpid"
+  #graeful exit eg. via rcon
+  send_stop_notification
 fi
 
-wait "$killpid"
+exit 0;

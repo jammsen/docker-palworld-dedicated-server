@@ -49,7 +49,7 @@ function start_main() {
 }
 
 term_handler() {
-  local exit_code = ${1:-143}
+  local stopnotification=${1:"true"}
 
   if [ -z "$(pidof PalServer-Linux-Test)" ]; then
     exit $exit_code
@@ -60,7 +60,15 @@ term_handler() {
   fi
 	kill -SIGTERM $(pidof PalServer-Linux-Test)
 	tail --pid=$(pidof PalServer-Linux-Test) -f 2>/dev/null
-  send_stop_notification
+
+  if [ ${REMOTE_CONTROL:false} != "true" ]; then
+    kill -SIGTERM $(pidof /remotestart.sh)
+	  tail --pid=$(pidof remotestart) -f 2>/dev/null
+  fi
+
+  if [ $stopnotification == "true"]; then
+    send_stop_notification
+  fi
 
 	exit $exit_code;
 }
