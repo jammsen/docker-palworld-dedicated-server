@@ -182,7 +182,7 @@ WEBHOOK_URL="https://your.webhook.url"
 
 After that the server should send messages in a Discord-Compatible way to your webhook.
 
-> You can find more details about these variables [here](/docs/ENV_VARS.md##Webhook-Settings).
+> You can find more details about these variables [here](/docs/ENV_VARS.md#webhook-settings).
 
 ### Supported events
 
