@@ -16,9 +16,9 @@ run_rcon_cli() {
         exit
     fi
 
-    pp --info "${message}"
+    ei "${message}"
     output=$(rconcli -c /configs/rcon.yaml "${cmd}")
-    pp --info "> RCON: ${output}"
+    ei "> RCON: ${output}"
 
     if [[ $cmd == "save" ]]; then
         sleep 5
