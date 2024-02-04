@@ -5,6 +5,7 @@ source /includes/colors.sh
 
 # Default values if the environment variables exist
 LOCAL_BACKUP_PATH=${BACKUP_PATH} # Dir where the backup files are stored
+LOCAL_GAME_PATH=${GAME_PATH} # Dir where the game save files are stored
 LOCAL_GAME_SAVE_PATH=${GAME_SAVE_PATH} # Dir where the game save files are stored
 LOCAL_BACKUP_RETENTION_POLICY=${BACKUP_RETENTION_POLICY} # Number of backup files to keep
 LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP=${BACKUP_RETENTION_AMOUNT_TO_KEEP} # Number of backup files to keep
@@ -105,6 +106,10 @@ function check_required_directories() {
         ee "> BACKUP_PATH environment variable not set. Exitting...\n"
         exit 1
     fi
+    if [ -z "${LOCAL_GAME_PATH}" ]; then
+        ee "> GAME_PATH environment variable not set.\n Exiting...\n"
+        exit 1
+    fi
     if [ -z "${LOCAL_GAME_SAVE_PATH}" ]; then
         ee "> GAME_SAVE_PATH environment variable not set.\n Exiting...\n"
         exit 1
@@ -113,7 +118,7 @@ function check_required_directories() {
     mkdir -p "${LOCAL_BACKUP_PATH}"
 
     if [ ! -d "${LOCAL_GAME_SAVE_PATH}" ]; then
-            ee "> Game save directory '${LOCAL_GAME_SAVE_PATH}' does not exist yet.\n"
+            ee "> Game save directory '${LOCAL_GAME_SAVE_PATH}' doesn't exist yet.\n"
             exit 1
     fi
 }
@@ -122,12 +127,9 @@ function check_required_directories() {
 ### Backup Functions
 
 function create_backup() {
-
-    if [ -z "${LOCAL_GAME_SAVE_PATH}" ]; then
-        ee ">> LOCAL_GAME_SAVE_PATH environment variable not set. Exiting...\n"
-        exit 1
-    fi
     
+    check_required_directories
+
     DATE=$(date +%Y%m%d_%H%M%S)
     TIME=$(date +%H-%M-%S)
 
@@ -147,13 +149,19 @@ function create_backup() {
     fi
 
     # Create backup
-    tar cfz "${LOCAL_BACKUP_PATH}/${backup_file_name}" -C "${LOCAL_GAME_SAVE_PATH}" Saved/
-    
-    if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
-        sleep 1
-        rcon 'broadcast Backup-done'
-    fi
-    es ">> Backup '${backup_file_name}' created successfully.\n"
+    if ! tar cfz "${LOCAL_BACKUP_PATH}/${backup_file_name}" -C "${LOCAL_GAME_PATH}/" "Saved" ; then
+        if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
+            sleep 1
+            rcon 'broadcast Backup-done'
+        fi
+        ee ">> Backup failed.\n"
+    else
+        if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
+            sleep 1
+            rcon 'broadcast Backup-done'
+        fi
+        es ">> Backup '${backup_file_name}' created successfully.\n"
+    fi 
 
     if [[ -n ${LOCAL_BACKUP_RETENTION_POLICY} ]] && [[ ${LOCAL_BACKUP_RETENTION_POLICY} == "true" ]] && [[ ${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP} =~ ^[0-9]+$ ]]; then
         #clean_backups
