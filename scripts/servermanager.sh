@@ -32,7 +32,6 @@ function start_server() {
     fi
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
         send_start_notification
-        send_start_notification
     fi
     ./PalServer.sh "$START_OPTIONS"
 }
