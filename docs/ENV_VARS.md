@@ -1,6 +1,6 @@
 # Environment Variables
 
-[Back to main](README.md#environment-variables)
+[Back to main](../README.md#environment-variables)
 
 In this section you will find a lot of environment variables to control your container-behavior and gameserver-settings. Due to the extensive control options, the settings are split into two parts for documentation: **Container-Settings** and **Gameserver-Settings**.
 
@@ -140,4 +140,4 @@ This section lists all the settings for the webhooks.
 > To convert a Hex-Color to its Decimal representation, you can use online tools such as [SpyColor](https://www.spycolor.com/).
 > After finding the Decimal representation, add it to the color field. Using Hex-Colors will cause errors.
 
-[Back to main](README.md#environment-variables)
+[Back to main](../README.md#environment-variables)
