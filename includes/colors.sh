@@ -71,4 +71,3 @@ function colorful_echos() {
     # Print the message with the specified color
     echo -ne "${color}${message}${CLEAN}"
 }
-    

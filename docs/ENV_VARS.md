@@ -110,4 +110,34 @@ Information sources and credits to the following websites:
 | USEAUTH                                   | bUseAuth                             | Use authentication                                                                                                                                                | true                                                   | Boolean       |
 | BAN_LIST_URL                              | BanListURL                           | Which ban list to use                                                                                                                                             | https://api.palworldgame.com/api/banlist.txt           | String        |
 
+## Webhook-Settings
+
+This section lists all the settings for the webhooks.
+
+| Variable                                | Description                                       | Default Value                           | Allowed Values    |
+| --------------------------------------- | ------------------------------------------------- | --------------------------------------- | ----------------- |
+| `WEBHOOK_ENABLED`                       | Determines if the webhook is enabled              | `false`                                 | `true`/`false`    |
+| `WEBHOOK_URL`                           | The URL for the webhook                           | `YOUR-URL-IN-HERE`                      | Valid webhook URL |
+| `WEBHOOK_START_TITLE`                   | The title for the start webhook                   | `Server is starting`                    | Message           |
+| `WEBHOOK_START_DESCRIPTION`             | The description for the start webhook             | `The gameserver is starting`            | Message           |
+| `WEBHOOK_START_COLOR`                   | The color for the start webhook                   | `2328576`                               | Color (see below) |
+| `WEBHOOK_STOP_TITLE`                    | The title for the stop webhook                    | `Server has been stopped`               | Message           |
+| `WEBHOOK_STOP_DESCRIPTION`              | The description for the stop webhook              | `The gameserver has been stopped`       | Message           |
+| `WEBHOOK_STOP_COLOR`                    | The color for the stop webhook                    | `7413016"`                              | Color (see below) |
+| `WEBHOOK_INFO_TITLE`                    | The title for the info webhook                    | `Info"`                                 | Message           |
+| `WEBHOOK_INFO_DESCRIPTION`              | The description for the info webhook              | `This is an info from the server`       | Message           |
+| `WEBHOOK_INFO_COLOR`                    | The color for the info webhook                    | `2849520`                               | Color (see below) |
+| `WEBHOOK_UPDATE_TITLE`                  | The title for the update webhook                  | `Updating server`                       | Message           |
+| `WEBHOOK_UPDATE_DESCRIPTION`            | The description for the update webhook            | `Server is being updated`               | Message           |
+| `WEBHOOK_UPDATE_COLOR`                  | The color for the update webhook                  | `2849520`                               | Color (see below) |
+| `WEBHOOK_UPDATE_VALIDATION_TITLE`       | The title for the update validation webhook       | `Updating and validating server`        | Message           |
+| `WEBHOOK_UPDATE_VALIDATION_DESCRIPTION` | The description for the update validation webhook | `Server is being updated and validated` | Message           |
+| `WEBHOOK_UPDATE_VALIDATION_COLOR`       | The color for the update validation webhook       | `2849520`                               | Color (see below) |
+
+> [!WARNING]
+> 
+> Please note that Hex-Colors are not supported. Instead, use the Decimal representation of the color.
+> To convert a Hex-Color to its Decimal representation, you can use online tools such as [SpyColor](https://www.spycolor.com/).
+> After finding the Decimal representation, add it to the color field. Using Hex-Colors will cause errors.
+
 [Back to main](README.md#environment-variables)

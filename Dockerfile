@@ -82,17 +82,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     BACKUP_RETENTION_AMOUNT_TO_KEEP=30 \
     STEAMCMD_VALIDATE_FILES=true \
     SERVER_SETTINGS_MODE=manual \
-    WEBHOOK_ENABLED=false \
-    WEBHOOK_URL= \
-    WEBHOOK_START_TITLE="Server is starting" \
-    WEBHOOK_START_DESCRIPTION="The gameserver is starting" \
-    WEBHOOK_START_COLOR="2328576" \
-    WEBHOOK_STOP_TITLE="Server has been stopped" \
-    WEBHOOK_STOP_DESCRIPTION="The gameserver has been stopped" \
-    WEBHOOK_STOP_COLOR="7413016" \
-    WEBHOOK_INFO_TITLE="Info" \
-    WEBHOOK_INFO_DESCRIPTION="This is an info from the server" \
-    WEBHOOK_INFO_COLOR="2849520" \
     ### Server-setting 
     NETSERVERMAXTICKRATE=120 \
     DIFFICULTY=None \
@@ -156,7 +145,25 @@ ENV DEBIAN_FRONTEND=noninteractive \
     RCON_PORT=25575 \
     REGION= \
     USEAUTH=true \
-    BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
+    BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt \
+    ### Webhook-settings
+    WEBHOOK_ENABLED=false \
+    WEBHOOK_URL= \
+    WEBHOOK_START_TITLE="Server is starting" \
+    WEBHOOK_START_DESCRIPTION="The gameserver is starting" \
+    WEBHOOK_START_COLOR="2328576" \
+    WEBHOOK_STOP_TITLE="Server has been stopped" \
+    WEBHOOK_STOP_DESCRIPTION="The gameserver has been stopped" \
+    WEBHOOK_STOP_COLOR="7413016" \
+    WEBHOOK_INFO_TITLE="Info" \
+    WEBHOOK_INFO_DESCRIPTION="This is an info from the server" \
+    WEBHOOK_INFO_COLOR="2849520" \
+    WEBHOOK_UPDATE_TITLE="Updating server" \
+    WEBHOOK_UPDATE_DESCRIPTION="Server is being updated" \
+    WEBHOOK_UPDATE_COLOR="2849520" \
+    WEBHOOK_UPDATE_VALIDATION_TITLE="Updating and validating server" \
+    WEBHOOK_UPDATE_VALIDATION_DESCRIPTION="Server is being updated and validated" \
+    WEBHOOK_UPDATE_VALIDATION_COLOR="2849520"
 
 
 EXPOSE 8211/udp

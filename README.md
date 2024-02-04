@@ -93,7 +93,7 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 
 ## Environment variables
 
-See [this file](/docs/ENV_VARS.md.md) for the documentation
+See [this file](/docs/ENV_VARS.md) for the documentation
 
 ## Docker-Compose examples
 
@@ -182,10 +182,14 @@ WEBHOOK_URL="https://your.webhook.url"
 
 After that the server should send messages in a Discord-Compatible way to your webhook.
 
+> You can find more details about these variables [here](/docs/ENV_VARS.md##Webhook-Settings).
+
 ### Supported events
 
 - Server starting
 - Server stopped
+- Server updating
+- Server updating and validating
 
 ## Deploy with Helm
 
