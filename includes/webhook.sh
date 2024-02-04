@@ -1,8 +1,7 @@
-# shellcheck disable=SC2148
 # Function to generate JSON data for the Discord message
 # Webpage for COLOR-Calculation - https://www.spycolor.com/
-# IMPORTANT: Don't use Hex-Colors! Go to the page search for the Hex-Color.
-# After that add the DECIMAL-Representation to the color field or it will break!
+# IMPORTANT: Dont use Hex-Colors! Go to the page search for the Hex-Color.
+# After that add the DECIMAL-Represenetation to the color field or it will break!
 generate_post_data() {
   cat <<EOF
 {
@@ -26,4 +25,12 @@ send_webhook_notification() {
   #curl --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
   # Prod Curl
   curl --silent --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
+}
+
+#Aliases to use in scripts
+send_start_notification() {
+  send_webhook_notification "$WEBHOOK_START_TITLE" "$WEBHOOK_START_DESCRIPTION" "$WEBHOOK_START_COLOR"
+}
+send_stop_notification() {
+  send_webhook_notification "$WEBHOOK_STOP_TITLE" "$WEBHOOK_STOP_DESCRIPTION" "$WEBHOOK_STOP_COLOR"
 }
