@@ -10,6 +10,15 @@ source /webhook.sh
 
 GAME_PATH="/palworld"
 
+function check_permissions() {
+    echo ">>> Checking permissions of $GAME_PATH"
+    if ! [[ -w "$GAME_PATH" ]]; then
+        echo ">>> Error: User steam with UID: $PUID cant access $GAME_PATH. Aborting server start ..."
+        exit 1
+    fi
+    echo "> User steam with UID: $PUID can access $GAME_PATH"
+}
+
 function start_server() {
     # IF Bash extension used:
     # https://stackoverflow.com/a/13864829
@@ -37,6 +46,7 @@ function start_server() {
 }
 
 function start_main() {
+    check_permissions
     check_for_default_credentials
     setup_crons
     if [ ! -f "$GAME_PATH/PalServer.sh" ]; then
@@ -67,6 +77,8 @@ killpid="$!"
 while true
 do
     wait $killpid
-    send_stop_notification
+    if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
+        send_stop_notification
+    fi
     exit 0;
 done
