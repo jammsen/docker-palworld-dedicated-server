@@ -4,12 +4,35 @@ LABEL maintainer="Sebastian Schmidt - https://github.com/jammsen/docker-palworld
 LABEL org.opencontainers.image.authors="Sebastian Schmidt"
 LABEL org.opencontainers.image.source="https://github.com/jammsen/docker-palworld-dedicated-server"
 
+
+# Configuration variables
+ARG STEAM_USER="steam"
+
+ARG GAME_ROOT="/palworld"
+ARG GAME_PATH="${GAME_ROOT}/Pal"
+ARG GAME_SAVE_PATH="${GAME_PATH}/Saved"
+ARG GAME_CONFIG_PATH="${GAME_SAVE_PATH}/Config/LinuxServer"
+ARG GAME_SETTINGS_FILE="${GAME_CONFIG_PATH}/PalWorldSettings.ini"
+ARG GAME_ENGINE_FILE="${GAME_CONFIG_PATH}/Engine.ini"
+ARG BACKUP_PATH="${GAME_ROOT}/backups"
+
+# Export the ARG variables to the environment
+ENV GAME_ROOT="${GAME_ROOT}" \
+    GAME_PATH="${GAME_PATH}" \
+    GAME_SAVE_PATH="${GAME_SAVE_PATH}" \
+    GAME_CONFIG_PATH="${GAME_CONFIG_PATH}" \
+    GAME_SETTINGS_FILE="${GAME_SETTINGS_FILE}" \
+    GAME_ENGINE_FILE="${GAME_ENGINE_FILE}" \
+    BACKUP_PATH="${BACKUP_PATH}"
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs \
     && apt-get clean \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Latest releases available at https://github.com/aptible/supercronic/releases
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 \
     SUPERCRONIC=supercronic-linux-amd64 \
@@ -32,23 +55,18 @@ RUN curl -fsSLO "$RCON_URL" \
     && tar xfz rcon-0.10.3-amd64_linux.tar.gz \
     && chmod +x "rcon-0.10.3-amd64_linux/$RCON_BINARY" \
     && mv "rcon-0.10.3-amd64_linux/$RCON_BINARY" "/usr/local/bin/${RCON_BINARY}" \
-    && ln -s "/usr/local/bin/${RCON_BINARY}" /usr/local/bin/rconcli \
     && rm -Rf rcon-0.10.3-amd64_linux rcon-0.10.3-amd64_linux.tar.gz
 
-COPY --chown=steam:steam --chmod=755 backupmanager.sh servermanager.sh includes/* /
+COPY --chown=steam:steam --chmod=755 scripts/ /scripts
+COPY --chown=steam:steam --chmod=755 includes/ /includes
+COPY --chown=steam:steam --chmod=755 configs/ /configs
+COPY --chown=steam:steam --chmod=755 entrypoint.sh /
 
-EXPOSE 8211/udp
-EXPOSE 25575/tcp
+RUN ln -s /scripts/backupmanager.sh /usr/local/bin/backup_manager \
+    && ln -s /scripts/backup.sh /usr/local/bin/backup \
+    && ln -s /scripts/rconcli.sh /usr/local/bin/rconcli \
+    && ln -s /configs/rcon.yaml /home/steam/steamcmd/rcon.yaml
 
-# Workaround for 'Named Volumes'
-RUN mkdir /palworld \
-    && chown steam:steam /palworld
-
-VOLUME [ "/palworld" ]
-
-USER steam
-
-ADD --chown=steam:steam --chmod=440 rcon.yaml ./rcon.yaml
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PUID=1000 \
@@ -64,17 +82,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     BACKUP_RETENTION_AMOUNT_TO_KEEP=30 \
     STEAMCMD_VALIDATE_FILES=true \
     SERVER_SETTINGS_MODE=manual \
-    WEBHOOK_ENABLED=false \
-    WEBHOOK_URL= \
-    WEBHOOK_START_TITLE="Server is starting" \
-    WEBHOOK_START_DESCRIPTION="The gameserver is starting" \
-    WEBHOOK_START_COLOR="2328576" \
-    WEBHOOK_STOP_TITLE="Server has been stopped" \
-    WEBHOOK_STOP_DESCRIPTION="The gameserver has been stopped" \
-    WEBHOOK_STOP_COLOR="7413016" \
-    WEBHOOK_INFO_TITLE="Info" \
-    WEBHOOK_INFO_DESCRIPTION="This is an info from the server" \
-    WEBHOOK_INFO_COLOR="2849520" \
     ### Server-setting 
     NETSERVERMAXTICKRATE=120 \
     DIFFICULTY=None \
@@ -138,6 +145,31 @@ ENV DEBIAN_FRONTEND=noninteractive \
     RCON_PORT=25575 \
     REGION= \
     USEAUTH=true \
-    BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
+    BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt \
+    ### Webhook-settings
+    WEBHOOK_ENABLED=false \
+    WEBHOOK_URL= \
+    WEBHOOK_START_TITLE="Server is starting" \
+    WEBHOOK_START_DESCRIPTION="The gameserver is starting" \
+    WEBHOOK_START_COLOR="2328576" \
+    WEBHOOK_STOP_TITLE="Server has been stopped" \
+    WEBHOOK_STOP_DESCRIPTION="The gameserver has been stopped" \
+    WEBHOOK_STOP_COLOR="7413016" \
+    WEBHOOK_INFO_TITLE="Info" \
+    WEBHOOK_INFO_DESCRIPTION="This is an info from the server" \
+    WEBHOOK_INFO_COLOR="2849520" \
+    WEBHOOK_UPDATE_TITLE="Updating server" \
+    WEBHOOK_UPDATE_DESCRIPTION="Server is being updated" \
+    WEBHOOK_UPDATE_COLOR="2849520" \
+    WEBHOOK_UPDATE_VALIDATION_TITLE="Updating and validating server" \
+    WEBHOOK_UPDATE_VALIDATION_DESCRIPTION="Server is being updated and validated" \
+    WEBHOOK_UPDATE_VALIDATION_COLOR="2849520"
 
-CMD ["/servermanager.sh"]
+
+EXPOSE 8211/udp
+EXPOSE ${RCON_PORT}/tcp
+
+VOLUME ["${GAME_ROOT}"]
+
+ENTRYPOINT  ["/entrypoint.sh"]
+CMD [ "/scripts/servermanager.sh" ]

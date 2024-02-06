@@ -1,10 +1,10 @@
-## Environment Variables
+# Environment Variables
 
-[Back to main](README.md#environment-variables)
+[Back to main](../README.md#environment-variables)
 
 In this section you will find a lot of environment variables to control your container-behavior and gameserver-settings. Due to the extensive control options, the settings are split into two parts for documentation: **Container-Settings** and **Gameserver-Settings**.
 
-### Container-Settings
+## Container-Settings
 
 These settings control the behavior of the Docker container:
 
@@ -23,26 +23,26 @@ These settings control the behavior of the Docker container:
 | SERVER_SETTINGS_MODE            | Determines whether settings can be modified via environment variables or via file, except `COMMUNITY_SERVER` and `MULTITHREAD_ENABLED`!                                                                                         | `auto`                         | `auto`: Settings are modified only by environment variables, manual edits will be ignored<br>`manual`: Settings are modified only by editing the file directly, environment variables are ignored |
 | STEAMCMD_VALIDATE_FILES         | Set to enabled SteamCMD will also validate the gameserver files, making sure nothing is corrupted and also overwrite any file changes of the source<br>See https://developer.valvesoftware.com/wiki/SteamCMD#Downloading_an_App | true                           | false/true                                                                                                                                                                                        |
 
-#### TZ identifiers
+### TZ identifiers
 
 The `TZ` setting affects logging output and the backup function. [TZ identifiers](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#Time_Zone_abbreviations) are a format for defining a timezone near you.
 
-#### Cron expression
+### Cron expression
 
 The `BACKUP_CRON_EXPRESSION` setting affects the backup function. In a Cron-Expression, you define an interval for when to run jobs. This image uses Supercronic for crons, see https://github.com/aptible/supercronic#crontab-format or https://crontab-generator.org
 
-###  Gameserver-Settings
+## Gameserver-Settings
 
 This section lists all the settings currently adjustable via Docker environment variables, based on the **order** and **contents of the DefaultPalWorldSettings.ini**.
 
 Information sources and credits to the following websites:
-* [Palworld Tech Guide](https://tech.palworldgame.com/optimize-game-balance) for the game server documentation
-* [PalworldSettingGenerator](https://dysoncheng.github.io/PalWorldSettingGenerator/setting.html) for variable descriptions
+
+- [Palworld Tech Guide](https://tech.palworldgame.com/optimize-game-balance) for the game server documentation
+- [PalworldSettingGenerator](https://dysoncheng.github.io/PalWorldSettingGenerator/setting.html) for variable descriptions
 
 > **Important:** Please note that all of this is subject to change. **The game is still in early access.**
-> 
-> To change a setting, you can set the environment variable to the value you want. If the environment variable is not set or is blank, the default value will be used. 
-
+>
+> To change a setting, you can set the environment variable to the value you want. If the environment variable is not set or is blank, the default value will be used.
 
 | Variable                                  | Game setting                         | Description                                                                                                                                                       | Default value                                          | Allowed value |
 | ----------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------- |
@@ -110,5 +110,34 @@ Information sources and credits to the following websites:
 | USEAUTH                                   | bUseAuth                             | Use authentication                                                                                                                                                | true                                                   | Boolean       |
 | BAN_LIST_URL                              | BanListURL                           | Which ban list to use                                                                                                                                             | https://api.palworldgame.com/api/banlist.txt           | String        |
 
+## Webhook-Settings
 
-[Back to main](README.md#environment-variables)
+This section lists all the settings for the webhooks.
+
+| Variable                                | Description                                       | Default Value                           | Allowed Values    |
+| --------------------------------------- | ------------------------------------------------- | --------------------------------------- | ----------------- |
+| `WEBHOOK_ENABLED`                       | Determines if the webhook is enabled              | `false`                                 | `true`/`false`    |
+| `WEBHOOK_URL`                           | The URL for the webhook                           | `YOUR-URL-IN-HERE`                      | Valid webhook URL |
+| `WEBHOOK_START_TITLE`                   | The title for the start webhook                   | `Server is starting`                    | Message           |
+| `WEBHOOK_START_DESCRIPTION`             | The description for the start webhook             | `The gameserver is starting`            | Message           |
+| `WEBHOOK_START_COLOR`                   | The color for the start webhook                   | `2328576`                               | Color (see below) |
+| `WEBHOOK_STOP_TITLE`                    | The title for the stop webhook                    | `Server has been stopped`               | Message           |
+| `WEBHOOK_STOP_DESCRIPTION`              | The description for the stop webhook              | `The gameserver has been stopped`       | Message           |
+| `WEBHOOK_STOP_COLOR`                    | The color for the stop webhook                    | `7413016"`                              | Color (see below) |
+| `WEBHOOK_INFO_TITLE`                    | The title for the info webhook                    | `Info"`                                 | Message           |
+| `WEBHOOK_INFO_DESCRIPTION`              | The description for the info webhook              | `This is an info from the server`       | Message           |
+| `WEBHOOK_INFO_COLOR`                    | The color for the info webhook                    | `2849520`                               | Color (see below) |
+| `WEBHOOK_UPDATE_TITLE`                  | The title for the update webhook                  | `Updating server`                       | Message           |
+| `WEBHOOK_UPDATE_DESCRIPTION`            | The description for the update webhook            | `Server is being updated`               | Message           |
+| `WEBHOOK_UPDATE_COLOR`                  | The color for the update webhook                  | `2849520`                               | Color (see below) |
+| `WEBHOOK_UPDATE_VALIDATION_TITLE`       | The title for the update validation webhook       | `Updating and validating server`        | Message           |
+| `WEBHOOK_UPDATE_VALIDATION_DESCRIPTION` | The description for the update validation webhook | `Server is being updated and validated` | Message           |
+| `WEBHOOK_UPDATE_VALIDATION_COLOR`       | The color for the update validation webhook       | `2849520`                               | Color (see below) |
+
+> [!WARNING]
+> 
+> Please note that Hex-Colors are not supported. Instead, use the Decimal representation of the color.
+> To convert a Hex-Color to its Decimal representation, you can use online tools such as [SpyColor](https://www.spycolor.com/).
+> After finding the Decimal representation, add it to the color field. Using Hex-Colors will cause errors.
+
+[Back to main](../README.md#environment-variables)
