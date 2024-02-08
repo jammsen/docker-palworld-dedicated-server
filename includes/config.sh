@@ -11,7 +11,7 @@ function setup_engine_ini() {
     ei "> Checking if config already exists...\n"
 
     if [ ! -f "${GAME_ENGINE_FILE}" ]; then
-        ew "> No config found, generating one!"
+        ew ">> No config found, generating one!"
         if [ ! -d "${GAME_CONFIG_PATH}" ]; then
             mkdir -p "${GAME_CONFIG_PATH}/"
         fi
@@ -45,7 +45,7 @@ function setup_palworld_settings_ini() {
     ew ">> Setting up PalWorldSettings.ini ...\n"
     ei "> Checking if config already exists...\n"
     if [ ! -f "${GAME_SETTINGS_FILE}" ]; then
-        ei "> No config found, generating one.\n"
+        ew ">> No config found, generating one.\n"
         if [ ! -d "${GAME_CONFIG_PATH}" ]; then
             mkdir -p "${GAME_CONFIG_PATH}/"
         fi
@@ -313,16 +313,10 @@ function setup_palworld_settings_ini() {
     es ">> Finished setting up PalWorldSettings.ini\n"
 }
 
-function setup_rcon_config_file () {
-    ew ">> Setting up 'rcon.yaml' ...\n"
+function setup_rcon_yaml () {
 
-    ew ">> RCON_ENABLED: ${RCON_ENABLED}\n"
-    ew ">> RCON_PORT: ${RCON_PORT}\n"
-    ew ">> ADMIN_PASSWORD: ${ADMIN_PASSWORD}\n"
-
-    # Check if RCON is enabled
     if [[ -n ${RCON_ENABLED+x} ]] && [ "$RCON_ENABLED" == "true" ] ; then
-        ei "> RCON is enabled, setting 'rcon.yaml' config file.\n"
+        ei "> RCON is enabled, setting 'rcon.yaml' config file...\n"
 
         if [[ -n ${RCON_PORT+x} ]]; then
             sed -i "s/###RCON_PORT###/$RCON_PORT/" /configs/rcon.yaml
@@ -333,7 +327,7 @@ function setup_rcon_config_file () {
         if [[ -n ${ADMIN_PASSWORD+x} ]]; then
             sed -i "s/###ADMIN_PASSWORD###/$ADMIN_PASSWORD/" /configs/rcon.yaml
         else
-            ee "> [ERROR] RCON_PORT is not set, please set it for RCON functionality to work!\n"
+            ee "> RCON_PORT is not set, please set it for RCON functionality to work!\n"
         fi
         
         es ">> Finished setting up 'rcon.yaml' config file.\n"
@@ -347,9 +341,9 @@ function setup_configs() {
         ew ">> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', using environment variables to configure the server!\n"
         setup_engine_ini
         setup_palworld_settings_ini
+        setup_rcon_yaml
     else
         ew ">> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', NOT using environment variables to configure the server!\n"
         ew ">> File ${GAME_SETTINGS_FILE} has to be manually set by user.\n"
     fi
-    setup_rcon_config_file
 }
