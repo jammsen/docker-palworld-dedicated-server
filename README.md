@@ -73,22 +73,12 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 1. Create a `game` sub-directory on your Docker-Node in your game-server-directory (Example: `/srv/palworld`).
    - This directory will be used to store the game server files, including configs and savegames.
 2. Set up Port-Forwarding or NAT for the ports in the Docker-Compose file.
-3. Pull the latest version of the image with:
-
-    ```shell
-    docker pull jammsen/palworld-dedicated-server:latest
-    ```
-
+3. Pull the latest version of the image with `docker pull jammsen/palworld-dedicated-server:latest`.
 4. Download the [docker-compose.yml](docker-compose.yml) and [default.env](default.env).
 5. Set up the `docker-compose.yml` and `default.env` to your liking.
    - Refer to the [Environment-Variables](#environment-variables) section for more information.
-6. Start the container with:
-
-    ```shell
-    docker-compose up -d && docker-compose logs -f
-    ```
-
-   - Watch the log. If no errors occur, you can close the logs with `ctrl+c`.
+6. Start the container via `docker-compose up -d && docker-compose logs -f`.
+   - Watch the log, if no errors occur you can close the logs with ctrl+c.
 7. Now have fun and happy gaming! 🎮😉
 
 ## Environment variables
@@ -131,6 +121,13 @@ Complete Save
 
 ## Backup Manager
 
+> [!WARNING]
+> If RCON is disabled, the backup manager won't do saves via RCON before creating a backup.
+> This means that the backup will be created from the last auto-save of the server.
+> This can lead to data-loss and/or savegame corruption.
+>
+> **Recommendation:** Please make sure that RCON is enabled before using the backup manager.
+
 Usage: `docker exec palworld-dedicated-server backup [command] [arguments]`
 
 | Command | Argument           | Required/Optional | Default Value                     | Values           | Description                                                                                                                                                                          |
@@ -163,13 +160,6 @@ $ docker exec palworld-dedicated-server backup_list
 >> Listing 1 out of backup 2 file(s).
 2024-02-03 03:30:00 | saved-20240203_033000.tar.gz
 ```
-
-> [!WARNING]
-> If RCON is disabled, the backup manager won't do saves via RCON before creating a backup.
-> This means that the backup will be created from the last auto-save of the server.
-> This can lead to data-loss and/or savegame corruption.
->
-> **Recommendation:** Please make sure that RCON is enabled before using the backup manager.
 
 ## Webhook integration
 
