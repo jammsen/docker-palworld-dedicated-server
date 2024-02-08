@@ -31,7 +31,7 @@ function start_server() {
         START_OPTIONS="$START_OPTIONS -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
     fi
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-        send_webhook_notification "$WEBHOOK_START_TITLE" "$WEBHOOK_START_DESCRIPTION" "$WEBHOOK_START_COLOR"
+        send_start_notification
     fi
     ./PalServer.sh "$START_OPTIONS"
 }
@@ -39,7 +39,6 @@ function start_server() {
 function start_main() {
     check_for_default_credentials
     setup_crons
-    # Check if server is installed, if not try again
     if [ ! -f "$GAME_PATH/PalServer.sh" ]; then
         install_server
     fi
@@ -51,16 +50,12 @@ function start_main() {
 
 term_handler() {
     if [[ ! -z ${RCON_ENABLED+x} ]]; then
-        rconcli 'broadcast Server_Shutdown_requested'
-        rconcli 'broadcast Saving...'
-        rconcli 'save'
-        rconcli 'broadcast Done...'
-        sleep 3
+        save_and_shutdown_server
     fi
 	kill -SIGTERM $(pidof PalServer-Linux-Test)
 	tail --pid=$(pidof PalServer-Linux-Test) -f 2>/dev/null
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-        send_webhook_notification "$WEBHOOK_STOP_TITLE" "$WEBHOOK_STOP_DESCRIPTION" "$WEBHOOK_STOP_COLOR"
+        send_stop_notification
     fi
 	exit 143;
 }
@@ -72,5 +67,6 @@ killpid="$!"
 while true
 do
     wait $killpid
+    send_stop_notification
     exit 0;
 done

@@ -8,8 +8,8 @@
 [![Discord](https://img.shields.io/discord/532141442731212810?logo=discord&label=Discord&link=https%3A%2F%2Fdiscord.gg%2F7tacb9Q6tj)](https://discord.gg/7tacb9Q6tj)
 
 > [!TIP]
-> Do you want to chat with the community? 
-> 
+> Do you want to chat with the community?
+>
 > **[Join us on Discord](https://discord.gg/7tacb9Q6tj)**
 
 This Docker image includes a Palworld Dedicated Server based on Linux and Docker.
@@ -30,12 +30,13 @@ ___
   - [Run RCON commands](#run-rcon-commands)
   - [Webhook integration](#webhook-integration)
     - [Supported events](#supported-events)
+  - [Deploy with Helm](#deploy-with-helm)
   - [FAQ](#faq)
     - [How can I use the interactive console in Portainer with this image?](#how-can-i-use-the-interactive-console-in-portainer-with-this-image)
     - [How can I look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
-    - [Im seeing S\_API errors in my logs when I start the container?](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
-    - [Im using Apple silicon type of hardware, can I run this?](#im-using-apple-silicon-type-of-hardware-can-i-run-this)
-    - [I have changed the `BaseCampWorkerMaxNum` settings, why are changes un-affected on the server?](#i-have-changed-the-basecampworkermaxnum-settings-why-are-changes-un-affected-on-the-server)
+    - [I'm seeing S\_API errors in my logs when I start the container?](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
+    - [I'm using Apple silicon type of hardware, can I run this?](#im-using-apple-silicon-type-of-hardware-can-i-run-this)
+    - [I changed the `BaseCampWorkerMaxNum` setting, why didn't this update the server?](#i-changed-the-basecampworkermaxnum-setting-why-didnt-this-update-the-server)
   - [Planned features in the future](#planned-features-in-the-future)
   - [Software used](#software-used)
 
@@ -43,7 +44,7 @@ ___
 
 If you need support for this Docker image:
 
-- Feel free to create a new issue. 
+- Feel free to create a new issue.
   - You can reference other issues if you're experiencing a similar problem via #issue-number.
 - Follow the instructions and answer the questions of people who are willing to help you.
 - Once your issue is resolved, please close it and please consider giving this repo and the [Docker-Hub repository](https://hub.docker.com/repository/docker/jammsen/palworld-dedicated-server) a star.
@@ -72,9 +73,9 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 2. Set up Port-Forwarding or NAT for the ports in the Docker-Compose file.
 3. Pull the latest version of the image with `docker pull jammsen/palworld-dedicated-server:latest`.
 4. Download the [docker-compose.yml](docker-compose.yml) and [default.env](default.env).
-5. Set up the `docker-compose.yml` and `default.env` to your liking. 
+5. Set up the `docker-compose.yml` and `default.env` to your liking.
    1. Refer to the [Environment-Variables](#environment-variables) section for more information.
-6. Start the container via `docker-compose up -d && docker-compose logs -f`. 
+6. Start the container via `docker-compose up -d && docker-compose logs -f`.
    1. Watch the log, if no errors occur you can close the logs with ctrl+c.
 7. Now have fun and happy gaming!
 
@@ -91,6 +92,7 @@ See [example docker-compose.yml](docker-compose.yml).
 ## Run RCON commands
 
 Open a shell into your container via `docker exec -ti palworld-dedicated-server bash`, then you can run commands against the gameserver via the command `rcon` or `rconcli`
+
 ```shell
 $:~/steamcmd$ rcon showplayers
 name,playeruid,steamid
@@ -99,6 +101,7 @@ Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
 $:~/steamcmd$ rcon save
 Complete Save
 ```
+
 > **Important:** Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
 
 ## Webhook integration
@@ -115,25 +118,33 @@ After that the server should send messages in a Discord-Compatible way to your w
 * Server starting
 * Server stopped
 
+## Deploy with Helm
+
+A Helm chart to deploy this container can be found at [palworld-helm](https://github.com/caleb-devops/palworld-helm).
+
 ## FAQ
 
 ### How can I use the interactive console in Portainer with this image?
+
 You can run this `docker exec -ti palworld-dedicated-server bash' or you could navigate to the **"Stacks"** tab in Portainer, select your stack, and click on the container name. Then click on the **"Exec console"** button.
 
 ### How can I look into the config of my Palworld container?
+
 You can run this `docker exec -ti palworld-dedicated-server cat /palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini` and it will show you the config inside the container.
 
-### Im seeing S_API errors in my logs when I start the container?
+### I'm seeing S_API errors in my logs when I start the container?
+
 Errors like `[S_API FAIL] Tried to access Steam interface SteamUser021 before SteamAPI_Init succeeded.` are safe to ignore.
 
-### Im using Apple silicon type of hardware, can I run this?
+### I'm using Apple silicon type of hardware, can I run this?
+
 You can try to insert in your docker-compose file this parameter `platform: linux/amd64` at the palworld service. This isnt a special fix for Apple silicon, but to run on other than x86 hosts. The support for arm exists only by enforcing x86 emulation, if that isnt to host already. Rosetta is doing the translation/emulation.
 
-### I have changed the `BaseCampWorkerMaxNum` settings, why are changes un-affected on the server?
+### I changed the `BaseCampWorkerMaxNum` setting, why didn't this update the server?
 
-It is a confirm bug, that changing `BaseCampWorkerMaxNum` in the `PalWorldSettings.ini` has no affect on the server. There are tools out there to help with this, like this one: <https://github.com/legoduded/palworld-worldoptions>
+This is a confirmed bug. Changing `BaseCampWorkerMaxNum` in the `PalWorldSettings.ini` has no affect on the server. There are tools out there to help with this, like this one: <https://github.com/legoduded/palworld-worldoptions>
 
-**PLEASE NOTE** that adding `WorldOption.sav` will breaking `PalWorldSetting.ini` and if that happens all the other settings won't be changeable anymore unless that specific tool is used everytime.
+**PLEASE NOTE** Adding `WorldOption.sav` will break `PalWorldSetting.ini`. To make changes, you must update your `WorldOption.sav` again.
 
 ## Planned features in the future
 
