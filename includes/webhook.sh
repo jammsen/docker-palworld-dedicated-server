@@ -16,8 +16,18 @@ generate_post_data() {
 EOF
 }
 
+function check_webhook_enabled() {
+  [[ -n "$WEBHOOK_ENABLED" && "$WEBHOOK_ENABLED" == "true" ]]
+}
+
+
 # Function to send a notification to a webhook
 send_webhook_notification() {
+
+  if ! check_webhook_enabled; then
+    return
+  fi
+
   local title="$1"
   local description="$2"
   local color="$3"
@@ -27,6 +37,7 @@ send_webhook_notification() {
   # Prod Curl
   curl --silent --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
 }
+
 
 #Aliases to use in scripts
 send_start_notification() {

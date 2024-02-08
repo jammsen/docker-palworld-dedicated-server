@@ -8,5 +8,5 @@ function setup_crons() {
 
     /usr/local/bin/supercronic -passthrough-logs cronlist &
 
-    es ">>> Supercronic started\n"
+    es ">>> Supercronic started"
 }

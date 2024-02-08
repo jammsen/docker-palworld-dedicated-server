@@ -19,7 +19,7 @@ function start_server() {
     # https://stackoverflow.com/a/13864829
     # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02
 
-    es ">>> Starting the gameserver\n"
+    es ">>> Starting the gameserver"
     cd "$GAME_ROOT" || exit
 
     setup_configs
@@ -30,17 +30,17 @@ function start_server() {
         START_OPTIONS="$START_OPTIONS EpicApp=PalServer"
     fi
     if [[ -n $MULTITHREAD_ENABLED ]] && [[ $MULTITHREAD_ENABLED == "true" ]]; then
-        ei "> Setting Multi-Core-Enhancements to enabled\n"
+        ei "> Setting Multi-Core-Enhancements to enabled"
         START_OPTIONS="$START_OPTIONS -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
     fi
-    if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-        send_start_notification
-    fi
+
+    send_start_notification
+
     ./PalServer.sh "$START_OPTIONS"
 }
 
 function stop_server() {
-    ew ">>> Stopping server...\n"
+    ew ">>> Stopping server..."
 
     if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
         save_and_shutdown_server
@@ -49,11 +49,9 @@ function stop_server() {
 	kill -SIGTERM "$(pidof PalServer-Linux-Test)"
 	tail --pid="$(pidof PalServer-Linux-Test)" -f 2>/dev/null
 
-    if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-        send_stop_notification
-    fi
+    send_stop_notification
 
-    ew ">> Server stopped gracefully.\n\n"
+    ew ">> Server stopped gracefully."
 
     exit 143;
 }
@@ -71,7 +69,7 @@ function start_handlers() {
     # If SIGTERM is sent to the process, call term_handler function
     trap 'kill ${!}; term_handler' SIGTERM
 
-    es ">>> Handlers started.\n"
+    es ">>> Handlers started."
 }
 
 
@@ -96,14 +94,14 @@ function start_main() {
 
 while true
 do
-    es ">>>> Starting server manager <<<<\n"
+    es ">>>> Starting server manager <<<<"
     start_handlers
 
     # Start the server manager
     start_main &
 
     killpid="$!"
-    ei "> Server main thread started with pid ${killpid}\n"
+    ei "> Server main thread started with pid ${killpid}"
     wait ${killpid}
     
     send_stop_notification
