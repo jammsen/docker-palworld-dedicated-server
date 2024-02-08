@@ -4,26 +4,52 @@
 # Ansi Default Color Codes https://hyperskill.org/learn/step/18193#terminal-support
 # Use ANSI whenever possible. Makes logs compatible with almost all systems.
 
-# Aliases for colorful echos
+# Aliases for colorful echos with newlines
 function e() { 
     colorful_echos --base "${@}"
+    echo ""
 }
 
 function ee() { 
     colorful_echos --error "${@}"
+    echo ""
 }
 
 function ei() { 
     colorful_echos --info "${@}"
+    echo ""
 }
 
 function es() { 
     colorful_echos --success "${@}"
+    echo ""
 }
 
 function ew() { 
     colorful_echos --warning "${@}"
+    echo ""
 }
+# Aliases for colorful echos without newlines
+function e_n() { 
+    colorful_echos --base "${@}"
+}
+
+function ee_n() { 
+    colorful_echos --error "${@}"
+}
+
+function ei_n() { 
+    colorful_echos --info "${@}"
+}
+
+function es_n() { 
+    colorful_echos --success "${@}"
+}
+
+function ew_n() { 
+    colorful_echos --warning "${@}"
+}
+
 
 # This creates a wrapper for echo to add colors
 function colorful_echos() {
