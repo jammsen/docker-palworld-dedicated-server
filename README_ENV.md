@@ -11,7 +11,7 @@ These settings control the behavior of the Docker container:
 > **Important:** If you want to change the server settings via environment variables use the default value (`auto`) for the environment variable `SERVER_SETTINGS_MODE`, otherwise change it to `manual` and edit the config file directly.
 
 | Variable                        | Description                                                                                                                                                                                                                     | Default value                  | Allowed values                                                                                                                                                                                    |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | TZ                              | Timezone used for time stamping server backups                                                                                                                                                                                  | Europe/Berlin                  | See [TZ identifiers](#tz-identifiers)                                                                                                                                                             |
 | ALWAYS_UPDATE_ON_START          | Updates the server on startup                                                                                                                                                                                                   | true                           | false/true                                                                                                                                                                                        |
 | MULTITHREAD_ENABLED             | Sets options for "Improved multi-threaded CPU performance"                                                                                                                                                                      | true                           | false/true                                                                                                                                                                                        |
@@ -22,6 +22,7 @@ These settings control the behavior of the Docker container:
 | BACKUP_RETENTION_AMOUNT_TO_KEEP | Defines how many backups in numbers to keep                                                                                                                                                                                     | 30                             | Integer                                                                                                                                                                                           |
 | SERVER_SETTINGS_MODE            | Determines whether settings can be modified via environment variables or via file, except `COMMUNITY_SERVER` and `MULTITHREAD_ENABLED`!                                                                                         | `auto`                         | `auto`: Settings are modified only by environment variables, manual edits will be ignored<br>`manual`: Settings are modified only by editing the file directly, environment variables are ignored |
 | STEAMCMD_VALIDATE_FILES         | Set to enabled SteamCMD will also validate the gameserver files, making sure nothing is corrupted and also overwrite any file changes of the source<br>See https://developer.valvesoftware.com/wiki/SteamCMD#Downloading_an_App | true                           | false/true                                                                                                                                                                                        |
+| REMOTE_CONTROL                  | If enabled server will not automatically start on container start and can be started/stopped via webhook call. Stop of the gameserver does not exit the container to allow external restart.                                    | false                          | false/true                                                                                                                                                                                        |
 
 #### TZ identifiers
 
@@ -30,6 +31,15 @@ The `TZ` setting affects logging output and the backup function. [TZ identifiers
 #### Cron expression
 
 The `BACKUP_CRON_EXPRESSION` setting affects the backup function. In a Cron-Expression, you define an interval for when to run jobs. This image uses Supercronic for crons, see https://github.com/aptible/supercronic#crontab-format or https://crontab-generator.org
+
+#### Remote Control
+If you enable the container setting the Container will not autostart the gameserver, it will however provide webhooks that allow you to control the server remotely. Hooks provided are
+
+`{containerip}:9000/hooks/start` - starts the gameserver
+`{containerip}:9000/hooks/stop` - stops the gameserver
+
+In order to utilize the webhooks expose port 9000 to your host/service and call them via `GET`
+
 
 ###  Gameserver-Settings
 
