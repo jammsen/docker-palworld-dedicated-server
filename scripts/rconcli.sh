@@ -1,6 +1,6 @@
 #!/bin/bash
-
 # shellcheck disable=SC2148,SC1091
+
 source /includes/colors.sh
 
 # Function to run RCON commands
@@ -13,6 +13,7 @@ run_rcon_cli() {
 
 
     if [[ -z ${RCON_ENABLED+x} ]] || [[ "$RCON_ENABLED" != "true" ]]; then
+        ee ">>> RCON is not enabled. Aborting RCON command ...\n"
         exit
     fi
 
