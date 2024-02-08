@@ -53,7 +53,7 @@ function stop_server() {
         send_stop_notification
     fi
 
-    ew "> Server stopped gracefully.\n\n"
+    ew ">> Server stopped gracefully.\n\n"
 
     exit 143;
 }
@@ -71,12 +71,12 @@ function start_handlers() {
     # If SIGTERM is sent to the process, call term_handler function
     trap 'kill ${!}; term_handler' SIGTERM
 
-    es "> Handlers started.\n"
+    es ">>> Handlers started.\n"
 }
 
 
-### Main Function
 
+### Server Manager Initialization
 function start_main() {
 
     check_for_default_credentials
@@ -94,10 +94,6 @@ function start_main() {
     start_server
 }
 
-
-### Server Manager Initialization
-
-# Server manager is running in a loop, so we can restart the server
 while true
 do
     es ">>>> Starting server manager <<<<\n"
@@ -111,7 +107,6 @@ do
     wait ${killpid}
     
     send_stop_notification
-    ew "\n\n>>> Exiting server...\n"
 
     exit 0;
 done
