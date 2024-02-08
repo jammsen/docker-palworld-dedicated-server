@@ -130,37 +130,27 @@ function create_backup() {
     
     check_required_directories
 
-    DATE=$(date +%Y%m%d_%H%M%S)
-    TIME=$(date +%H-%M-%S)
+    date=$(date +%Y%m%d_%H%M%S)
+    time=$(date +%H-%M-%S)
 
-    backup_file_name="saved-${DATE}.tar.gz"
+    backup_file_name="saved-${date}.tar.gz"
 
     mkdir -p "${LOCAL_BACKUP_PATH}"
 
-    if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
-        rcon "broadcast ${TIME}-Saving-in-5-seconds"
-        sleep 5
-        rcon 'broadcast Saving-world...'
-        rcon 'save'
-        sleep 1
-        rcon 'broadcast Saving-done'
-        rcon 'broadcast Creating-backup'
-        sleep 1
-    fi
+    rconcli "broadcast ${time}-Saving-in-5-seconds"
+    sleep 5
+    rconcli 'broadcast Saving-world...'
+    rconcli 'save'
+    rconcli 'broadcast Saving-done'
+    rconcli 'broadcast Creating-backup'
 
     # Create backup
     if ! tar cfz "${LOCAL_BACKUP_PATH}/${backup_file_name}" -C "${LOCAL_GAME_PATH}/" "Saved" ; then
-        if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
-            sleep 1
-            rcon 'broadcast Backup-done'
-        fi
-        ee ">> Backup failed.\n"
+        rconcli 'broadcast Backup-failed'
+        ee ">>> Backup failed.\n"
     else
-        if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
-            sleep 1
-            rcon 'broadcast Backup-done'
-        fi
-        es ">> Backup '${backup_file_name}' created successfully.\n"
+        rconcli 'broadcast Backup-done'
+        es ">>> Backup '${backup_file_name}' created successfully.\n"
     fi 
 
     if [[ -n ${LOCAL_BACKUP_RETENTION_POLICY} ]] && [[ ${LOCAL_BACKUP_RETENTION_POLICY} == "true" ]] && [[ ${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP} =~ ^[0-9]+$ ]]; then
@@ -173,12 +163,12 @@ function list_backups() {
     local num_backup_entries=${1}
 
     if [ ! -d "${LOCAL_BACKUP_PATH}" ]; then
-        ee ">> Backup directory ${LOCAL_BACKUP_PATH} does not exist.\n"
+        ee ">>> Backup directory ${LOCAL_BACKUP_PATH} does not exist.\n"
         exit 1
     fi
 
     if [ -z "$(ls -A "${LOCAL_BACKUP_PATH}")" ]; then
-        ei ">> No backups in the backup directory ${LOCAL_BACKUP_PATH}.\n"
+        ew ">> No backups in the backup directory ${LOCAL_BACKUP_PATH}.\n"
         exit 0
     fi
 
@@ -187,10 +177,10 @@ function list_backups() {
 
     if [ -z "${num_backup_entries}" ]; then
         file_list=${files}
-        es ">> Listing ${total_file_count} backup file(s)!\n"
+        es ">>> Listing ${total_file_count} backup file(s)!\n"
     else
         file_list=$(echo "${files}" | head -n "${num_backup_entries}")
-        es ">> Listing ${num_backup_entries} out of backup ${total_file_count} file(s).\n"
+        es ">>> Listing ${num_backup_entries} out of backup ${total_file_count} file(s).\n"
     fi
 
     for file in $file_list; do
@@ -215,7 +205,7 @@ function clean_backups() {
     fi
 
     if ! [[ "$num_files_to_keep" =~ ^[0-9]+$ ]]; then
-        ee ">> Invalid argument '${num_files_to_keep}'. Please provide a positive integer.\n\n"
+        ee ">>> Invalid argument '${num_files_to_keep}'. Please provide a positive integer.\n\n"
         exit 1
     fi
 
@@ -242,7 +232,6 @@ function clean_backups() {
 
 
 ### Backup Manager Initialization
-
 function initializeBackupManager() {
     parse_arguments "${@}"
     # Check if the backup directory exists, if not create it
@@ -252,5 +241,4 @@ function initializeBackupManager() {
     fi
 }
 
-# Call the initializeBackupManager function and pass the arguments
 initializeBackupManager "${@}"
