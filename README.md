@@ -28,6 +28,7 @@ ___
   - [Docker-Compose examples](#docker-compose-examples)
     - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
   - [Run RCON commands](#run-rcon-commands)
+  - [Backup Manager](#backup-manager)
   - [Webhook integration](#webhook-integration)
     - [Supported events](#supported-events)
   - [Deploy with Helm](#deploy-with-helm)
@@ -69,19 +70,20 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 
 ## Getting started
 
-1. Create a `game` sub-directory on your Docker-Node in your game-server-directory (Example: `/srv/palworld`). Give it full ownership with `chown -R 1000:1000 game/` or permissions with `chmod 777 game`.
+1. Create a `game` sub-directory on your Docker-Node in your game-server-directory (Example: `/srv/palworld`).
+   - This directory will be used to store the game server files, including configs and savegames.
 2. Set up Port-Forwarding or NAT for the ports in the Docker-Compose file.
 3. Pull the latest version of the image with `docker pull jammsen/palworld-dedicated-server:latest`.
 4. Download the [docker-compose.yml](docker-compose.yml) and [default.env](default.env).
 5. Set up the `docker-compose.yml` and `default.env` to your liking.
-   1. Refer to the [Environment-Variables](#environment-variables) section for more information.
+   - Refer to the [Environment-Variables](#environment-variables) section for more information.
 6. Start the container via `docker-compose up -d && docker-compose logs -f`.
-   1. Watch the log, if no errors occur you can close the logs with ctrl+c.
-7. Now have fun and happy gaming!
+   - Watch the log, if no errors occur you can close the logs with ctrl+c.
+7. Now have fun and happy gaming! 🎮😉
 
 ## Environment variables
 
-See [this file](README_ENV.md) for the documentation
+See [this file](/docs/ENV_VARS.md) for the documentation
 
 ## Docker-Compose examples
 
@@ -91,18 +93,73 @@ See [example docker-compose.yml](docker-compose.yml).
 
 ## Run RCON commands
 
-Open a shell into your container via `docker exec -ti palworld-dedicated-server bash`, then you can run commands against the gameserver via the command `rcon` or `rconcli`
+Open a shell into your container via `docker exec -ti palworld-dedicated-server bash`, then you can run commands against the gameserver via the command `rconcli`
 
 ```shell
-$:~/steamcmd$ rcon showplayers
+$:~/steamcmd$ rconcli showplayers
 name,playeruid,steamid
-$:~/steamcmd$ rcon info
+$:~/steamcmd$ rconcli info
 Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
-$:~/steamcmd$ rcon save
+$:~/steamcmd$ rconcli save
+Complete Save
+```
+
+You can also use `docker exec palworld-dedicated-server rconcli <command>` right on your terminal/shell.
+
+```shell
+$ docker exec palworld-dedicated-server rconcli showplayers
+name,playeruid,steamid
+
+$ docker exec palworld-dedicated-server rconcli info
+Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
+
+$ docker exec palworld-dedicated-server rconcli save
 Complete Save
 ```
 
 > **Important:** Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
+
+## Backup Manager
+
+> [!WARNING]
+> If RCON is disabled, the backup manager won't do saves via RCON before creating a backup.
+> This means that the backup will be created from the last auto-save of the server.
+> This can lead to data-loss and/or savegame corruption.
+>
+> **Recommendation:** Please make sure that RCON is enabled before using the backup manager.
+
+Usage: `docker exec palworld-dedicated-server backup [command] [arguments]`
+
+| Command | Argument           | Required/Optional | Default Value                     | Values           | Description                                                                                                                                                                          |
+| ------- | ------------------ | ----------------- | --------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| create  | N/A                | N/A               | N/A                               | N/A              | Creates a backup.                                                                                                                                                                    |
+| list    | `<number_to_list>` | Optional          | N/A                               | Positive numbers | Lists all backups.<br>If `<number_to_list>` is specified, only the most<br>recent `<number_to_list>` backups are listed.                                                             |
+| clean   | `<number_to_keep>` | Optional          | `BACKUP_RETENTION_AMOUNT_TO_KEEP` | Positive numbers | Cleans up backups.<br>If `<number_to_list>` is specified, cleans and keeps<br>the most recent`<number_to_keep>` backups.<br>If not, default to `BACKUP_RETENTION_AMOUNT_TO_KEEP` var |
+
+Examples:
+
+```shell
+$ docker exec palworld-dedicated-server backup
+>> Backup 'saved-20240203_032855.tar.gz' created successfully.
+```
+
+```shell
+$ docker exec palworld-dedicated-server backup list
+>> Listing 2 backup file(s)!
+2024-02-03 03:28:55 | saved-20240203_032855.tar.gz
+2024-02-03 03:28:00 | saved-20240203_032800.tar.gz
+```
+
+```shell
+$ docker exec palworld-dedicated-server backup_clean 3
+>> 1 backup(s) cleaned, keeping 2 backups(s).
+```
+
+```shell
+$ docker exec palworld-dedicated-server backup_list   
+>> Listing 1 out of backup 2 file(s).
+2024-02-03 03:30:00 | saved-20240203_033000.tar.gz
+```
 
 ## Webhook integration
 
@@ -112,11 +169,17 @@ To enable webhook integration, you need to set the following environment variabl
 WEBHOOK_ENABLED=true
 WEBHOOK_URL="https://your.webhook.url"
 ```
+
 After that the server should send messages in a Discord-Compatible way to your webhook.
 
+> You can find more details about these variables [here](/docs/ENV_VARS.md#webhook-settings).
+
 ### Supported events
-* Server starting
-* Server stopped
+
+- Server starting
+- Server stopped
+- Server updating
+- Server updating and validating
 
 ## Deploy with Helm
 
@@ -126,25 +189,26 @@ A Helm chart to deploy this container can be found at [palworld-helm](https://gi
 
 ### How can I use the interactive console in Portainer with this image?
 
-You can run this `docker exec -ti palworld-dedicated-server bash' or you could navigate to the **"Stacks"** tab in Portainer, select your stack, and click on the container name. Then click on the **"Exec console"** button.
+> You can run this `docker exec -ti palworld-dedicated-server bash' or you could navigate to the **"Stacks"** tab in Portainer, select your stack, and click on the container name. Then click on the **"Exec console"** button.
 
 ### How can I look into the config of my Palworld container?
 
-You can run this `docker exec -ti palworld-dedicated-server cat /palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini` and it will show you the config inside the container.
+> You can run this `docker exec -ti palworld-dedicated-server cat /palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini` and it will show you the config inside the container.
 
 ### I'm seeing S_API errors in my logs when I start the container?
 
-Errors like `[S_API FAIL] Tried to access Steam interface SteamUser021 before SteamAPI_Init succeeded.` are safe to ignore.
+> Errors like `[S_API FAIL] Tried to access Steam interface SteamUser021 before SteamAPI_Init succeeded.` are safe to ignore.
 
 ### I'm using Apple silicon type of hardware, can I run this?
 
-You can try to insert in your docker-compose file this parameter `platform: linux/amd64` at the palworld service. This isnt a special fix for Apple silicon, but to run on other than x86 hosts. The support for arm exists only by enforcing x86 emulation, if that isnt to host already. Rosetta is doing the translation/emulation.
+> You can try to insert in your docker-compose file this parameter `platform: linux/amd64` at the palworld service. This isn't a special fix for Apple silicon, but to run on other than x86 hosts. The support for arm exists only by enforcing x86 emulation, if that isn't to host already. Rosetta is doing the translation/emulation.
 
 ### I changed the `BaseCampWorkerMaxNum` setting, why didn't this update the server?
 
-This is a confirmed bug. Changing `BaseCampWorkerMaxNum` in the `PalWorldSettings.ini` has no affect on the server. There are tools out there to help with this, like this one: <https://github.com/legoduded/palworld-worldoptions>
+> This is a confirmed bug. Changing `BaseCampWorkerMaxNum` in the `PalWorldSettings.ini` has no effect on the server. There are tools out there to help with this, like this one: <https://github.com/legoduded/palworld-worldoptions>
 
-**PLEASE NOTE** Adding `WorldOption.sav` will break `PalWorldSetting.ini`. To make changes, you must update your `WorldOption.sav` again.
+> [!WARNING]
+> Adding `WorldOption.sav` will break `PalWorldSetting.ini`. So any new changes to the settings (either on the file or via ENV VARS), you will have to create a new `WorldOption.sav` and update it everytime for those changes to have effect.
 
 ## Planned features in the future
 
