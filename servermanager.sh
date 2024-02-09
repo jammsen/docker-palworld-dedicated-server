@@ -21,19 +21,19 @@ function start_server() {
     setup_engine_ini
     setup_pal_world_settings_ini
 
-    START_OPTIONS=""
+    START_OPTIONS=()
     if [[ -n $COMMUNITY_SERVER ]] && [[ $COMMUNITY_SERVER == "true" ]]; then
         echo "> Setting Community-Mode to enabled"
-        START_OPTIONS="$START_OPTIONS EpicApp=PalServer"
+        START_OPTIONS+=("EpicApp=PalServer")
     fi
     if [[ -n $MULTITHREAD_ENABLED ]] && [[ $MULTITHREAD_ENABLED == "true" ]]; then
         echo "> Setting Multi-Core-Enchancements to enabled"
-        START_OPTIONS="$START_OPTIONS -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS"
+        START_OPTIONS+=("-useperfthreads" "-NoAsyncLoadingThread" "-UseMultithreadForDS")
     fi
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
         send_start_notification
     fi
-    ./PalServer.sh "$START_OPTIONS"
+    ./PalServer.sh "${START_OPTIONS[@]}"
 }
 
 function start_main() {
