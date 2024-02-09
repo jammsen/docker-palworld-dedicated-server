@@ -36,5 +36,5 @@ body:
       label: Final checks
       description: Before submitting, please understand and agree to this
       options:
-        - label: I understand that this is a feature request function. I also unterstand that if i use this to report a bug report, that my issue might be un-answered closed.
+        - label: I understand that this is a feature request function. I also understand that if i use this to report a bug report, that my issue might be un-answered closed.
           required: true

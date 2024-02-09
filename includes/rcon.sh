@@ -1,4 +1,5 @@
-#Save and shutdown the server
+# shellcheck disable=SC2148
+
 function save_and_shutdown_server() {
     rcon 'broadcast Server-shutdown-was-requested-init-saving'
     rcon 'save'

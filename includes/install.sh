@@ -1,27 +1,30 @@
-# Function to install the gameserver
-function install_server() {
-    # force a fresh install of all
-    echo ">>> Doing a fresh install of the gameserver"
+# shellcheck disable=SC2148,SC1091
+
+source /includes/colors.sh
+
+function fresh_install_server() {
+    ei ">>> Doing a fresh install of the gameserver...\n"
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-        send_webhook_notification "Installing server" "Server is being installed" "$WEBHOOK_INFO_COLOR"
+        send_install_notification
     fi
-    /home/steam/steamcmd/steamcmd.sh +force_install_dir "$GAME_PATH" +login anonymous +app_update 2394010 validate +quit
+    "${STEAMCMD_PATH}"/steamcmd.sh +force_install_dir "$GAME_ROOT" +login anonymous +app_update 2394010 validate +quit
+    es "> Done installing the gameserver\n"
 }
 
-# Function to update the gameserver
 function update_server() {
-    # force an update and validation
     if [[ -n $STEAMCMD_VALIDATE_FILES ]] && [[ $STEAMCMD_VALIDATE_FILES == "true" ]]; then
-        echo ">>> Doing an update and validate of the gameserver files"
+        ei ">>> Doing an update and validate of the gameserver files...\n"
         if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-            send_webhook_notification "Updating server" "Server is being updated and validated" "$WEBHOOK_INFO_COLOR"
+            send_update_and_validate_notification
         fi
-        /home/steam/steamcmd/steamcmd.sh +force_install_dir "$GAME_PATH" +login anonymous +app_update 2394010 validate +quit
+        "${STEAMCMD_PATH}"/steamcmd.sh +force_install_dir "$GAME_ROOT" +login anonymous +app_update 2394010 validate +quit
+        es ">>> Done updating and validating the gameserver files\n"
     else
-        echo ">>> Doing an update of the gameserver files"
+        ei ">>> Doing an update of the gameserver files...\n"
         if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-            send_webhook_notification "Updating server" "Server is being updated" "$WEBHOOK_INFO_COLOR"
+            send_update_notification
         fi
-        /home/steam/steamcmd/steamcmd.sh +force_install_dir "$GAME_PATH" +login anonymous +app_update 2394010 +quit
+        "${STEAMCMD_PATH}"/steamcmd.sh +force_install_dir "$GAME_ROOT" +login anonymous +app_update 2394010 +quit
+        es ">>> Done updating the gameserver files\n"
     fi
 }
