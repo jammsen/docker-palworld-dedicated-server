@@ -1,7 +1,7 @@
 # shellcheck disable=SC2148,SC1091
+
 source /includes/colors.sh
 
-# Function to check if the default passwords are replaced
 function check_for_default_credentials() {
     ei "> Checking for existence of default credentials\n"
     if [[ -n $ADMIN_PASSWORD ]] && [[ $ADMIN_PASSWORD == "adminPasswordHere" ]]; then

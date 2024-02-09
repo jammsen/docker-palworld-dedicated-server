@@ -1,7 +1,5 @@
 #!/bin/bash
-
 # Wrapper for backup manager
-
 # Add '--' to the beginning of the first argument
 arg1="--${1}"
 

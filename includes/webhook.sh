@@ -16,7 +16,6 @@ generate_post_data() {
 EOF
 }
 
-# Function to send a notification to a webhook
 send_webhook_notification() {
   local title="$1"
   local description="$2"

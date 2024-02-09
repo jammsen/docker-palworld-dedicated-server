@@ -93,13 +93,16 @@ See [example docker-compose.yml](docker-compose.yml).
 
 ## Run RCON commands
 
+> [!NOTE]
+> Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
+
 Open a shell into your container via `docker exec -ti palworld-dedicated-server bash`, then you can run commands against the gameserver via the command `rconcli`
 
 ```shell
 $:~/steamcmd$ rconcli showplayers
 name,playeruid,steamid
 $:~/steamcmd$ rconcli info
-Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
+Welcome to Pal Server[v0.1.4.1] jammsen-docker-generated-20384
 $:~/steamcmd$ rconcli save
 Complete Save
 ```
@@ -111,13 +114,11 @@ $ docker exec palworld-dedicated-server rconcli showplayers
 name,playeruid,steamid
 
 $ docker exec palworld-dedicated-server rconcli info
-Welcome to Pal Server[v0.1.3.0] jammsen-docker-generated-20384
+Welcome to Pal Server[v0.1.4.1] jammsen-docker-generated-20384
 
 $ docker exec palworld-dedicated-server rconcli save
 Complete Save
 ```
-
-> **Important:** Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
 
 ## Backup Manager
 
@@ -140,43 +141,44 @@ Examples:
 
 ```shell
 $ docker exec palworld-dedicated-server backup
->> Backup 'saved-20240203_032855.tar.gz' created successfully.
+> Backup 'saved-20240203_032855.tar.gz' created successfully.
 ```
 
 ```shell
 $ docker exec palworld-dedicated-server backup list
->> Listing 2 backup file(s)!
+> Listing 2 backup file(s)!
 2024-02-03 03:28:55 | saved-20240203_032855.tar.gz
 2024-02-03 03:28:00 | saved-20240203_032800.tar.gz
 ```
 
 ```shell
 $ docker exec palworld-dedicated-server backup_clean 3
->> 1 backup(s) cleaned, keeping 2 backups(s).
+> 1 backup(s) cleaned, keeping 2 backups(s).
 ```
 
 ```shell
 $ docker exec palworld-dedicated-server backup_list   
->> Listing 1 out of backup 2 file(s).
+> Listing 1 out of backup 2 file(s).
 2024-02-03 03:30:00 | saved-20240203_033000.tar.gz
 ```
 
 ## Webhook integration
 
-To enable webhook integration, you need to set the following environment variables in the `default.env`:
+To enable webhook integrations, you need to set the following environment variables in the `default.env`:
 
 ```shell
 WEBHOOK_ENABLED=true
 WEBHOOK_URL="https://your.webhook.url"
 ```
 
-After that the server should send messages in a Discord-Compatible way to your webhook.
+After enabling the server should send messages in a Discord-Compatible way to your webhook url.
 
 > You can find more details about these variables [here](/docs/ENV_VARS.md#webhook-settings).
 
 ### Supported events
 
-- Server starting
+- Server starting 
+  - This even is not server started. Just add like 5 seconds on top and the server is online
 - Server stopped
 - Server updating
 - Server updating and validating
@@ -208,11 +210,11 @@ A Helm chart to deploy this container can be found at [palworld-helm](https://gi
 > This is a confirmed bug. Changing `BaseCampWorkerMaxNum` in the `PalWorldSettings.ini` has no effect on the server. There are tools out there to help with this, like this one: <https://github.com/legoduded/palworld-worldoptions>
 
 > [!WARNING]
-> Adding `WorldOption.sav` will break `PalWorldSetting.ini`. So any new changes to the settings (either on the file or via ENV VARS), you will have to create a new `WorldOption.sav` and update it everytime for those changes to have effect.
+> Adding `WorldOption.sav` will break `PalWorldSetting.ini`. So any new changes to the settings (either on the file or via ENV VARS), you will have to create a new `WorldOption.sav` and update it every time for those changes to have an effect.
 
 ## Planned features in the future
 
-- Feel free to suggest something
+- Feel free to suggest something. Under `Issues` there is a Feature Request issue-type.
 
 ## Software used
 

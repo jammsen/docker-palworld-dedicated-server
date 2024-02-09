@@ -4,9 +4,9 @@
 source /includes/colors.sh
 
 # Default values if the environment variables exist
-LOCAL_BACKUP_PATH=${BACKUP_PATH} # Dir where the backup files are stored
-LOCAL_GAME_PATH=${GAME_PATH} # Dir where the game save files are stored
-LOCAL_GAME_SAVE_PATH=${GAME_SAVE_PATH} # Dir where the game save files are stored
+LOCAL_BACKUP_PATH=${BACKUP_PATH} # Directory where the backup files are stored
+LOCAL_GAME_PATH=${GAME_PATH} # Directory where the game save files are stored
+LOCAL_GAME_SAVE_PATH=${GAME_SAVE_PATH} # Directory where the game save files are stored
 LOCAL_BACKUP_RETENTION_POLICY=${BACKUP_RETENTION_POLICY} # Number of backup files to keep
 LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP=${BACKUP_RETENTION_AMOUNT_TO_KEEP} # Number of backup files to keep
 
@@ -43,7 +43,7 @@ function parse_arguments() {
         exit 1
     fi
 
-    # Check the command
+    # Evaluate the command
     case "$1" in
         --create)
             if [ ${#} -ne 1 ]; then
@@ -123,16 +123,11 @@ function check_required_directories() {
     fi
 }
 
-
-### Backup Functions
-
 function create_backup() {
-    
     check_required_directories
 
     date=$(date +%Y%m%d_%H%M%S)
     time=$(date +%H-%M-%S)
-
     backup_file_name="saved-${date}.tar.gz"
 
     mkdir -p "${LOCAL_BACKUP_PATH}"
@@ -144,7 +139,6 @@ function create_backup() {
     rconcli 'broadcast Saving-done'
     rconcli 'broadcast Creating-backup'
 
-    # Create backup
     if ! tar cfz "${LOCAL_BACKUP_PATH}/${backup_file_name}" -C "${LOCAL_GAME_PATH}/" "Saved" ; then
         rconcli 'broadcast Backup-failed'
         ee ">>> Backup failed.\n"
@@ -154,7 +148,6 @@ function create_backup() {
     fi 
 
     if [[ -n ${LOCAL_BACKUP_RETENTION_POLICY} ]] && [[ ${LOCAL_BACKUP_RETENTION_POLICY} == "true" ]] && [[ ${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP} =~ ^[0-9]+$ ]]; then
-        #clean_backups
         ls -1t "${LOCAL_BACKUP_PATH}"/saved-*.tar.gz | tail -n +"$(($LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP + 1))" | xargs -d '\n' rm -f --
     fi
 }
@@ -168,7 +161,7 @@ function list_backups() {
     fi
 
     if [ -z "$(ls -A "${LOCAL_BACKUP_PATH}")" ]; then
-        ew ">> No backups in the backup directory ${LOCAL_BACKUP_PATH}.\n"
+        ew ">>> No backups in the backup directory ${LOCAL_BACKUP_PATH}.\n"
         exit 0
     fi
 
@@ -201,7 +194,7 @@ function clean_backups() {
     local num_files_to_keep=${1}
 
     if [[ -z "$num_files_to_keep" ]]; then
-        ew ">> Number of backups to keep is empty. Using default value of ${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP}.\n"
+        ew ">>> Number of backups to keep is empty. Using default value of ${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP}.\n"
     fi
 
     if ! [[ "$num_files_to_keep" =~ ^[0-9]+$ ]]; then
@@ -224,17 +217,14 @@ function clean_backups() {
         if [[ ${num_files} -lt ${num_files_to_keep} ]]; then
             num_files_to_keep="${num_files}"
         fi
-        es ">> ${num_files_to_delete} backup(s) cleaned, keeping ${num_files_to_keep} backups(s).\n"
+        es ">>> ${num_files_to_delete} backup(s) cleaned, keeping ${num_files_to_keep} backups(s).\n"
     else
         ei "> No backups to clean.\n"
     fi
 }
 
-
-### Backup Manager Initialization
 function initializeBackupManager() {
     parse_arguments "${@}"
-    # Check if the backup directory exists, if not create it
     if [ ! -d "${LOCAL_BACKUP_PATH}" ]; then
         es "> Backup directory ${LOCAL_BACKUP_PATH} doesn't exist. Creating it..."
         mkdir -p "${LOCAL_BACKUP_PATH}"

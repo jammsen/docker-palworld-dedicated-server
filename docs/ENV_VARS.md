@@ -15,7 +15,7 @@ These settings control the behavior of the Docker container:
 | TZ                              | Timezone used for time stamping server backups                                                                                                                                                                                  | Europe/Berlin                  | See [TZ identifiers](#tz-identifiers)                                                                                                                                                             |
 | ALWAYS_UPDATE_ON_START          | Updates the server on startup                                                                                                                                                                                                   | true                           | false/true                                                                                                                                                                                        |
 | MULTITHREAD_ENABLED             | Sets options for "Improved multi-threaded CPU performance"                                                                                                                                                                      | true                           | false/true                                                                                                                                                                                        |
-| COMMUNITY_SERVER                | Set to enabled, the server will appear in the Community-Serverlist.                                                                                                                                                             | true                           | false/true                                                                                                                                                                                        |
+| COMMUNITY_SERVER                | Set to enabled, the server will appear in the Community-Serverlist                                                                                                                                                             | true                           | false/true                                                                                                                                                                                        |
 | BACKUP_ENABLED                  | Backup function, creates backups in your `game` directory                                                                                                                                                                       | true                           | false/true                                                                                                                                                                                        |
 | BACKUP_CRON_EXPRESSION          | Needs a Cron-Expression - See [Cron expression](#cron-expression)                                                                                                                                                               | 0 * * * * (meaning every hour) | Cron-Expression                                                                                                                                                                                   |
 | BACKUP_RETENTION_POLICY         | Set to enabled, will cleanup old backups                                                                                                                                                                                        | false                          | false/true                                                                                                                                                                                        |
@@ -116,13 +116,13 @@ This section lists all the settings for the webhooks.
 
 > [!WARNING]
 > 
-> Please note that Hex-Colors are not supported. Instead, use the Decimal representation of the color.
+> Please note that Hex-Colors (Example #eeeeee) are not supported. Instead, use the Decimal representation of the color.
 > To convert a Hex-Color to its Decimal representation, you can use online tools such as [SpyColor](https://www.spycolor.com/).
-> After finding the Decimal representation, add it to the color field. Using Hex-Colors will cause errors.
+> Search for the Hex-Color and use the Decimal representation of that color. Using Hex-Colors will cause errors!
 
 | Variable                                | Description                                       | Default Value                           | Allowed Values    |
 | --------------------------------------- | ------------------------------------------------- | --------------------------------------- | ----------------- |
-| `WEBHOOK_ENABLED`                       | Determines if the webhook is enabled              | `false`                                 | `true`/`false`    |
+| `WEBHOOK_ENABLED`                       | Determines if the webhook is enabled              | `false`                                 | false/true    |
 | `WEBHOOK_URL`                           | The URL for the webhook                           | `YOUR-URL-IN-HERE`                      | Valid webhook URL |
 | `WEBHOOK_START_TITLE`                   | The title for the start webhook                   | `Server is starting`                    | Message           |
 | `WEBHOOK_START_DESCRIPTION`             | The description for the start webhook             | `The gameserver is starting`            | Message           |
@@ -136,8 +136,8 @@ This section lists all the settings for the webhooks.
 | `WEBHOOK_UPDATE_TITLE`                  | The title for the update webhook                  | `Updating server`                       | Message           |
 | `WEBHOOK_UPDATE_DESCRIPTION`            | The description for the update webhook            | `Server is being updated`               | Message           |
 | `WEBHOOK_UPDATE_COLOR`                  | The color for the update webhook                  | `2849520`                               | Color (see below) |
-| `WEBHOOK_UPDATE_VALIDATION_TITLE`       | The title for the update validation webhook       | `Updating and validating server`        | Message           |
-| `WEBHOOK_UPDATE_VALIDATION_DESCRIPTION` | The description for the update validation webhook | `Server is being updated and validated` | Message           |
-| `WEBHOOK_UPDATE_VALIDATION_COLOR`       | The color for the update validation webhook       | `2849520`                               | Color (see below) |
+| `WEBHOOK_UPDATE_VALIDATION_TITLE`       | The title for the update and validation webhook       | `Updating and validating server`        | Message           |
+| `WEBHOOK_UPDATE_VALIDATION_DESCRIPTION` | The description for the update and validation webhook | `Server is being updated and validated` | Message           |
+| `WEBHOOK_UPDATE_VALIDATION_COLOR`       | The color for the update and validation webhook       | `2849520`                               | Color (see below) |
 
 [Back to main](../README.md#environment-variables)

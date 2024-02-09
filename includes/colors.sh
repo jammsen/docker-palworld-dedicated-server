@@ -40,11 +40,11 @@ function colorful_echos() {
         exit 1
     fi
 
-    # Parse the arguments
+    # Parse arguments
     arg1=$1
     message=$2
 
-    # Set the color based on the argument
+    # Set color based on argument
     if [ "$arg1" == "--success" ]; then
         color="$SUCCESS"
     elif [ "$arg1" == "--error" ]; then
@@ -60,7 +60,7 @@ function colorful_echos() {
         return 0
     fi
 
-    # print the newlines in the beggining of the message
+    # print newlines in the beggining of the message
     while [ "${message:0:2}" = "\\n" ]; do
         # Print a newline
         echo ""
@@ -68,6 +68,6 @@ function colorful_echos() {
         message="${message:2}"
     done
 
-    # Print the message with the specified color
+    # Print message with the specified color
     echo -ne "${color}${message}${CLEAN}"
 }
