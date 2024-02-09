@@ -1,0 +1,60 @@
+name: Update README
+
+on:
+  push:
+    paths:
+      - 'docker-compose.yml'
+
+jobs:
+  update_readme:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.10
+
+    - name: Update README
+      run: |
+        python -c "
+        import re
+        import subprocess
+
+        # Read docker-compose.yml
+        with open('docker-compose.yml', 'r') as file:
+            docker_compose_content = file.read()
+
+        # Wrap docker-compose content within triple backticks for markdown code formatting
+        # and specify yaml for syntax highlighting
+        markdown_docker_compose_content = '```yaml\n' + docker_compose_content + '\n```'
+
+        # Read README.md
+        with open('README.md', 'r') as file:
+            readme_content = file.read()
+
+        # Define the pattern to find the docker-compose content between the markers
+        pattern = r'<!-- docker-compose-start -->(.*?)<!-- docker-compose-end -->'
+
+        # Replace the existing docker-compose content with the new one
+        new_readme_content = re.sub(pattern, '<!-- docker-compose-start -->\n' + markdown_docker_compose_content + '\n<!-- docker-compose-end -->', readme_content, flags=re.DOTALL)
+
+        # Write the updated content back to README.md
+        with open('README.md', 'w') as file:
+            file.write(new_readme_content)
+        "
+
+    - name: Commit changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add README.md
+        if git diff --quiet HEAD; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update README with latest docker-compose.yml content"
+          git push
+        fi

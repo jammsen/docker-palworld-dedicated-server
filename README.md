@@ -86,6 +86,30 @@ See [this file](README_ENV.md) for the documentation
 ## Docker-Compose examples
 
 ### Gameserver with RCON-CLI-Tool
+<!-- docker-compose-start -->
+```yaml
+version: '3.9'
+services:
+  palworld-dedicated-server:
+    #build: .
+    container_name: palworld-dedicated-server
+    image: jammsen/palworld-dedicated-server:latest
+    restart: unless-stopped
+    ports:
+      - target: 8211 # Gamerserver port inside of the container
+        published: 8211 # Gamerserver port on your host
+        protocol: udp
+        mode: host
+      - target: 25575 # RCON port inside of the container
+        published: 25575 # RCON port on your host
+        protocol: tcp
+        mode: host
+    env_file:
+      - ./default.env
+    volumes:
+      - ./game:/palworld
+```
+<!-- docker-compose-end -->
 
 See [example docker-compose.yml](docker-compose.yml).
 
@@ -102,7 +126,7 @@ $:~/steamcmd$ rcon save
 Complete Save
 ```
 
-> **Important:** Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
+> **Important:** Please research the RCON-Commands on the official source: <https://tech.palworldgame.com/server-commands>
 
 ## Webhook integration
 
@@ -112,11 +136,13 @@ To enable webhook integration, you need to set the following environment variabl
 WEBHOOK_ENABLED=true
 WEBHOOK_URL="https://your.webhook.url"
 ```
+
 After that the server should send messages in a Discord-Compatible way to your webhook.
 
 ### Supported events
-* Server starting
-* Server stopped
+
+- Server starting
+- Server stopped
 
 ## Deploy with Helm
 
@@ -152,7 +178,7 @@ This is a confirmed bug. Changing `BaseCampWorkerMaxNum` in the `PalWorldSetting
 
 ## Software used
 
-- CM2Network SteamCMD - Debian-based (Officially recommended by Valve - https://developer.valvesoftware.com/wiki/SteamCMD#Docker)
-- Supercronic - https://github.com/aptible/supercronic
-- rcon-cli - https://github.com/gorcon/rcon-cli
-- Palworld Dedicated Server (APP-ID: 2394010 - https://steamdb.info/app/2394010/config/)
+- CM2Network SteamCMD - Debian-based (Officially recommended by Valve - <https://developer.valvesoftware.com/wiki/SteamCMD#Docker>)
+- Supercronic - <https://github.com/aptible/supercronic>
+- rcon-cli - <https://github.com/gorcon/rcon-cli>
+- Palworld Dedicated Server (APP-ID: 2394010 - <https://steamdb.info/app/2394010/config/>)
