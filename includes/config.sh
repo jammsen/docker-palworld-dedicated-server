@@ -5,8 +5,8 @@ source /includes/colors.sh
 function setup_engine_ini() {
     pattern1="OnlineSubsystemUtils.IpNetDriver"
     pattern2="^NetServerMaxTickRate=[0-9]*"
-    ei ">>> Setting up Engine.ini ...\n"
-    ei "> Checking if config already exists...\n"
+    ei ">>> Setting up Engine.ini ..."
+    ei "> Checking if config already exists..."
     if [ ! -f "${GAME_ENGINE_FILE}" ]; then
         ew "> No config found, generating one!"
         if [ ! -d "${GAME_CONFIG_PATH}" ]; then
@@ -15,36 +15,36 @@ function setup_engine_ini() {
         # Create empty Engine.ini file
         echo "" > "${GAME_ENGINE_FILE}"
     else 
-        ei "> Found existing config!\n"
+        ei "> Found existing config!"
     fi
     if grep -qE "${pattern1}" "${GAME_ENGINE_FILE}" 2>/dev/null; then
-        ei "> Found [/Script/OnlineSubsystemUtils.IpNetDriver] section.\n"
+        ei "> Found [/Script/OnlineSubsystemUtils.IpNetDriver] section"
     else
-        ew "> Found no [/Script/OnlineSubsystemUtils.IpNetDriver], adding it.\n"
-        echo -e "\n[/Script/OnlineSubsystemUtils.IpNetDriver]" >> "${GAME_ENGINE_FILE}"
+        ew "> Found no [/Script/OnlineSubsystemUtils.IpNetDriver], adding it"
+        echo -e "[/Script/OnlineSubsystemUtils.IpNetDriver]" >> "${GAME_ENGINE_FILE}"
     fi
     if grep -qE "${pattern2}" "${GAME_ENGINE_FILE}" 2>/dev/null; then
-        ei "> Found NetServerMaxTickRate parameter, changing it to '${NETSERVERMAXTICKRATE}'\n"
+        ei "> Found NetServerMaxTickRate parameter, changing it to '${NETSERVERMAXTICKRATE}'"
         sed -E -i "s/${pattern2}/NetServerMaxTickRate=${NETSERVERMAXTICKRATE}/" "${GAME_ENGINE_FILE}"
     else
-        ew "> Found no NetServerMaxTickRate parameter, adding it with value '${NETSERVERMAXTICKRATE}'\n"
+        ew "> Found no NetServerMaxTickRate parameter, adding it with value '${NETSERVERMAXTICKRATE}'"
         echo "NetServerMaxTickRate=${NETSERVERMAXTICKRATE}" >> "${GAME_ENGINE_FILE}"
     fi
-    es ">>> Finished setting up Engine.ini!\n"
+    es ">>> Finished setting up Engine.ini!"
 }
 
 function setup_palworld_settings_ini() {
-    ei ">>> Setting up PalWorldSettings.ini ...\n"
-    ei "> Checking if config already exists...\n"
+    ei ">>> Setting up PalWorldSettings.ini ..."
+    ei "> Checking if config already exists..."
     if [ ! -f "${GAME_SETTINGS_FILE}" ]; then
-        ew "> No config found, generating one.\n"
+        ew "> No config found, generating one"
         if [ ! -d "${GAME_CONFIG_PATH}" ]; then
             mkdir -p "${GAME_CONFIG_PATH}/"
         fi
         # Copy default-config, which comes with SteamCMD to gameserver save location
         cp "${GAME_ROOT}/DefaultPalWorldSettings.ini" "${GAME_SETTINGS_FILE}"
     else 
-        ei "> Found existing config!\n"
+        ei "> Found existing config!"
     fi
 
     if [[ -n ${DIFFICULTY+x} ]]; then
@@ -301,36 +301,36 @@ function setup_palworld_settings_ini() {
         echo "> Setting BanListURL to '$BAN_LIST_URL'"
         sed -E -i "s~BanListURL=\"[^\"]*\"~BanListURL=\"$BAN_LIST_URL\"~" "$GAME_SETTINGS_FILE"
     fi
-    es ">>> Finished setting up PalWorldSettings.ini\n"
+    es ">>> Finished setting up PalWorldSettings.ini"
 }
 
 function setup_rcon_yaml () {
     if [[ -n ${RCON_ENABLED+x} ]] && [ "$RCON_ENABLED" == "true" ] ; then
-        ei ">>> RCON is enabled - Setting up rcon.yaml ...\n"
+        ei ">>> RCON is enabled - Setting up rcon.yaml ..."
         if [[ -n ${RCON_PORT+x} ]]; then
             sed -i "s/###RCON_PORT###/$RCON_PORT/" "$RCON_CONFIG_FILE"
         else
-            ee "> RCON_PORT is not set, please set it for RCON functionality to work!\n"
+            ee "> RCON_PORT is not set, please set it for RCON functionality to work!"
         fi
         if [[ -n ${ADMIN_PASSWORD+x} ]]; then
             sed -i "s/###ADMIN_PASSWORD###/$ADMIN_PASSWORD/" "$RCON_CONFIG_FILE"
         else
-            ee "> RCON_PORT is not set, please set it for RCON functionality to work!\n"
+            ee "> RCON_PORT is not set, please set it for RCON functionality to work!"
         fi
-        es ">>> Finished setting up 'rcon.yaml' config file.\n"
+        es ">>> Finished setting up 'rcon.yaml' config file"
     else
-        ei ">>> RCON is disabled, skipping 'rcon.yaml' config file!\n"
+        ei ">>> RCON is disabled, skipping 'rcon.yaml' config file!"
     fi
 }
 
 function setup_configs() {
     if [[ -n ${SERVER_SETTINGS_MODE} ]] && [[ ${SERVER_SETTINGS_MODE} == "auto" ]]; then
-        ei ">>> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', using environment variables to configure the server!\n"
+        ei ">>> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', using environment variables to configure the server!"
         setup_engine_ini
         setup_palworld_settings_ini
         setup_rcon_yaml
     else
-        ew ">>> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', NOT using environment variables to configure the server!\n"
-        ew ">>> ALL SETTINGS including setup of rcon.yaml has to be done manually by the user!\n"
+        ew ">>> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', NOT using environment variables to configure the server!"
+        ew ">>> ALL SETTINGS including setup of rcon.yaml has to be done manually by the user!"
     fi
 }

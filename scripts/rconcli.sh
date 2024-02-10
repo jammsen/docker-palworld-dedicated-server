@@ -10,7 +10,7 @@ run_rcon_cli() {
     local cmd=$1
     local message=$2
     if [[ -z ${RCON_ENABLED+x} ]] || [[ "$RCON_ENABLED" != "true" ]]; then
-        ee ">>> RCON is not enabled. Aborting RCON command ...\n"
+        ee ">>> RCON is not enabled. Aborting RCON command ..."
         exit
     fi
     ei "${message}"

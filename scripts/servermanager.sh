@@ -18,22 +18,22 @@ function start_server() {
     setup_configs
     START_OPTIONS=()
     if [[ -n $COMMUNITY_SERVER ]] && [[ $COMMUNITY_SERVER == "true" ]]; then
-        ei "> Setting Community-Mode to enabled\n"
+        ei "> Setting Community-Mode to enabled"
         START_OPTIONS+=("EpicApp=PalServer")
     fi
     if [[ -n $MULTITHREAD_ENABLED ]] && [[ $MULTITHREAD_ENABLED == "true" ]]; then
-        ei "> Setting Multi-Core-Enhancements to enabled\n"
+        ei "> Setting Multi-Core-Enhancements to enabled"
         START_OPTIONS+=("-useperfthreads" "-NoAsyncLoadingThread" "-UseMultithreadForDS")
     fi
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
         send_start_notification
     fi
-    es ">>> Starting the gameserver\n"
+    es ">>> Starting the gameserver"
     ./PalServer.sh "${START_OPTIONS[@]}"
 }
 
 function stop_server() {
-    ew ">>> Stopping server...\n"
+    ew ">>> Stopping server..."
     if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
         save_and_shutdown_server
     fi
@@ -42,7 +42,7 @@ function stop_server() {
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
         send_stop_notification
     fi
-    ew ">>> Server stopped gracefully.\n\n"
+    ew ">>> Server stopped gracefully"
     exit 143;
 }
 
@@ -70,11 +70,11 @@ trap 'kill ${!}; term_handler' SIGTERM
 # Main process loop
 while true
 do
-    ei ">>> Starting server manager\n"
+    ei ">>> Starting server manager"
     start_main &
 
     killpid="$!"
-    ei "> Server main thread started with pid ${killpid}\n"
+    ei "> Server main thread started with pid ${killpid}"
     wait ${killpid}
 
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
