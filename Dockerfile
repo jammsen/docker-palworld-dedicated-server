@@ -4,66 +4,32 @@ LABEL maintainer="Sebastian Schmidt - https://github.com/jammsen/docker-palworld
 LABEL org.opencontainers.image.authors="Sebastian Schmidt"
 LABEL org.opencontainers.image.source="https://github.com/jammsen/docker-palworld-dedicated-server"
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs \
-    && apt-get clean \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Latest releases available at https://github.com/aptible/supercronic/releases
-ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 \
-    SUPERCRONIC=supercronic-linux-amd64 \
-    SUPERCRONIC_SHA1SUM=cd48d45c4b10f3f0bfdd3a57d054cd05ac96812b
-
-RUN curl -fsSLO "$SUPERCRONIC_URL" \
-    && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
-    && chmod +x "$SUPERCRONIC" \
-    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
-    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
-
-# Latest releases available at https://github.com/gorcon/rcon-cli/releases
-ENV RCON_URL=https://github.com/gorcon/rcon-cli/releases/download/v0.10.3/rcon-0.10.3-amd64_linux.tar.gz \
-    RCON_TGZ=rcon-0.10.3-amd64_linux.tar.gz \
-    RCON_TGZ_MD5SUM=8601c70dcab2f90cd842c127f700e398 \
-    RCON_BINARY=rcon
-
-RUN curl -fsSLO "$RCON_URL" \
-    && echo "${RCON_TGZ_MD5SUM} ${RCON_TGZ}" | md5sum -c - \
-    && tar xfz rcon-0.10.3-amd64_linux.tar.gz \
-    && chmod +x "rcon-0.10.3-amd64_linux/$RCON_BINARY" \
-    && mv "rcon-0.10.3-amd64_linux/$RCON_BINARY" "/usr/local/bin/${RCON_BINARY}" \
-    && ln -s "/usr/local/bin/${RCON_BINARY}" /usr/local/bin/rconcli \
-    && rm -Rf rcon-0.10.3-amd64_linux rcon-0.10.3-amd64_linux.tar.gz
-
-COPY --chown=steam:steam --chmod=755 backupmanager.sh servermanager.sh includes/* /
-
-EXPOSE 8211/udp
-EXPOSE 25575/tcp
-
-# Workaround for 'Named Volumes'
-RUN mkdir /palworld \
-    && chown steam:steam /palworld
-
-VOLUME [ "/palworld" ]
-
-USER steam
-
-ADD --chown=steam:steam --chmod=440 rcon.yaml ./rcon.yaml
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ENV DEBIAN_FRONTEND=noninteractive \
+    # Path-vars
+    GAME_ROOT="/palworld" \
+    GAME_PATH="/palworld/Pal" \
+    GAME_SAVE_PATH="/palworld/Pal/Saved" \
+    GAME_CONFIG_PATH="/palworld/Pal/Saved/Config/LinuxServer" \
+    GAME_SETTINGS_FILE="/palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini" \
+    GAME_ENGINE_FILE="/palworld/Pal/Saved/Config/LinuxServer/Engine.ini" \
+    STEAMCMD_PATH="/home/steam/steamcmd" \
+    RCON_CONFIG_FILE="/home/steam/steamcmd/rcon.yaml" \
+    BACKUP_PATH="/palworld/backups" \
+    # Container-setttings
     PUID=1000 \
     PGID=1000 \
-    ### Container-setttings
-    TZ="Europe/Berlin"   \
+    TZ="Europe/Berlin" \
+    # SteamCMD-settings
     ALWAYS_UPDATE_ON_START=true \
-    MULTITHREAD_ENABLED=true \
-    COMMUNITY_SERVER=true \
+    STEAMCMD_VALIDATE_FILES=true \
+    # Backup-settings
     BACKUP_ENABLED=true \
     BACKUP_CRON_EXPRESSION="0 * * * *" \
-    BACKUP_RETENTION_POLICY=false \
-    BACKUP_RETENTION_AMOUNT_TO_KEEP=30 \
-    STEAMCMD_VALIDATE_FILES=true \
-    SERVER_SETTINGS_MODE=manual \
+    BACKUP_RETENTION_POLICY=true \
+    BACKUP_RETENTION_AMOUNT_TO_KEEP=72 \
+    # Webhook-settings
     WEBHOOK_ENABLED=false \
     WEBHOOK_URL= \
     WEBHOOK_START_TITLE="Server is starting" \
@@ -75,8 +41,20 @@ ENV DEBIAN_FRONTEND=noninteractive \
     WEBHOOK_INFO_TITLE="Info" \
     WEBHOOK_INFO_DESCRIPTION="This is an info from the server" \
     WEBHOOK_INFO_COLOR="2849520" \
-    ### Server-setting 
+    WEBHOOK_UPDATE_TITLE="Updating server" \
+    WEBHOOK_UPDATE_DESCRIPTION="Server is being updated" \
+    WEBHOOK_UPDATE_COLOR="2849520" \
+    WEBHOOK_UPDATE_VALIDATION_TITLE="Updating and validating server" \
+    WEBHOOK_UPDATE_VALIDATION_DESCRIPTION="Server is being updated and validated" \
+    WEBHOOK_UPDATE_VALIDATION_COLOR="2849520" \
+    # Gameserver-start-settings
+    MULTITHREAD_ENABLED=true \
+    COMMUNITY_SERVER=true \
+    # Config-setting - Warning: Every setting below here will be affected!
+    SERVER_SETTINGS_MODE=manual \
+    # Engine.ini settings
     NETSERVERMAXTICKRATE=120 \
+    # PalWorldSettings.ini settings
     DIFFICULTY=None \
     DAYTIME_SPEEDRATE=1.000000 \
     NIGHTTIME_SPEEDRATE=1.000000 \
@@ -140,4 +118,49 @@ ENV DEBIAN_FRONTEND=noninteractive \
     USEAUTH=true \
     BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
 
-CMD ["/servermanager.sh"]
+EXPOSE 8211/udp
+EXPOSE 25575/tcp
+
+COPY --chown=steam:steam --chmod=755 scripts/ /scripts
+COPY --chown=steam:steam --chmod=755 includes/ /includes
+COPY --chown=steam:steam --chmod=755 configs/rcon.yaml /home/steam/steamcmd/rcon.yaml
+COPY --chown=steam:steam --chmod=755 entrypoint.sh /
+
+RUN ln -s /scripts/backupmanager.sh /usr/local/bin/backup \
+    && ln -s /scripts/rconcli.sh /usr/local/bin/rconcli
+
+# Install minimum required packages for dedicated server
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs \
+    && apt-get clean \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Latest releases available at https://github.com/aptible/supercronic/releases
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 \
+    SUPERCRONIC=supercronic-linux-amd64 \
+    SUPERCRONIC_SHA1SUM=cd48d45c4b10f3f0bfdd3a57d054cd05ac96812b
+
+RUN curl -fsSLO "$SUPERCRONIC_URL" \
+    && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
+    && chmod +x "$SUPERCRONIC" \
+    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
+
+# Latest releases available at https://github.com/gorcon/rcon-cli/releases
+ENV RCON_URL=https://github.com/gorcon/rcon-cli/releases/download/v0.10.3/rcon-0.10.3-amd64_linux.tar.gz \
+    RCON_TGZ=rcon-0.10.3-amd64_linux.tar.gz \
+    RCON_TGZ_MD5SUM=8601c70dcab2f90cd842c127f700e398 \
+    RCON_BINARY=rcon
+
+RUN curl -fsSLO "$RCON_URL" \
+    && echo "${RCON_TGZ_MD5SUM} ${RCON_TGZ}" | md5sum -c - \
+    && tar xfz rcon-0.10.3-amd64_linux.tar.gz \
+    && chmod +x "rcon-0.10.3-amd64_linux/$RCON_BINARY" \
+    && mv "rcon-0.10.3-amd64_linux/$RCON_BINARY" "/usr/local/bin/${RCON_BINARY}" \
+    && rm -Rf rcon-0.10.3-amd64_linux rcon-0.10.3-amd64_linux.tar.gz
+
+VOLUME ["${GAME_ROOT}"]
+
+ENTRYPOINT  ["/entrypoint.sh"]
+CMD ["/scripts/servermanager.sh"]

@@ -28,7 +28,7 @@ body:
     attributes:
       label: Desired behavior
       description: Remember, im not familiar with your setup, your permission, your Docker settings and all that kind of stuff, please provide a clear description of what your desired outcome is.
-      placeholder: Desried ...
+      placeholder: Desired behavior ...
     validations:
       required: true
   - type: textarea
