@@ -13,9 +13,10 @@ run_rcon_cli() {
         ee ">>> RCON is not enabled. Aborting RCON command ..."
         exit
     fi
-    ei "${message}"
-    output=$(rconcli -c /configs/rcon.yaml "${cmd}")
-    ei "> RCON: ${output}"
+    ei "> Sending: ${cmd} ${message}"
+    output=$(rcon -c "$RCON_CONFIG_FILE" "${cmd}")
+    ei "> RCON-Ouput:"
+    ei "${output}"
 }
 
 run_rcon_cli "$@"

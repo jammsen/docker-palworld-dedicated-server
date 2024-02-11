@@ -14,19 +14,19 @@ LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP=${BACKUP_RETENTION_AMOUNT_TO_KEEP} # Numbe
 function print_usage() {
     script_name=$(basename "$0")
     echo "Usage:"
-    echo "  ${script_name} --create"
-    echo "  ${script_name} --list [number_of_entries]"
-    echo "  ${script_name} --clean [number_to_keep]"
-    echo "  ${script_name} --help"
+    echo "  ${script_name} create"
+    echo "  ${script_name} list [number_of_entries]"
+    echo "  ${script_name} clean [number_to_keep]"
+    echo "  ${script_name} help"
     echo ""
     echo "Options:"
-    echo "  --create                        Create a backup"
-    echo "  --list [number_to_list]         List the backup files. If number_to_list isn't"
+    echo "  create                        Create a backup"
+    echo "  list [number_to_list]         List the backup files. If number_to_list isn't"
     echo "                                  provided, all backup files will be listed"
-    echo "  --clean [number_to_keep]        Deletes old backups keeping the number_to_keep"
+    echo "  clean [number_to_keep]        Deletes old backups keeping the number_to_keep"
     echo "                                  most recent backups. If number_to_keep isn't"
     echo "                                  provided, keep 30 most recent backups"
-    echo "  --help                          Display this help message"
+    echo "  help                          Display this help message"
     echo ""
     echo "Arguments:"
     echo "  number_to_list (optional)       The number of backup files to list."
@@ -46,7 +46,7 @@ function parse_arguments() {
 
     # Evaluate the command
     case "$1" in
-        --create)
+        create)
             if [ ${#} -ne 1 ]; then
                 ee ">>> Invalid number of arguments for 'create'"
                 print_usage
@@ -54,7 +54,7 @@ function parse_arguments() {
             fi
             create_backup
             ;;
-        --list)
+        list)
             if [ ${#} -gt 2 ]; then
                 ee ">>> Invalid number of arguments for 'list'"
                 print_usage
@@ -70,7 +70,7 @@ function parse_arguments() {
 
             list_backups "${number_to_list}"
             ;;
-        --clean)
+        clean)
             if [ ${#} -gt 2 ]; then
                 ee ">>> Invalid number of arguments for 'clean'"
                 print_usage
@@ -86,7 +86,7 @@ function parse_arguments() {
 
             clean_backups "${num_backup_entries}"
             ;;
-        --help)
+        help)
             if [ ${#} -ne 1 ]; then
                 ee ">>> Invalid number of arguments for 'help'"
                 print_usage

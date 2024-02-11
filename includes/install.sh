@@ -13,7 +13,7 @@ function fresh_install_server() {
 
 function update_server() {
     if [[ -n $STEAMCMD_VALIDATE_FILES ]] && [[ $STEAMCMD_VALIDATE_FILES == "true" ]]; then
-        ei ">>> Doing an update and validate of the gameserver files..."
+        ei ">>> Doing an update with validation of the gameserver files..."
         if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
             send_update_and_validate_notification
         fi

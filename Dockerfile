@@ -126,8 +126,7 @@ COPY --chown=steam:steam --chmod=755 includes/ /includes
 COPY --chown=steam:steam --chmod=755 configs/rcon.yaml /home/steam/steamcmd/rcon.yaml
 COPY --chown=steam:steam --chmod=755 entrypoint.sh /
 
-RUN ln -s /scripts/backupmanager.sh /usr/local/bin/backupmanager \
-    && ln -s /scripts/backup.sh /usr/local/bin/backup \
+RUN ln -s /scripts/backupmanager.sh /usr/local/bin/backup \
     && ln -s /scripts/rconcli.sh /usr/local/bin/rconcli
 
 # Install minimum required packages for dedicated server
