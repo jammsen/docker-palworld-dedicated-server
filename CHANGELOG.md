@@ -14,6 +14,7 @@
   * Added shell linting
   * Changed structure of the project and where files like documentation, includes, scripts and config-templates are to find
   * Fixed typos in various documents
+  * Added multicore-bugfix, now multi-core-enhancment should be working (#190)
 * Requirements - What you need to do:
   * **Read the readme, a lot has changed, there is a new part about the backupmanager and how to interact now with rconcli**
   * Update to latest image
