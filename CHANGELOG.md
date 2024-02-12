@@ -1,6 +1,8 @@
 # Changelog
 
-## 2024-02-09
+[Back to main](README.md#changelog)
+
+## 2024-02-12
 * **Breaking changes:** 
   * Changed the default BACKUP_RETENTION_POLICY to true and changed BACKUP_RETENTION_AMOUNT_TO_KEEP to 72, meaning 3 days worth of backup are kept in the default configuration
   * Added the ability to change the PUID and PGID via environment variables, this includes a user-process-jail mechanic including entrypoint-script, which makes sure that the gameserver is always working with the right permissions as only user steam and not root by accident or bug 
@@ -12,6 +14,11 @@
   * Added shell linting
   * Changed structure of the project and where files like documentation, includes, scripts and config-templates are to find
   * Fixed typos in various documents
+* Requirements - What you need to do:
+  * **Read the readme, a lot has changed, there is a new part about the backupmanager and how to interact now with rconcli**
+  * Update to latest image
+  * Download new docker-compose.yml and new default.env
+    * Merge your settings and make sure that backup-settings, PGID and PUID are right
 
 ## 2024-02-03
 
@@ -19,3 +26,5 @@
 * Added rcon.sh again for having alias function calls that dont bloat the servermanager
 * Refactored how webhook messages function are called and added alias functions
 * Added a changelog, from various request resources
+
+[Back to main](README.md#changelog)

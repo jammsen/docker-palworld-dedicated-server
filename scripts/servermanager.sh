@@ -16,13 +16,14 @@ source /includes/colors.sh
 function start_server() {
     cd "$GAME_ROOT" || exit
     setup_configs
+    ei ">>> Preparing to start the gameserver"
     START_OPTIONS=()
     if [[ -n $COMMUNITY_SERVER ]] && [[ $COMMUNITY_SERVER == "true" ]]; then
-        ei "> Setting Community-Mode to enabled"
+        e "> Setting Community-Mode to enabled"
         START_OPTIONS+=("EpicApp=PalServer")
     fi
     if [[ -n $MULTITHREAD_ENABLED ]] && [[ $MULTITHREAD_ENABLED == "true" ]]; then
-        ei "> Setting Multi-Core-Enhancements to enabled"
+        e "> Setting Multi-Core-Enhancements to enabled"
         START_OPTIONS+=("-useperfthreads" "-NoAsyncLoadingThread" "-UseMultithreadForDS")
     fi
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
@@ -70,11 +71,14 @@ trap 'kill ${!}; term_handler' SIGTERM
 # Main process loop
 while true
 do
+    current_date=$(date +%Y-%m-%d)
+    current_time=$(date +%H:%M:%S)
     ei ">>> Starting server manager"
+    e "> Started at: $current_date $current_time"
     start_main &
 
     killpid="$!"
-    ei "> Server main thread started with pid ${killpid}"
+    e "> Server main thread started with pid ${killpid}"
     wait ${killpid}
 
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then

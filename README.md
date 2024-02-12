@@ -23,6 +23,7 @@ ___
   - [How to ask for support for this Docker image](#how-to-ask-for-support-for-this-docker-image)
   - [Requirements](#requirements)
   - [Minimum system requirements](#minimum-system-requirements)
+  - [Changelog](#changelog)
   - [Getting started](#getting-started)
   - [Environment variables](#environment-variables)
   - [Docker-Compose examples](#docker-compose-examples)
@@ -68,17 +69,26 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 | RAM      | 8GB RAM Base + 2GB per player | 12GB RAM Base + 2GB per player |
 | Storage  | 30GB                          | 30GB+                          |
 
+## Changelog
+
+You can find the [changelog here](CHANGELOG.md)
+
 ## Getting started
 
-1. Create a `game` sub-directory on your Docker-Node in your game-server-directory (Example: `/srv/palworld`).
-   - This directory will be used to store the game server files, including configs and savegames.
-2. Set up Port-Forwarding or NAT for the ports in the Docker-Compose file.
-3. Pull the latest version of the image with `docker pull jammsen/palworld-dedicated-server:latest`.
-4. Download the [docker-compose.yml](docker-compose.yml) and [default.env](default.env).
-5. Set up the `docker-compose.yml` and `default.env` to your liking.
-   - Refer to the [Environment-Variables](#environment-variables) section for more information.
-6. Start the container via `docker-compose up -d && docker-compose logs -f`.
-   - Watch the log, if no errors occur you can close the logs with ctrl+c.
+1. Create a `game` sub-directory on your Docker-Node in your game-server-directory 
+   - (Examples: `/srv/palworld`, `/opt/palworld` or `/home/username/palworld`)
+   - This directory will be used to store the game server files, including configs and savegames
+   - In older versions we asked you to setup permissions via CHMOD or CHOWN, this should not be needed anymore!
+2. Set up Port-Forwarding or NAT for the ports in the Docker-Compose file
+3. Pull the latest version of the image with `docker pull jammsen/palworld-dedicated-server:latest`
+4. Download the [docker-compose.yml](docker-compose.yml) and [default.env](default.env)
+5. Set up the `docker-compose.yml` and `default.env` to your liking
+   - Make sure you setup PUID and PGID according to the user you want to use
+     - **PUID and PGID 0 will error out, thats on purpose!**
+     - if you use Docker as root, then you can just use 1000 inside the container
+   - Refer to the [Environment-Variables](#environment-variables) section for more information
+6. Start the container via `docker-compose up -d && docker-compose logs -f`
+   - Watch the log, if no errors occur you can close the logs with ctrl+c
 7. Now have fun and happy gaming! 🎮😉
 
 ## Environment variables
@@ -96,18 +106,7 @@ See [example docker-compose.yml](docker-compose.yml).
 > [!NOTE]
 > Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
 
-Open a shell into your container via `docker exec -ti palworld-dedicated-server bash`, then you can run commands against the gameserver via the command `rconcli`
-
-```shell
-$:~/steamcmd$ rconcli showplayers
-name,playeruid,steamid
-$:~/steamcmd$ rconcli info
-Welcome to Pal Server[v0.1.4.1] jammsen-docker-generated-20384
-$:~/steamcmd$ rconcli save
-Complete Save
-```
-
-You can also use `docker exec palworld-dedicated-server rconcli <command>` right on your terminal/shell.
+You can use `docker exec palworld-dedicated-server rconcli <command>` right on your terminal/shell.
 
 ```shell
 $ docker exec palworld-dedicated-server rconcli showplayers
@@ -123,13 +122,17 @@ Complete Save
 ## Backup Manager
 
 > [!WARNING]
-> If RCON is disabled, the backup manager won't do saves via RCON before creating a backup.
+> If RCON is disabled, the backup manager won't do saves via RCON before creating a backup and will report warnings.
 > This means that the backup will be created from the last auto-save of the server.
 > This can lead to data-loss and/or savegame corruption.
 >
 > **Recommendation:** Please make sure that RCON is enabled before using the backup manager.
 
-Usage: `docker exec palworld-dedicated-server backup [command] [arguments]`
+> [!WARNING]
+> Please use in the following part always the `-user steam` option or your files will written as root
+
+
+Usage: `docker exec -user steam palworld-dedicated-server backup [command] [arguments]`
 
 | Command | Argument           | Required/Optional | Default Value                     | Values           | Description                                                                                                                                                                          |
 | ------- | ------------------ | ----------------- | --------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -140,24 +143,24 @@ Usage: `docker exec palworld-dedicated-server backup [command] [arguments]`
 Examples:
 
 ```shell
-$ docker exec palworld-dedicated-server backup
+$ docker exec -user steam palworld-dedicated-server backup
 > Backup 'saved-20240203_032855.tar.gz' created successfully.
 ```
 
 ```shell
-$ docker exec palworld-dedicated-server backup list
+$ docker exec -user steam palworld-dedicated-server backup list
 > Listing 2 backup file(s)!
 2024-02-03 03:28:55 | saved-20240203_032855.tar.gz
 2024-02-03 03:28:00 | saved-20240203_032800.tar.gz
 ```
 
 ```shell
-$ docker exec palworld-dedicated-server backup_clean 3
+$ docker exec -user steam palworld-dedicated-server backup_clean 3
 > 1 backup(s) cleaned, keeping 2 backups(s).
 ```
 
 ```shell
-$ docker exec palworld-dedicated-server backup_list   
+$ docker exec -user steam palworld-dedicated-server backup_list   
 > Listing 1 out of backup 2 file(s).
 2024-02-03 03:30:00 | saved-20240203_033000.tar.gz
 ```

@@ -7,5 +7,5 @@ function setup_crons() {
         echo "${BACKUP_CRON_EXPRESSION} backup create" >> cronlist
     fi
     /usr/local/bin/supercronic -passthrough-logs cronlist &
-    ei ">>> Supercronic started"
+    e "> Supercronic started"
 }

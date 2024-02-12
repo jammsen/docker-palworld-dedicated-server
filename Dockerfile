@@ -47,11 +47,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
     WEBHOOK_UPDATE_VALIDATION_TITLE="Updating and validating server" \
     WEBHOOK_UPDATE_VALIDATION_DESCRIPTION="Server is being updated and validated" \
     WEBHOOK_UPDATE_VALIDATION_COLOR="2849520" \
+    # Config-setting - Warning: Every setting below here will be affected!
+    SERVER_SETTINGS_MODE=manual \
     # Gameserver-start-settings
     MULTITHREAD_ENABLED=true \
     COMMUNITY_SERVER=true \
-    # Config-setting - Warning: Every setting below here will be affected!
-    SERVER_SETTINGS_MODE=manual \
     # Engine.ini settings
     NETSERVERMAXTICKRATE=120 \
     # PalWorldSettings.ini settings
@@ -121,19 +121,20 @@ ENV DEBIAN_FRONTEND=noninteractive \
 EXPOSE 8211/udp
 EXPOSE 25575/tcp
 
-COPY --chown=steam:steam --chmod=755 scripts/ /scripts
-COPY --chown=steam:steam --chmod=755 includes/ /includes
-COPY --chown=steam:steam --chmod=755 configs/rcon.yaml /home/steam/steamcmd/rcon.yaml
-COPY --chown=steam:steam --chmod=755 entrypoint.sh /
+COPY --chmod=744 entrypoint.sh /
+COPY --chmod=755 scripts/ /scripts
+COPY --chmod=755 includes/ /includes
+COPY --chmod=755 configs/rcon.yaml /home/steam/steamcmd/rcon.yaml
 
-RUN ln -s /scripts/backupmanager.sh /usr/local/bin/backup \
+RUN mkdir -p "$BACKUP_PATH" \
+    && ln -s /scripts/backupmanager.sh /usr/local/bin/backup \
     && ln -s /scripts/rconcli.sh /usr/local/bin/rconcli
 
 # Install minimum required packages for dedicated server
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs \
+    && apt-get install -y --no-install-recommends --no-install-suggests gosu procps xdg-user-dirs \
+    && apt-get autoremove -y --purge \
     && apt-get clean \
-    && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Latest releases available at https://github.com/aptible/supercronic/releases

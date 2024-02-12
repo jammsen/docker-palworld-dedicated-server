@@ -1,8 +1,8 @@
 # shellcheck disable=SC2148
 # Function to generate JSON data for the Discord message
 # Webpage for COLOR-Calculation - https://www.spycolor.com/
-# IMPORTANT: Don't use Hex-Colors! Go to the page search for the Hex-Color.
-# After that add the DECIMAL-Representation to the color field or it will break!
+# IMPORTANT: Don't use Hex-Colors! Go to the page, search for the Hex-Color, 
+# after that add the DECIMAL-Representation to the color field or it will break for Discord!
 generate_post_data() {
   cat <<EOF
 {
