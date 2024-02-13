@@ -104,7 +104,7 @@ See [example docker-compose.yml](docker-compose.yml).
 ## Run RCON commands
 
 > [!NOTE]
-> Please research the RCON-Commands on the official source: https://tech.palworldgame.com/server-commands
+> Please research the RCON-Commands on the official source: https://tech.palworldgame.com/settings-and-operation/commands
 
 You can use `docker exec palworld-dedicated-server rconcli <command>` right on your terminal/shell.
 

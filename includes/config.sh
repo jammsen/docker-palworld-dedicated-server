@@ -321,7 +321,7 @@ function setup_rcon_yaml () {
 
 function setup_configs() {
     if [[ -n ${SERVER_SETTINGS_MODE} ]] && [[ ${SERVER_SETTINGS_MODE} == "auto" ]]; then
-        ew "> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', using environment variables to configure the server"
+        ew ">>> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', using environment variables to configure the server"
         setup_engine_ini
         setup_palworld_settings_ini
         setup_rcon_yaml

@@ -28,18 +28,18 @@ send_webhook_notification() {
 }
 
 #Aliases to use in scripts
+send_install_notification() {
+  send_webhook_notification "$WEBHOOK_INSTALL_TITLE" "$WEBHOOK_INSTALL_DESCRIPTION" "$WEBHOOK_INSTALL_COLOR"
+}
+send_restart_notification() {
+  send_webhook_notification "$WEBHOOK_RESTART_TITLE" "$WEBHOOK_RESTART_DESCRIPTION" "$WEBHOOK_RESTART_COLOR"
+}
 send_start_notification() {
   send_webhook_notification "$WEBHOOK_START_TITLE" "$WEBHOOK_START_DESCRIPTION" "$WEBHOOK_START_COLOR"
 }
 send_stop_notification() {
   send_webhook_notification "$WEBHOOK_STOP_TITLE" "$WEBHOOK_STOP_DESCRIPTION" "$WEBHOOK_STOP_COLOR"
 }
-send_install_notification() {
-  send_webhook_notification "$WEBHOOK_INSTALL_TITLE" "$WEBHOOK_INSTALL_DESCRIPTION" "$WEBHOOK_INSTALL_COLOR"
-}
 send_update_notification() {
   send_webhook_notification "$WEBHOOK_UPDATE_TITLE" "$WEBHOOK_UPDATE_DESCRIPTION" "$WEBHOOK_UPDATE_COLOR"
-}
-send_update_and_validate_notification() {
-  send_webhook_notification "$WEBHOOK_UPDATE_VALIDATE_TITLE" "$WEBHOOK_UPDATE_VALIDATE_DESCRIPTION" "$WEBHOOK_UPDATE_VALIDATE_COLOR"
 }

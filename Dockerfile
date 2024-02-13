@@ -29,9 +29,15 @@ ENV DEBIAN_FRONTEND=noninteractive \
     BACKUP_CRON_EXPRESSION="0 * * * *" \
     BACKUP_RETENTION_POLICY=true \
     BACKUP_RETENTION_AMOUNT_TO_KEEP=72 \
+    # Restart-settings
+    RESTART_ENABLED=false \
+    RESTART_CRON_EXPRESSION="0 3,15 * * *" \
     # Webhook-settings
     WEBHOOK_ENABLED=false \
     WEBHOOK_URL= \
+    WEBHOOK_RESTART_TITLE="Server is restarting soon" \
+    WEBHOOK_RESTART_DESCRIPTION="The gameserver is restarting in 15 minutes" \
+    WEBHOOK_RESTART_COLOR="15593515" \
     WEBHOOK_START_TITLE="Server is starting" \
     WEBHOOK_START_DESCRIPTION="The gameserver is starting" \
     WEBHOOK_START_COLOR="2328576" \
@@ -44,9 +50,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     WEBHOOK_UPDATE_TITLE="Updating server" \
     WEBHOOK_UPDATE_DESCRIPTION="Server is being updated" \
     WEBHOOK_UPDATE_COLOR="2849520" \
-    WEBHOOK_UPDATE_VALIDATION_TITLE="Updating and validating server" \
-    WEBHOOK_UPDATE_VALIDATION_DESCRIPTION="Server is being updated and validated" \
-    WEBHOOK_UPDATE_VALIDATION_COLOR="2849520" \
     # Config-setting - Warning: Every setting below here will be affected!
     SERVER_SETTINGS_MODE=manual \
     # Gameserver-start-settings
@@ -128,7 +131,8 @@ COPY --chmod=755 configs/rcon.yaml /home/steam/steamcmd/rcon.yaml
 
 RUN mkdir -p "$BACKUP_PATH" \
     && ln -s /scripts/backupmanager.sh /usr/local/bin/backup \
-    && ln -s /scripts/rconcli.sh /usr/local/bin/rconcli
+    && ln -s /scripts/rconcli.sh /usr/local/bin/rconcli \
+    && ln -s /scripts/restart.sh /usr/local/bin/restart
 
 # Install minimum required packages for dedicated server
 RUN apt-get update \

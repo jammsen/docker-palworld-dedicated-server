@@ -6,46 +6,12 @@
 
 set -e
 
-source /includes/install.sh
+source /includes/colors.sh
 source /includes/config.sh
 source /includes/cron.sh
 source /includes/security.sh
+source /includes/server.sh
 source /includes/webhook.sh
-source /includes/colors.sh
-
-function start_server() {
-    cd "$GAME_ROOT" || exit
-    setup_configs
-    ei ">>> Preparing to start the gameserver"
-    START_OPTIONS=()
-    if [[ -n $COMMUNITY_SERVER ]] && [[ $COMMUNITY_SERVER == "true" ]]; then
-        e "> Setting Community-Mode to enabled"
-        START_OPTIONS+=("EpicApp=PalServer")
-    fi
-    if [[ -n $MULTITHREAD_ENABLED ]] && [[ $MULTITHREAD_ENABLED == "true" ]]; then
-        e "> Setting Multi-Core-Enhancements to enabled"
-        START_OPTIONS+=("-useperfthreads" "-NoAsyncLoadingThread" "-UseMultithreadForDS")
-    fi
-    if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-        send_start_notification
-    fi
-    es ">>> Starting the gameserver"
-    ./PalServer.sh "${START_OPTIONS[@]}"
-}
-
-function stop_server() {
-    ew ">>> Stopping server..."
-    if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
-        save_and_shutdown_server
-    fi
-	kill -SIGTERM "$(pidof PalServer-Linux-Test)"
-	tail --pid="$(pidof PalServer-Linux-Test)" -f 2>/dev/null
-    if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-        send_stop_notification
-    fi
-    ew ">>> Server stopped gracefully"
-    exit 143;
-}
 
 # Handler for SIGTERM from docker-based stop events
 function term_handler() {
