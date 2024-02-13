@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         ## Important information
-        Thank you for taking the time to fill out this feature request! Please understand you are asking for support for the Docker-Image and Docker-Container. I'm NOT the creator of the Dedicated-Game-Server itself, i'm not involved in programming that. If you need help for that, you might want to ask here for topics related to that: https://tech.palworldgame.com/dedicated-server-guide
+        Thank you for taking the time to fill out this feature request! Please understand you are asking for support for the Docker-Image and Docker-Container. I'm NOT the creator of the Dedicated-Game-Server itself, i'm not involved in programming that. If you need help for that, you might want to ask here for topics related to that: https://tech.palworldgame.com/getting-started/deploy-dedicated-server
   - type: checkboxes
     id: understand-important-info
     attributes:
@@ -36,5 +36,5 @@ body:
       label: Final checks
       description: Before submitting, please understand and agree to this
       options:
-        - label: I understand that this is a feature request function. I also unterstand that if i use this to report a bug report, that my issue might be un-answered closed.
+        - label: I understand that this is a feature request function. I also understand that if i use this to report a bug report, that my issue might be un-answered closed.
           required: true
