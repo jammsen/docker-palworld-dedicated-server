@@ -121,7 +121,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 EXPOSE 8211/udp
 EXPOSE 25575/tcp
 
-COPY --chmod=744 entrypoint.sh /
+COPY --chmod=755 entrypoint.sh /
 COPY --chmod=755 scripts/ /scripts
 COPY --chmod=755 includes/ /includes
 COPY --chmod=755 configs/rcon.yaml /home/steam/steamcmd/rcon.yaml

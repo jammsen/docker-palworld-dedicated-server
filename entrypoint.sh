@@ -27,12 +27,6 @@ chown "$APP_USER":"$APP_GROUP" /entrypoint.sh
 chown -R "$APP_USER":"$APP_GROUP" /scripts
 chown -R "$APP_USER":"$APP_GROUP" /includes
 
-ls -al /
-ls -al /home
-ls -al /home/steam
-ls -al /home/steam/steamcmd
-ls -al /palworld
-ls -al /palworld/backups
-id steam
+ew_nn "> id steam: " ; e "$(id steam)"
 
 exec gosu $APP_USER:$APP_GROUP "$@"

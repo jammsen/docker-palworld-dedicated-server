@@ -35,17 +35,13 @@ function setup_engine_ini() {
 
 function setup_palworld_settings_ini() {
     ei ">>> Setting up PalWorldSettings.ini ..."
-    e "> Checking if config already exists..."
-    if [ ! -f "${GAME_SETTINGS_FILE}" ]; then
-        ew "> No config found, generating one"
-        if [ ! -d "${GAME_CONFIG_PATH}" ]; then
-            mkdir -p "${GAME_CONFIG_PATH}/"
-        fi
-        # Copy default-config, which comes with SteamCMD to gameserver save location
-        cp "${GAME_ROOT}/DefaultPalWorldSettings.ini" "${GAME_SETTINGS_FILE}"
-    else 
-        e "> Found existing config!"
+    if [ ! -d "${GAME_CONFIG_PATH}" ]; then
+        mkdir -p "${GAME_CONFIG_PATH}/"
     fi
+    # Copy default-config, which comes with SteamCMD to gameserver save location
+    ew "> Copying DefaultPalWorldSettings.ini to ${GAME_SETTINGS_FILE}"
+    cp "${GAME_ROOT}/DefaultPalWorldSettings.ini" "${GAME_SETTINGS_FILE}"
+
 
     if [[ -n ${DIFFICULTY+x} ]]; then
         e "> Setting Difficulty to '$DIFFICULTY'"
@@ -266,11 +262,11 @@ function setup_palworld_settings_ini() {
         sed -E -i "s/ServerDescription=\"[^\"]*\"/ServerDescription=\"$SERVER_DESCRIPTION\"/" "$GAME_SETTINGS_FILE"
     fi
     if [[ -n ${ADMIN_PASSWORD+x} ]]; then
-        e "> Setting server admin password to '$ADMIN_PASSWORD'"
+        e "> Setting server admin password to [REDACTED]"
         sed -E -i "s/AdminPassword=\"[^\"]*\"/AdminPassword=\"$ADMIN_PASSWORD\"/" "$GAME_SETTINGS_FILE"
     fi
     if [[ -n ${SERVER_PASSWORD+x} ]]; then
-        e "> Setting server password to '$SERVER_PASSWORD'"
+        e "> Setting server password to [REDACTED]"
         sed -E -i "s/ServerPassword=\"[^\"]*\"/ServerPassword=\"$SERVER_PASSWORD\"/" "$GAME_SETTINGS_FILE"
     fi
     if [[ -n ${PUBLIC_PORT+x} ]]; then
