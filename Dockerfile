@@ -34,6 +34,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     RESTART_CRON_EXPRESSION="0 3,15 * * *" \
     # Webhook-settings
     WEBHOOK_ENABLED=false \
+    WEBHOOK_DEBUG_ENABLED=false \
     WEBHOOK_URL= \
     WEBHOOK_INFO_TITLE="Info" \
     WEBHOOK_INFO_DESCRIPTION="This is an info from the server" \
@@ -127,16 +128,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
 EXPOSE 8211/udp
 EXPOSE 25575/tcp
 
-COPY --chmod=755 entrypoint.sh /
-COPY --chmod=755 scripts/ /scripts
-COPY --chmod=755 includes/ /includes
-COPY --chmod=755 configs/rcon.yaml /home/steam/steamcmd/rcon.yaml
-
-RUN mkdir -p "$BACKUP_PATH" \
-    && ln -s /scripts/backupmanager.sh /usr/local/bin/backup \
-    && ln -s /scripts/rconcli.sh /usr/local/bin/rconcli \
-    && ln -s /scripts/restart.sh /usr/local/bin/restart
-
 # Install minimum required packages for dedicated server
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests gosu procps xdg-user-dirs \
@@ -167,6 +158,16 @@ RUN curl -fsSLO "$RCON_URL" \
     && chmod +x "rcon-0.10.3-amd64_linux/$RCON_BINARY" \
     && mv "rcon-0.10.3-amd64_linux/$RCON_BINARY" "/usr/local/bin/${RCON_BINARY}" \
     && rm -Rf rcon-0.10.3-amd64_linux rcon-0.10.3-amd64_linux.tar.gz
+
+COPY --chmod=755 entrypoint.sh /
+COPY --chmod=755 scripts/ /scripts
+COPY --chmod=755 includes/ /includes
+COPY --chmod=755 configs/rcon.yaml /home/steam/steamcmd/rcon.yaml
+
+RUN mkdir -p "$BACKUP_PATH" \
+    && ln -s /scripts/backupmanager.sh /usr/local/bin/backup \
+    && ln -s /scripts/rconcli.sh /usr/local/bin/rconcli \
+    && ln -s /scripts/restart.sh /usr/local/bin/restart
 
 VOLUME ["${GAME_ROOT}"]
 

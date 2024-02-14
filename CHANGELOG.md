@@ -3,6 +3,10 @@
 [Back to main](README.md#changelog)
 
 ## 2024-02-13
+
+* Added the option to enable webhook curl debugging for weird error edge-cases
+
+## 2024-02-13
 * **Breaking changes:** 
   * Changed the default BACKUP_RETENTION_POLICY to true and changed BACKUP_RETENTION_AMOUNT_TO_KEEP to 72, meaning 3 days worth of backup are kept in the default configuration
   * Added the ability to change the PUID and PGID via environment variables (#117)

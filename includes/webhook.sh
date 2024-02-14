@@ -6,7 +6,7 @@
 generate_post_data() {
   cat <<EOF
 {
-  "content": "",
+  "content": "Status update",
   "embeds": [{
     "title": "$1",
     "description": "$2",
@@ -19,12 +19,15 @@ EOF
 send_webhook_notification() {
   local title="$1"
   local description="$2"
-  local color="$3"
-  
-  # Debug Curl
-  #curl --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
-  # Prod Curl
-  curl --silent --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
+  local linecolor="$3"
+
+  if [[ -n $WEBHOOK_DEBUG_ENABLED ]] && [[ $WEBHOOK_DEBUG_ENABLED == "true" ]]; then
+    # Debug Curl
+    curl --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$linecolor")" "$WEBHOOK_URL"
+  else
+    # Prod Curl
+    curl --silent --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$linecolor")" "$WEBHOOK_URL"
+  fi
 }
 
 #Aliases to use in scripts
