@@ -34,6 +34,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     RESTART_CRON_EXPRESSION="0 3,15 * * *" \
     # Webhook-settings
     WEBHOOK_ENABLED=false \
+    WEBHOOK_DEBUG_ENABLED=false \
     WEBHOOK_URL= \
     WEBHOOK_INFO_TITLE="Info" \
     WEBHOOK_INFO_DESCRIPTION="This is an info from the server" \

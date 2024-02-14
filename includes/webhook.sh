@@ -20,11 +20,14 @@ send_webhook_notification() {
   local title="$1"
   local description="$2"
   local color="$3"
-  
-  # Debug Curl
-  #curl --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
-  # Prod Curl
-  curl --silent --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
+
+  if [[ -n $WEBHOOK_DEBUG_ENABLED ]] && [[ $WEBHOOK_DEBUG_ENABLED == "true" ]]; then
+    # Debug Curl
+    curl --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
+  else
+    # Prod Curl
+    curl --silent --ssl-no-revoke -H "Content-Type: application/json" -X POST -d "$(generate_post_data "$title" "$description" "$color")" "$WEBHOOK_URL"
+  fi
 }
 
 #Aliases to use in scripts
