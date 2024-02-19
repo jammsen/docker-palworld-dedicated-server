@@ -31,7 +31,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     BACKUP_RETENTION_AMOUNT_TO_KEEP=72 \
     # Restart-settings
     RESTART_ENABLED=false \
-    RESTART_CRON_EXPRESSION="0 3,15 * * *" \
+    RESTART_CRON_EXPRESSION="0 18 * * *" \
     # Webhook-settings
     WEBHOOK_ENABLED=false \
     WEBHOOK_DEBUG_ENABLED=false \

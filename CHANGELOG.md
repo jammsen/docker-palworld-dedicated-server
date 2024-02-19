@@ -2,6 +2,12 @@
 
 [Back to main](README.md#changelog)
 
+## 2024-02-19
+
+* Added 15 seconds delay after save before backup (#209)
+* Changed standard RESTART_CRON_EXPRESSION to only once a day at 6pm
+  * Cause less illnesses on Pals that way
+
 ## 2024-02-13
 
 * Added the option to enable webhook curl debugging for weird error edge-cases

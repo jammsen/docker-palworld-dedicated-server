@@ -138,6 +138,7 @@ function create_backup() {
     rconcli 'broadcast Saving-world...'
     rconcli 'save'
     rconcli 'broadcast Saving-done'
+    sleep 15
     rconcli 'broadcast Creating-backup'
 
     if ! tar cfz "${LOCAL_BACKUP_PATH}/${backup_file_name}" -C "${LOCAL_GAME_PATH}/" "Saved" ; then
