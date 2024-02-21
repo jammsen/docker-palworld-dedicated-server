@@ -28,6 +28,8 @@ These settings control the behavior of the Docker container:
 | WEBHOOK_URL                     | Defines the url the webhook to send data to                                                                                                         |                                | Url                                                                                                                                                                                                       |
 | WEBHOOK_*                       | See below the table "Webhook environment variables"                                                                                                 |                                | String                                                                                                                                                                                                    |
 | SERVER_SETTINGS_MODE            | Determines whether settings can be modified via environment variables or via file, except `COMMUNITY_SERVER` and `MULTITHREAD_ENABLED`!             | `auto`                         | Enum<br>`auto`: Settings are modified only by environment variables, manual edits will be ignored<br>`manual`: Settings are modified only by editing the file directly, environment variables are ignored |
+| ENABLE_PLAYER_LOGGING      | Enables Logging and announcing when players join and leave | true         | true/false |
+| PLAYER_LOGGING_POLL_PERIOD          | Polling period (in seconds) to check for players who have joined or left | 5                      | Integer |
 
 ### Webhook environment variables
 
