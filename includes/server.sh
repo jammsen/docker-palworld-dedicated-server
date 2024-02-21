@@ -3,6 +3,7 @@
 source /includes/colors.sh
 source /includes/rcon.sh
 source /includes/webhook.sh
+source /includes/player_logging.sh
 
 function start_server() {
     cd "$GAME_ROOT" || exit
