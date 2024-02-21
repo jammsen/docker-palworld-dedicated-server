@@ -1,3 +1,40 @@
+FROM golang:1.22.0-bookworm as rconclibuilder
+
+WORKDIR /build
+
+ENV CGO_ENABLED=0 \
+    GORCON_RCONCLI_URL=https://github.com/gorcon/rcon-cli/archive/refs/tags/v0.10.3.tar.gz \
+    GORCON_RCONCLI_DIR=rcon-cli-0.10.3 \
+    GORCON_RCONCLI_TGZ=v0.10.3.tar.gz \
+    GORCON_RCONCLI_TGZ_SHA1SUM=33ee8077e66bea6ee097db4d9c923b5ed390d583
+
+RUN curl -fsSLO "$GORCON_RCONCLI_URL" \
+    && echo "${GORCON_RCONCLI_TGZ_SHA1SUM}  ${GORCON_RCONCLI_TGZ}" | sha1sum -c - \
+    && tar -xzf "$GORCON_RCONCLI_TGZ" \
+    && mv "$GORCON_RCONCLI_DIR"/* ./ \
+    && rm "$GORCON_RCONCLI_TGZ" \
+    && rm -Rf "$GORCON_RCONCLI_DIR" \
+    && go build -v ./cmd/gorcon
+
+FROM debian:bookworm-slim as supercronicverify
+
+# Latest releases available at https://github.com/aptible/supercronic/releases
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 \
+    SUPERCRONIC=supercronic-linux-amd64 \
+    SUPERCRONIC_SHA1SUM=cd48d45c4b10f3f0bfdd3a57d054cd05ac96812b
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends --no-install-suggests ca-certificates curl \
+    && apt-get autoremove -y --purge \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+ RUN curl -fsSLO "$SUPERCRONIC_URL" \
+    && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
+    && chmod +x "$SUPERCRONIC" \
+    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
+
 FROM --platform=linux/amd64 cm2network/steamcmd:root
 
 LABEL maintainer="Sebastian Schmidt - https://github.com/jammsen/docker-palworld-dedicated-server"
@@ -129,45 +166,27 @@ EXPOSE 8211/udp
 EXPOSE 25575/tcp
 
 # Install minimum required packages for dedicated server
+COPY --from=rconclibuilder /build/gorcon /usr/local/bin/rcon
+COPY --from=supercronicverify /usr/local/bin/supercronic /usr/local/bin/supercronic
+
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends --no-install-suggests gosu procps xdg-user-dirs \
+    && apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs \
     && apt-get autoremove -y --purge \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Latest releases available at https://github.com/aptible/supercronic/releases
-ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 \
-    SUPERCRONIC=supercronic-linux-amd64 \
-    SUPERCRONIC_SHA1SUM=cd48d45c4b10f3f0bfdd3a57d054cd05ac96812b
-
-RUN curl -fsSLO "$SUPERCRONIC_URL" \
-    && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
-    && chmod +x "$SUPERCRONIC" \
-    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
-    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
-
-# Latest releases available at https://github.com/gorcon/rcon-cli/releases
-ENV RCON_URL=https://github.com/gorcon/rcon-cli/releases/download/v0.10.3/rcon-0.10.3-amd64_linux.tar.gz \
-    RCON_TGZ=rcon-0.10.3-amd64_linux.tar.gz \
-    RCON_TGZ_MD5SUM=8601c70dcab2f90cd842c127f700e398 \
-    RCON_BINARY=rcon
-
-RUN curl -fsSLO "$RCON_URL" \
-    && echo "${RCON_TGZ_MD5SUM} ${RCON_TGZ}" | md5sum -c - \
-    && tar xfz rcon-0.10.3-amd64_linux.tar.gz \
-    && chmod +x "rcon-0.10.3-amd64_linux/$RCON_BINARY" \
-    && mv "rcon-0.10.3-amd64_linux/$RCON_BINARY" "/usr/local/bin/${RCON_BINARY}" \
-    && rm -Rf rcon-0.10.3-amd64_linux rcon-0.10.3-amd64_linux.tar.gz
 
 COPY --chmod=755 entrypoint.sh /
 COPY --chmod=755 scripts/ /scripts
 COPY --chmod=755 includes/ /includes
 COPY --chmod=755 configs/rcon.yaml /home/steam/steamcmd/rcon.yaml
+COPY --chmod=755 gosu-amd64 /usr/local/bin/gosu
 
 RUN mkdir -p "$BACKUP_PATH" \
     && ln -s /scripts/backupmanager.sh /usr/local/bin/backup \
     && ln -s /scripts/rconcli.sh /usr/local/bin/rconcli \
-    && ln -s /scripts/restart.sh /usr/local/bin/restart
+    && ln -s /scripts/restart.sh /usr/local/bin/restart \
+    && gosu --version \
+    && gosu nobody true
 
 VOLUME ["${GAME_ROOT}"]
 
