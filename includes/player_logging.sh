@@ -21,7 +21,7 @@ broadcast_command() {
 }
 
 player_logging() {
-    old_player_list=( )
+    local old_player_list=( )
     while true; do
         mapfile -t server_pids < <(pgrep PalServer-Linux)
         if [ "${#server_pids[@]}" -ne 0 ]; then
@@ -42,22 +42,22 @@ player_logging() {
             fi
 
             for player in "${players_change_list[@]}"; do
-                player_steamid=$(get_steamid "${player}")
+                local player_steamid=$(get_steamid "${player}")
                 for new_player in "${new_player_list[@]}"; do
-                    new_player_steamid=$(get_steamid "${new_player}")
+                    local new_player_steamid=$(get_steamid "${new_player}")
                     # If a new player then a change
                     if [ "$new_player_steamid" = "$player_steamid" ]; then
-                        player_name=$( get_playername "${player}" )
+                        local player_name=$( get_playername "${player}" )
                         echo "${player_name} has joined"
                         broadcast_command "${player_name} has joined"
                         continue 2
                     fi
                 done
                 for old_player in "${old_player_list[@]}"; do
-                    old_player_steamid=$(get_steamid "${old_player}")
+                    local old_player_steamid=$(get_steamid "${old_player}")
                     # If an old player then no change
                     if [ "$old_player_steamid" = "$player_steamid" ]; then
-                        player_name=$( get_playername "${player}" )
+                        local player_name=$( get_playername "${player}" )
                         echo "${player_name} has left"
                         broadcast_command "${player_name} has left"
                         continue 2
