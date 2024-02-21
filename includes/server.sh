@@ -20,6 +20,12 @@ function start_server() {
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
         send_start_notification
     fi
+
+    if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]] && \
+       [ "${ENABLE_PLAYER_LOGGING,,}" = true ] && [[ "${PLAYER_LOGGING_POLL_PERIOD}" =~ ^[0-9]+$ ]]; then
+        player_logging &
+    fi
+
     es ">>> Starting the gameserver"
     ./PalServer.sh "${START_OPTIONS[@]}"
 }
