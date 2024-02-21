@@ -16,35 +16,6 @@ RUN curl -fsSLO "$GORCON_RCONCLI_URL" \
     && rm -Rf "$GORCON_RCONCLI_DIR" \
     && go build -v ./cmd/gorcon
 
-# FROM debian:bookworm-slim as gosuverify
-
-# Latest releases available at https://github.com/tianon/gosu/releases
-# ENV GOSU_URL=https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64 \
-#     GOSU_BINARY_FILENAME=gosu-amd64 \
-#     GOSU_BINARY_SHA1SUM=9a17525a1c21e57f3a074768c53f0f676a85ea3a \
-#     GOSU_ASC_URL=https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64.asc \
-#     GOSU_ASC_FILENAME=gosu-amd64.asc \
-#     GOSU_ASC_SHA1SUM=6a44cbe21a12d47424a43873ca955994a39dc23e
-
-# RUN apt-get update \
-#     && apt-get install -y --no-install-recommends --no-install-suggests ca-certificates curl gnupg \
-#     && apt-get autoremove -y --purge \
-#     && apt-get clean \
-#     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# RUN gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-#     && curl -fsSLO "$GOSU_URL" \
-#     && echo "${GOSU_BINARY_SHA1SUM} ${GOSU_BINARY_FILENAME}" | sha1sum -c - \
-#     && curl -fsSLO "$GOSU_ASC_URL" \
-#     && echo "${GOSU_ASC_SHA1SUM} ${GOSU_ASC_FILENAME}" | sha1sum -c - \
-#     && gpg --batch --verify gosu-amd64.asc gosu-amd64 \
-#     && chmod +x "$GOSU_BINARY_FILENAME" \
-#     && mv "$GOSU_BINARY_FILENAME" "/usr/local/bin/$GOSU_BINARY_FILENAME" \
-#     && ln -s "/usr/local/bin/${GOSU_BINARY_FILENAME}" /usr/local/bin/gosu \
-#     && rm -Rf "$GOSU_ASC_FILENAME" \
-#     && gosu --version \
-#     && gosu nobody true
-
 FROM debian:bookworm-slim as supercronicverify
 
 # Latest releases available at https://github.com/aptible/supercronic/releases
