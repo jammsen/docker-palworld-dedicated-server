@@ -8,6 +8,7 @@ source /includes/server.sh
 source /includes/webhook.sh
 
 function schedule_restart() {
+    PLAYER_DETECTION_PID=$(<PLAYER_DETECTION.PID)
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
         send_restart_notification
     fi
@@ -25,6 +26,7 @@ function schedule_restart() {
         rconcli 'save'
         rconcli 'broadcast Saving-done'
         sleep 15
+        kill -SIGTERM "${PLAYER_DETECTION_PID}"
         rcon "Shutdown 10"
         if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
             send_stop_notification
@@ -36,6 +38,7 @@ function schedule_restart() {
         fi
         kill -SIGTERM "$(pidof PalServer-Linux-Test)"
         tail --pid="$(pidof PalServer-Linux-Test)" -f 2>/dev/null
+        kill -SIGTERM "${PLAYER_DETECTION_PID}"
         ew ">>> Server stopped gracefully"
         exit 143;
     fi

@@ -26,6 +26,7 @@ function start_server() {
 
 function stop_server() {
     ew ">>> Stopping server..."
+    kill -SIGTERM "${PLAYER_DETECTION_PID}"
     if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
         save_and_shutdown_server
     fi
