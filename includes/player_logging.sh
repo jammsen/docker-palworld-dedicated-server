@@ -28,19 +28,9 @@ player_logging() {
             # Player IDs are usally 9 or 10 digits however when a player joins for the first time for a given boot their ID is temporary 00000000 (8x zeros) while loading
             # Player ID is also 00000000 (8x zeros) when in character creation
             mapfile -t new_player_list < <( rconcli "ShowPlayers" | sed '/,00000000,[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/d' )
-            # No players
-            if [ "${#new_player_list[@]}" -gt 0 ] && [ "${#old_player_list[@]}" -gt 0 ]; then
-                mapfile -t players_change_list < <( comm -23  \
-                    <(printf '%s\n' "${old_player_list[@]}" | sort) \
-                    <(printf '%s\n' "${new_player_list[@]}" | sort) )
-
-            # All have joined
-            elif [ "${#new_player_list[@]}" -gt 0 ]; then
-                players_change_list=("${new_player_list[@]}")
-            # All have left
-            elif [ "${#old_player_list[@]}" -gt 0 ]; then 
-                players_change_list=("${old_player_list[@]}")
-            fi
+            
+            # See players whose states have changed
+            mapfile -t players_change_list < <( printf '%s\n' "${old_player_list[@]}" "${new_player_list[@]}" | sort | uniq -u )
 
             for player in "${players_change_list[@]}"; do
                 local player_steamid=$(get_steamid "${player}")
