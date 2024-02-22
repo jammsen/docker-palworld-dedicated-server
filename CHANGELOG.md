@@ -2,6 +2,11 @@
 
 [Back to main](README.md#changelog)
 
+## 2024-02-22
+
+- Added RCON-Based player detection, for join and leave messages on console, rcon-broadcast and webhooks (#216)
+  - Important change: RCON is now on by default, was false in the Dockerfile before, not considered a breaking change
+
 ## 2024-02-21
 
 - Fixed major CVEs and added re-compiled gosu-amd64 binary to the repository (#214 #215)
