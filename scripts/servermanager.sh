@@ -14,6 +14,11 @@ source /includes/security.sh
 source /includes/server.sh
 source /includes/webhook.sh
 
+START_MAIN_PID=
+PLAYER_DETECTION_PID=
+
+
+
 # Handler for SIGTERM from docker-based stop events
 function term_handler() {
     stop_server
@@ -43,14 +48,17 @@ do
     ei ">>> Starting server manager"
     e "> Started at: $current_date $current_time"
     start_main &
+    START_MAIN_PID="$!"
 
     if [[ -n $RCON_PLAYER_DETECTION ]] && [[ $RCON_PLAYER_DETECTION == "true" ]] && [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
        player_detection_loop &
+       PLAYER_DETECTION_PID="$!"
+       echo $PLAYER_DETECTION_PID > PLAYER_DETECTION.PID
+       e "> Player detection thread started with pid ${PLAYER_DETECTION_PID}"
     fi
 
-    killpid="$!"
-    e "> Server main thread started with pid ${killpid}"
-    wait ${killpid}
+    e "> Server main thread started with pid ${START_MAIN_PID}"
+    wait ${START_MAIN_PID}
 
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
         send_stop_notification
