@@ -9,6 +9,7 @@ set -e
 source /includes/colors.sh
 source /includes/config.sh
 source /includes/cron.sh
+source /includes/playerdetection.sh
 source /includes/security.sh
 source /includes/server.sh
 source /includes/webhook.sh
@@ -42,6 +43,10 @@ do
     ei ">>> Starting server manager"
     e "> Started at: $current_date $current_time"
     start_main &
+
+    if [[ -n $RCON_PLAYER_DETECTION ]] && [[ $RCON_PLAYER_DETECTION == "true" ]] && [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
+       player_detection_loop &
+    fi
 
     killpid="$!"
     e "> Server main thread started with pid ${killpid}"

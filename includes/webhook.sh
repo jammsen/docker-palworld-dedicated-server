@@ -46,3 +46,9 @@ send_stop_notification() {
 send_update_notification() {
   send_webhook_notification "$WEBHOOK_UPDATE_TITLE" "$WEBHOOK_UPDATE_DESCRIPTION" "$WEBHOOK_UPDATE_COLOR"
 }
+send_player_join_notification() {
+  send_webhook_notification "$WEBHOOK_INFO_TITLE" "$1" "$WEBHOOK_INFO_COLOR"
+}
+send_player_leave_notification() {
+  send_webhook_notification "$WEBHOOK_INFO_TITLE" "$1" "$WEBHOOK_INFO_COLOR"
+}

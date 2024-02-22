@@ -69,6 +69,10 @@ ENV DEBIAN_FRONTEND=noninteractive \
     # Restart-settings
     RESTART_ENABLED=false \
     RESTART_CRON_EXPRESSION="0 18 * * *" \
+    # RCON-Playerdection - NEEDS RCON ENABLED!
+    RCON_PLAYER_DETECTION=true \
+    RCON_PLAYER_DETECTION_STARTUP_DELAY=60 \
+    RCON_PLAYER_DETECTION_CHECK_INTERVAL=15 \
     # Webhook-settings
     WEBHOOK_ENABLED=false \
     WEBHOOK_DEBUG_ENABLED=false \
@@ -156,7 +160,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SERVER_PASSWORD=serverPasswordHere \
     PUBLIC_PORT=8211 \
     PUBLIC_IP= \
-    RCON_ENABLED=false \
+    RCON_ENABLED=true \
     RCON_PORT=25575 \
     REGION= \
     USEAUTH=true \
