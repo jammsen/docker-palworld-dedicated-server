@@ -6,7 +6,13 @@
 
 - Added new SERVER_SETTINGS_MODE called "rcononly" this will only setup up RCON, everything else is still manually to set (#221)
 - Added RESTART_DEBUG_OVERRIDE for local testing
-- Fixed expansion-bug from #224 by @Dashboy1998
+- Fixed expansion-bug from #224 & #225 by @Dashboy1998
+- Refactoring of code-duplication in webhook.sh
+- Extended fixing for edge-cases of playernames from #226, #227 & #228
+  - Default mechanic checks more steamid oriented, not comparing playernames directly
+  - Added mechanic for playername changes and temporary characters which are still in char-creation screen
+  - Also cut down on text in the announces on RCON, because messages can only be 40 chars long
+  - Stripped all special-chars from playername, using TR class [:alnum:] meaning only a-zA-z0-9 are valid
 
 ## 2024-02-22
 
