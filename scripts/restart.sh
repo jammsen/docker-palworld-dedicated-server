@@ -18,7 +18,11 @@ function schedule_restart() {
             time=$(date '+%H:%M:%S')
             rconcli "broadcast ${time}-AUTOMATIC-RESTART-IN-$counter-MINUTES"
         fi
-        sleep 60
+        if [[ -n $RESTART_DEBUG_OVERRIDE ]] && [[ $RESTART_DEBUG_OVERRIDE == "true" ]]; then
+            sleep 1
+        else
+            sleep 60
+        fi 
     done
 
     if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then

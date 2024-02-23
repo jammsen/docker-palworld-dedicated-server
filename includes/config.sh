@@ -325,6 +325,10 @@ function setup_configs() {
         setup_engine_ini
         setup_palworld_settings_ini
         setup_rcon_yaml
+    elif [[ -n ${SERVER_SETTINGS_MODE} ]] && [[ ${SERVER_SETTINGS_MODE} == "rcononly" ]]; then
+        ew ">>> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', using environment variables to ONLY configure RCON!"
+        ew ">>> ALL SETTINGS excluding setup of rcon.yaml has to be done manually by the user!"
+        setup_rcon_yaml
     else
         ew ">>> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', NOT using environment variables to configure the server!"
         ew ">>> ALL SETTINGS including setup of rcon.yaml has to be done manually by the user!"
