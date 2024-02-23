@@ -36,6 +36,7 @@ These settings control the behavior of the Docker container:
 
 SERVER_SETTINGS_MODE accepts 2 values:
 - `auto`: Settings are modified only by environment variables, manual edits will be ignored
+- `rcononly`: RCON-Settings are modified by environment variables (RCON_ENABLED, RCON_PORT, ADMIN_PASSWORD), everything else has to be done by editing the file directly, other environment variables are ignored
 - `manual`: Settings are modified only by editing the file directly, environment variables are ignored
 
 

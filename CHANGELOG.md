@@ -2,6 +2,10 @@
 
 [Back to main](README.md#changelog)
 
+## 2024-02-23
+
+- Added new SERVER_SETTINGS_MODE called "rcononly" this will only setup up RCON, everything else is still manually to set (#221)
+
 ## 2024-02-22
 
 - Added RCON-Based player detection, for join and leave messages on console, rcon-broadcast and webhooks (#216)
