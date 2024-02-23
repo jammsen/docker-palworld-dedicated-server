@@ -52,7 +52,7 @@ announce_join() {
         send_player_join_notification "$message"
     fi
     if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
-       broadcast_player_join "$1"
+        broadcast_player_join "${1// /\-}"
     fi
 }
 
@@ -65,6 +65,6 @@ announce_leave() {
         send_player_leave_notification "$message"
     fi
     if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
-       broadcast_player_leave "$1"
+        broadcast_player_leave "${1// /\-}"
     fi
 }

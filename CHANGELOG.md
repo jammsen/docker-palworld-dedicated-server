@@ -5,6 +5,7 @@
 ## 2024-02-23
 
 - Added new SERVER_SETTINGS_MODE called "rcononly" this will only setup up RCON, everything else is still manually to set (#221)
+- Added RESTART_DEBUG_OVERRIDE for local testing
 
 ## 2024-02-22
 
