@@ -8,7 +8,7 @@
 - Added RESTART_DEBUG_OVERRIDE for local testing
 - Fixed expansion-bug from #224 & #225 by @Dashboy1998
 - Refactoring of code-duplication in webhook.sh
-- Extended fixing for edge-cases of playernames from #226, #227 & #228
+- Extended fixing for edge-cases of playernames from #226, #227 & #228 by @Dashboy1998
   - Default mechanic checks more steamid oriented, not comparing playernames directly
   - Added mechanic for playername changes and temporary characters which are still in char-creation screen
   - Also cut down on text in the announces on RCON, because messages can only be 40 chars long
