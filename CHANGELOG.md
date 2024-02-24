@@ -2,6 +2,11 @@
 
 [Back to main](README.md#changelog)
 
+## 2024-02-24
+
+- Added new mechanic for auto-restart, where the player count will be checked, 15 minutes grace-period (for dungeons, boss-fights, etc.) will only used if a player is online, if not the restart will be initiated (#221)
+  - Renamed/extended webhook messages accordingly
+
 ## 2024-02-23
 
 - Added new SERVER_SETTINGS_MODE called "rcononly" this will only setup up RCON, everything else is still manually to set (#221)

@@ -8,13 +8,23 @@ source /includes/server.sh
 source /includes/webhook.sh
 
 function schedule_restart() {
+    ew ">>> Automatic restart was triggered..."
     PLAYER_DETECTION_PID=$(<PLAYER_DETECTION.PID)
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
-        send_restart_notification
+        send_restart_planned_notification
     fi
 
     for ((counter=15; counter>=1; counter--)); do
         if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
+            if check_is_server_empty; then
+                ew ">>> Server is empty, restarting now"
+                if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
+                    send_restart_now_notification
+                fi
+                break
+            else 
+                ew ">>> Server has still players"
+            fi
             time=$(date '+%H:%M:%S')
             rconcli "broadcast ${time}-AUTOMATIC-RESTART-IN-$counter-MINUTES"
         fi

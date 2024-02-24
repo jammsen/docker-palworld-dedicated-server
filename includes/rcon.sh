@@ -20,7 +20,6 @@ function broadcast_automatic_restart() {
     rcon "Shutdown 10"
 }
 
-
 function broadcast_backup_start() {
     time=$(date '+%H:%M:%S')
 
@@ -53,4 +52,13 @@ function broadcast_player_name_change() {
 function broadcast_player_leave() {
     time=$(date '+%H:%M:%S')
     rconcli "broadcast ${time}-$1-left-the-server"
+}
+
+function check_is_server_empty() {
+    num_players=$(rcon -c "$RCON_CONFIG_FILE" showplayers | tail -n +2 | wc -l)
+    if [ "$num_players" -eq 0 ]; then
+        return 0  # Server empty
+    else
+        return 1  # Server not empty
+    fi
 }
