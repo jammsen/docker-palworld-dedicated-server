@@ -4,7 +4,7 @@
 
 ## 2024-02-24
 
-- Added new mechanic for auto-restart, where the player count will be checked, 15 minutes grace-period (for dungeons, boss-fights, etc.) will only used if a player is online, if not the restart will be initiated (#221)
+- Added new mechanic for auto-restart, where the player count will be checked, 15 minutes grace-period (for dungeons, boss-fights, etc.) will only used if a player is online, if not the restart will be initiated (#230)
   - Renamed/extended webhook messages accordingly
 
 ## 2024-02-23
