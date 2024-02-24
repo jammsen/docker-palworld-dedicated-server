@@ -99,6 +99,11 @@ compare_players() {
 
     for player_info in "${current_players[@]}"; do
         # Extract player name, UID, and Steam ID from player info
+        # This part sets the Internal Field Separator (IFS) variable to ','. 
+        # In Bash, the IFS variable determines how Bash recognizes word boundaries. 
+        # By default, it includes space, tab, and newline characters. 
+        # By setting it to ',', we're telling Bash to split input lines at commas.
+        # https://tldp.org/LDP/abs/html/internalvariables.html#IFSREF
         IFS=',' read -r -a player_data <<< "$player_info"
         local steamid="${player_data[-1]}"
         local playeruid="${player_data[-2]}"
