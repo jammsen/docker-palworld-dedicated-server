@@ -4,9 +4,10 @@
 # IMPORTANT: Don't use Hex-Colors! Go to the page, search for the Hex-Color, 
 # after that add the DECIMAL-Representation to the color field or it will break for Discord!
 generate_post_data() {
-  cat <<EOF
+  if [[ -n "${WEBHOOK_CONTENT_TITLE}" ]]; then
+    cat <<EOF
 {
-  "content": "Status update",
+  "content": "${WEBHOOK_CONTENT_TITLE}",
   "embeds": [{
     "title": "$1",
     "description": "$2",
@@ -14,6 +15,17 @@ generate_post_data() {
   }]
 }
 EOF
+  else
+    cat <<EOF
+{
+  "embeds": [{
+    "title": "$1",
+    "description": "$2",
+    "color": "$3"
+  }]
+}
+EOF
+  fi
 }
 
 send_webhook_notification() {
