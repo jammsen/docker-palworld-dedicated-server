@@ -2,6 +2,10 @@
 
 [Back to main](README.md#changelog)
 
+## 2024-02-25
+
+- Added new mechanic for customization of webhook content-titles (#223)
+
 ## 2024-02-24
 
 - Added new mechanic for auto-restart, where the player count will be checked, 15 minutes grace-period (for dungeons, boss-fights, etc.) will only used if a player is online, if not the restart will be initiated (#230)

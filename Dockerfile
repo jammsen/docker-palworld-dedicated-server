@@ -78,6 +78,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     WEBHOOK_ENABLED=false \
     WEBHOOK_DEBUG_ENABLED=false \
     WEBHOOK_URL= \
+    WEBHOOK_CONTENT_TITLE="Status update" \
     WEBHOOK_INFO_TITLE="Info" \
     WEBHOOK_INFO_DESCRIPTION="This is an info from the server" \
     WEBHOOK_INFO_COLOR="2849520" \
