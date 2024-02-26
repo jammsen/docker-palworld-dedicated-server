@@ -2,6 +2,10 @@
 
 [Back to main](README.md#changelog)
 
+## Upcoming release
+
+- Added clearer descriptions in the ENV_VARS documentation by @m1xzg
+
 ## 2024-02-25
 
 - Added new mechanic for customization of webhook content-titles (#223)
