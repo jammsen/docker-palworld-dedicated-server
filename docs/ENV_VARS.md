@@ -46,9 +46,9 @@ SERVER_SETTINGS_MODE accepts 2 values:
 
 > [!WARNING]
 > **IMPORTANT: Don't use Hex-Colors!**
-> 
+>
 > Go to the page, search for the Hex-Color, after that add the DECIMAL-Representation to the color field or it will break for Discord!
-> >https://www.spycolor.com/ 
+> >https://www.spycolor.com/
 
 There are a lot of Variables to setup for messages and colors to send to the webhook url in the `default.env`
 
@@ -135,6 +135,7 @@ Information sources and credits to the following websites:
 | SERVER_PASSWORD                           | AdminPassword                                                      | Set the server password.                                                                                                                                                                                                                                                                                                                                                                                                           | serverPasswordHere                                     | String        |
 | PUBLIC_PORT                               | public port                                                        | Public port number                                                                                                                                                                                                                                                                                                                                                                                                                 | 8211                                                   | UInt16        |
 | PUBLIC_IP                                 | public ip or FQDN                                                  | Public IP or FQDN                                                                                                                                                                                                                                                                                                                                                                                                                  |                                                        | String        |
+| SHOW_PLAYER_LIST                          | bShowPlayerList                                                    | Make the player list public on a community server                                                                                                                                                                                                                                                                                                                                                                                                                | false                                                  | Boolean       |
 | RCON_ENABLED                              | RCONEnabled                                                        | Enable RCON - Use ADMIN_PASSWORD to login                                                                                                                                                                                                                                                                                                                                                                                          | true                                                   | Boolean       |
 | RCON_PORT                                 | RCONPort                                                           | Port number for RCON                                                                                                                                                                                                                                                                                                                                                                                                               | 25575                                                  | UInt16        |
 | REGION                                    | Region                                                             | Area                                                                                                                                                                                                                                                                                                                                                                                                                               |                                                        | String        |
@@ -150,7 +151,7 @@ Information sources and credits to the following websites:
 This section lists all the settings for the webhooks.
 
 > [!WARNING]
-> 
+>
 > Please note that Hex-Colors (Example #eeeeee) are not supported. Instead, use the Decimal representation of the color.
 > To convert a Hex-Color to its Decimal representation, you can use online tools such as [SpyColor](https://www.spycolor.com/).
 > Search for the Hex-Color and use the Decimal representation of that color. Using Hex-Colors will cause errors!

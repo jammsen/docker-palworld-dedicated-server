@@ -14,7 +14,7 @@ function setup_engine_ini() {
         fi
         # Create empty Engine.ini file
         echo "" > "${GAME_ENGINE_FILE}"
-    else 
+    else
         e "> Found existing config!"
     fi
     if grep -qE "${pattern1}" "${GAME_ENGINE_FILE}" 2>/dev/null; then
@@ -276,6 +276,10 @@ function setup_palworld_settings_ini() {
     if [[ -n ${PUBLIC_IP+x} ]]; then
         e "> Setting public ip to '$PUBLIC_IP'"
         sed -E -i "s/PublicIP=\"[^\"]*\"/PublicIP=\"$PUBLIC_IP\"/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${SHOW_PLAYER_LIST+x} ]]; then
+        e "> Setting bShowPlayerList to '$SHOW_PLAYER_LIST'"
+        sed -E -i "s/bShowPlayerList=[a-zA-Z]*/bShowPlayerList=$SHOW_PLAYER_LIST/" "$GAME_SETTINGS_FILE"
     fi
     if [[ -n ${RCON_ENABLED+x} ]]; then
         e "> Setting rcon-enabled to '$RCON_ENABLED'"
