@@ -53,6 +53,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     GAME_ENGINE_FILE="/palworld/Pal/Saved/Config/LinuxServer/Engine.ini" \
     STEAMCMD_PATH="/home/steam/steamcmd" \
     RCON_CONFIG_FILE="/home/steam/steamcmd/rcon.yaml" \
+    PALWORLD_TEMPLATE_FILE="/PalWorldSettings.ini.template" \
     BACKUP_PATH="/palworld/backups" \
     # Container-setttings
     PUID=1000 \
@@ -167,7 +168,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     RCON_PORT=25575 \
     REGION= \
     USEAUTH=true \
-    BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt
+    BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt \
+    SHOW_PLAYER_LIST=false
 
 EXPOSE 8211/udp
 EXPOSE 25575/tcp
@@ -186,6 +188,7 @@ COPY --chmod=755 entrypoint.sh /
 COPY --chmod=755 scripts/ /scripts
 COPY --chmod=755 includes/ /includes
 COPY --chmod=755 configs/rcon.yaml /home/steam/steamcmd/rcon.yaml
+COPY --chmod=755 configs/PalWorldSettings.ini.template /
 COPY --chmod=755 gosu-amd64 /usr/local/bin/gosu
 
 RUN mkdir -p "$BACKUP_PATH" \
