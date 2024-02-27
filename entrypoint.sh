@@ -24,6 +24,7 @@ fi
 chown -R "$APP_USER":"$APP_GROUP" "$APP_HOME"
 chown -R "$APP_USER":"$APP_GROUP" "$GAME_ROOT"
 chown "$APP_USER":"$APP_GROUP" /entrypoint.sh
+chown "$APP_USER":"$APP_GROUP" /PalWorldSettings.ini.template
 chown -R "$APP_USER":"$APP_GROUP" /scripts
 chown -R "$APP_USER":"$APP_GROUP" /includes
 

@@ -14,7 +14,7 @@ function setup_engine_ini() {
         fi
         # Create empty Engine.ini file
         echo "" > "${GAME_ENGINE_FILE}"
-    else 
+    else
         e "> Found existing config!"
     fi
     if grep -qE "${pattern1}" "${GAME_ENGINE_FILE}" 2>/dev/null; then
@@ -39,9 +39,8 @@ function setup_palworld_settings_ini() {
         mkdir -p "${GAME_CONFIG_PATH}/"
     fi
     # Copy default-config, which comes with SteamCMD to gameserver save location
-    ew "> Copying DefaultPalWorldSettings.ini to ${GAME_SETTINGS_FILE}"
-    cp "${GAME_ROOT}/DefaultPalWorldSettings.ini" "${GAME_SETTINGS_FILE}"
-
+    ew "> Copying PalWorldSettings.ini.template to ${GAME_SETTINGS_FILE}"
+    cp "${PALWORLD_TEMPLATE_FILE}" "${GAME_SETTINGS_FILE}"
 
     if [[ -n ${DIFFICULTY+x} ]]; then
         e "> Setting Difficulty to '$DIFFICULTY'"
@@ -296,6 +295,10 @@ function setup_palworld_settings_ini() {
     if [[ -n ${BAN_LIST_URL+x} ]]; then
         e "> Setting BanListURL to '$BAN_LIST_URL'"
         sed -E -i "s~BanListURL=\"[^\"]*\"~BanListURL=\"$BAN_LIST_URL\"~" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${SHOW_PLAYER_LIST+x} ]]; then
+        e "> Setting bShowPlayerList to '$SHOW_PLAYER_LIST'"
+        sed -E -i "s/bShowPlayerList=[a-zA-Z]*/bShowPlayerList=$SHOW_PLAYER_LIST/" "$GAME_SETTINGS_FILE"
     fi
     es ">>> Finished setting up PalWorldSettings.ini"
 }
