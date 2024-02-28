@@ -191,6 +191,12 @@ COPY --chmod=755 configs/rcon.yaml /home/steam/steamcmd/rcon.yaml
 COPY --chmod=755 configs/PalWorldSettings.ini.template /
 COPY --chmod=755 gosu-amd64 /usr/local/bin/gosu
 
+RUN chown -R "$PUID:$PGID" "/home/steam/" && \
+    chown "$PUID:$PGID" /entrypoint.sh && \
+    chown "$PUID:$PGID" /PalWorldSettings.ini.template && \
+    chown -R "$PUID:$PGID" /scripts && \
+    chown -R "$PUID:$PGID" /includes
+
 RUN mkdir -p "$BACKUP_PATH" \
     && ln -s /scripts/backupmanager.sh /usr/local/bin/backup \
     && ln -s /scripts/rconcli.sh /usr/local/bin/rconcli \
