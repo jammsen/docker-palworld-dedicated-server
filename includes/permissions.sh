@@ -14,11 +14,7 @@ change_ownership() {
     else
         # Echo the total count of files_with_incorrect_permissions
         count=$(echo "$files_with_incorrect_permissions" | wc -l)
-        ei "> Found $count items with improper permissions"
-
-        # Echo the files_with_incorrect_permissions to stdout
-        ei "> Files with incorrect permissions:"
-        ei "> $files_with_incorrect_permissions"
+        ei "> Found $count items with improper permissions for $TARGET"
 
         # Check if running as root and warn user if not
         if [ "$EUID" -ne 0 ]; then
@@ -30,6 +26,6 @@ change_ownership() {
             chown -R "$APP_USER:$APP_GROUP" "$TARGET"
         fi
 
-        echo "> Ownership changed to $APP_USER:$APP_GROUP for all items in $TARGET."
+        ei "> Ownership changed to $APP_USER:$APP_GROUP for all items in $TARGET."
     fi
 }
