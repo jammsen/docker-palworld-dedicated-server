@@ -16,6 +16,17 @@ RUN curl -fsSLO "$GORCON_RCONCLI_URL" \
     && rm -Rf "$GORCON_RCONCLI_DIR" \
     && go build -v ./cmd/gorcon
 
+
+WORKDIR /build/custom_rcon_broadcast/
+
+# Download the source code
+RUN curl -OJL https://raw.githubusercontent.com/thejcpalma/palworld-dedicated-server-docker/0.2.1/src/custom_rcon_broadcast/go.mod \
+    && curl -OJL https://raw.githubusercontent.com/thejcpalma/palworld-dedicated-server-docker/0.2.1/src/custom_rcon_broadcast/go.sum \
+    && curl -OJL https://raw.githubusercontent.com/thejcpalma/palworld-dedicated-server-docker/0.2.1/src/custom_rcon_broadcast/main.go
+
+# Build the custom rcon broadcast binary
+RUN go build -v -o /build/rcon_broadcast main.go
+
 FROM debian:bookworm-slim as supercronicverify
 
 # Latest releases available at https://github.com/aptible/supercronic/releases
@@ -176,6 +187,7 @@ EXPOSE 25575/tcp
 
 # Install minimum required packages for dedicated server
 COPY --from=rconclibuilder /build/gorcon /usr/local/bin/rcon
+COPY --from=rconclibuilder /build/rcon_broadcast /usr/local/bin/rcon_broadcast
 COPY --from=supercronicverify /usr/local/bin/supercronic /usr/local/bin/supercronic
 
 RUN apt-get update \
