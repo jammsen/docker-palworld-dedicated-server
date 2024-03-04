@@ -2,6 +2,13 @@
 
 [Back to main](README.md#changelog)
 
+## 2024-03-04
+
+- Fixed typo
+- Removed 0.1.5.0 -rcon workaround
+- Cleanup code
+- No default.env update needed, just update image, down and up and your good
+
 ## 2024-02-27
 
 - Added clearer descriptions in the ENV_VARS documentation by @m1xzg

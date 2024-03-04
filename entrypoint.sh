@@ -10,7 +10,7 @@ APP_HOME=/home/$APP_USER
 source /includes/colors.sh
 
 if [[ "${PUID}" -eq 0 ]] || [[ "${PGID}" -eq 0 ]]; then
-    ee ">>> Running as root is not supported, please fix your PUID and PGID!"
+    ee ">>> Running Palworld as root is not supported, please fix your PUID and PGID!"
     exit 1
 elif [[ "$(id -u steam)" -ne "${PUID}" ]] || [[ "$(id -g steam)" -ne "${PGID}" ]]; then
     ew "> Current $APP_USER user PUID is '$(id -u steam)' and PGID is '$(id -g steam)'"
