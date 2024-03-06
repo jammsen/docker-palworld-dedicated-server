@@ -1,61 +1,61 @@
 # shellcheck disable=SC2148
 
 function save_and_shutdown_server() {
-    rconcli 'broadcast Server-shutdown-was-requested-init-saving'
+    rconcli 'broadcast Server shutdown was requested init saving'
     rconcli 'save'
-    rconcli 'broadcast Done-saving-server-shuts-down-now'
+    rconcli 'broadcast Done saving server shuts down now'
 }
 
 function broadcast_automatic_restart() {
     time=$(date '+%H:%M:%S')
 
     for ((counter=1; counter<=15; counter++)); do
-        rconcli "broadcast ${time}-AUTOMATIC-RESTART-IN-$counter-MINUTES"
+        rconcli "broadcast ${time} AUTOMATIC RESTART IN $counter MINUTES"
         sleep 1
     done
-    rconcli 'broadcast Saving-world-before-restart...'
+    rconcli 'broadcast Saving world before restart...'
     rconcli 'save'
-    rconcli 'broadcast Saving-done'
-    rconcli 'broadcast Creating-backup'
+    rconcli 'broadcast Saving done'
+    rconcli 'broadcast Creating backup'
     rcon "Shutdown 10"
 }
 
 function broadcast_backup_start() {
     time=$(date '+%H:%M:%S')
 
-    rconcli "broadcast ${time}-Saving-in-5-seconds"
+    rconcli "broadcast ${time} Saving in 5 seconds"
     sleep 5
-    rconcli 'broadcast Saving-world...'
+    rconcli 'broadcast Saving world...'
     rconcli 'save'
-    rconcli 'broadcast Saving-done'
-    rconcli 'broadcast Creating-backup'
+    rconcli 'broadcast Saving done'
+    rconcli 'broadcast Creating backup'
 }
 
 function broadcast_backup_success() {
-    rconcli 'broadcast Backup-done'
+    rconcli 'broadcast Backup done'
 }
 
 function broadcast_backup_failed() {
-    rconcli 'broadcast Backup-failed'
+    rconcli 'broadcast Backup failed'
 }
 
 function broadcast_player_join() {
     time=$(date '+%H:%M:%S')
-    rconcli "broadcast ${time}-$1-joined-the-server"
+    rconcli "broadcast ${time} $1 joined the server"
 }
 
 function broadcast_player_name_change() {
     time=$(date '+%H:%M:%S')
-    rconcli "broadcast ${time}-$1-renamed-to-$2"
+    rconcli "broadcast ${time} $1 renamed to $2"
 }
 
 function broadcast_player_leave() {
     time=$(date '+%H:%M:%S')
-    rconcli "broadcast ${time}-$1-left-the-server"
+    rconcli "broadcast ${time} $1 left the server"
 }
 
 function check_is_server_empty() {
-    num_players=$(rcon -c "$RCON_CONFIG_FILE" showplayers | tail -n +2 | wc -l)
+    num_players=$(rcon -c "$RCON_CONFIG_FILE" showplayers 2>/dev/null | tail -n +2 | wc -l)
     if [ "$num_players" -eq 0 ]; then
         return 0  # Server empty
     else

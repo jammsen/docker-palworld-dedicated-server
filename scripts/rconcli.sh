@@ -13,8 +13,21 @@ run_rcon_cli() {
         ew ">>> RCON is not enabled. Aborting RCON command ..."
         exit
     fi
-    output=$(rcon -c "$RCON_CONFIG_FILE" "${cmd}")
-    ei_nn "> RCON: "; e "${output}"
+
+    if [[ ! -f "${RCON_CONFIG_FILE}" ]]; then
+        er ">>> RCON config file not found. Aborting RCON command ..."
+        return
+    fi
+
+    # Edge case for broadcast because it doesn't support spaces in the message
+    if [[ ${cmd,,} == broadcast* ]]; then
+        cmd=${cmd#broadcast }  # Remove 'broadcast ' from the command (also removes the space after 'broadcast')
+        output=$(rcon_broadcast -c "${RCON_CONFIG_FILE}" "${cmd}" | tr -d '\0')
+    else
+        output=$(rcon -c "${RCON_CONFIG_FILE}" "${cmd}" | tr -d '\0')
+    fi
+
+    ei_nn "> RCON: "; echo "${output}"
 }
 
 run_rcon_cli "$@"
