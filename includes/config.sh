@@ -40,7 +40,7 @@ function setup_palworld_settings_ini() {
     fi
     # Copy default-config, which comes with SteamCMD to gameserver save location
     ew "> Copying PalWorldSettings.ini.template to ${GAME_SETTINGS_FILE}"
-    cp "${PALWORLD_TEMPLATE_FILE}" "${GAME_SETTINGS_FILE}"
+    cp --no-preserve=ownership "${PALWORLD_TEMPLATE_FILE}" "${GAME_SETTINGS_FILE}"
 
     if [[ -n ${DIFFICULTY+x} ]]; then
         e "> Setting Difficulty to '$DIFFICULTY'"
