@@ -4,6 +4,7 @@
 set -e
 
 source /includes/colors.sh
+source /includes/rcon.sh
 source /includes/server.sh
 source /includes/webhook.sh
 
