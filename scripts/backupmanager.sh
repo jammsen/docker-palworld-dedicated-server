@@ -11,6 +11,10 @@ LOCAL_GAME_SAVE_PATH=${GAME_SAVE_PATH} # Directory where the game save files are
 LOCAL_BACKUP_RETENTION_POLICY=${BACKUP_RETENTION_POLICY} # Number of backup files to keep
 LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP=${BACKUP_RETENTION_AMOUNT_TO_KEEP} # Number of backup files to keep
 
+function get_time() {
+    date '+[%H:%M:%S]'
+}
+
 function print_usage() {
     script_name=$(basename "$0")
     echo "Usage:"
@@ -128,18 +132,17 @@ function create_backup() {
     check_required_directories
 
     date=$(date +%Y%m%d_%H%M%S)
-    time=$(date +%H-%M-%S)
     backup_file_name="saved-${date}.tar.gz"
 
     mkdir -p "${LOCAL_BACKUP_PATH}"
 
-    rconcli "broadcast ${time}-Saving-in-5-seconds"
+    rconcli broadcast "$(get_time) Saving in 5 seconds..."
     sleep 5
-    rconcli 'broadcast Saving-world...'
-    rconcli 'save'
-    rconcli 'broadcast Saving-done'
+    rconcli broadcast "$(get_time) Saving world..."
+    rconcli save
+    rconcli broadcast "$(get_time) Saving done"
     sleep 15
-    rconcli 'broadcast Creating-backup'
+    rconcli broadcast "$(get_time) Creating backup..."
 
     if ! tar cfz "${LOCAL_BACKUP_PATH}/${backup_file_name}" -C "${LOCAL_GAME_PATH}/" "Saved" ; then
         broadcast_backup_failed
@@ -147,7 +150,7 @@ function create_backup() {
     else
         broadcast_backup_success
         es ">>> Backup '${backup_file_name}' created successfully"
-    fi 
+    fi
 
     if [[ -n ${LOCAL_BACKUP_RETENTION_POLICY} ]] && [[ ${LOCAL_BACKUP_RETENTION_POLICY} == "true" ]] && [[ ${LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP} =~ ^[0-9]+$ ]]; then
         ls -1t "${LOCAL_BACKUP_PATH}"/saved-*.tar.gz | tail -n +"$(($LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP + 1))" | xargs -d '\n' rm -f --
@@ -208,7 +211,7 @@ function clean_backups() {
         ei "> No files in the backup directory ${LOCAL_BACKUP_PATH}. Exiting..."
         exit 0
     fi
-    
+
     files=$(ls -1t "${LOCAL_BACKUP_PATH}"/saved-*.tar.gz)
     files_to_delete=$(echo "${files}" | tail -n +"$(($num_files_to_keep + 1))")
     num_files=$(echo -n "${files}" | grep -c '^')
