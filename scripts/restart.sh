@@ -22,23 +22,22 @@ function schedule_restart() {
                     send_restart_now_notification
                 fi
                 break
-            else 
+            else
                 ew ">>> Server has still players"
             fi
-            time=$(date '+%H:%M:%S')
-            rconcli "broadcast ${time}-AUTOMATIC-RESTART-IN-$counter-MINUTES"
+            rconcli broadcast "$(get_time) AUTOMATIC RESTART IN $counter MINUTES"
         fi
         if [[ -n $RESTART_DEBUG_OVERRIDE ]] && [[ $RESTART_DEBUG_OVERRIDE == "true" ]]; then
             sleep 1
         else
             sleep 60
-        fi 
+        fi
     done
 
     if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
-        rconcli 'broadcast Saving-world-before-restart...'
-        rconcli 'save'
-        rconcli 'broadcast Saving-done'
+        rconcli broadcast "$(get_time) Saving world before restart..."
+        rconcli save
+        rconcli broadcast "$(get_time) Saving done"
         sleep 15
         kill -SIGTERM "${PLAYER_DETECTION_PID}"
         rcon "Shutdown 10"
