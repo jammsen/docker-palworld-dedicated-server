@@ -11,6 +11,10 @@ LOCAL_GAME_SAVE_PATH=${GAME_SAVE_PATH} # Directory where the game save files are
 LOCAL_BACKUP_RETENTION_POLICY=${BACKUP_RETENTION_POLICY} # Number of backup files to keep
 LOCAL_BACKUP_RETENTION_AMOUNT_TO_KEEP=${BACKUP_RETENTION_AMOUNT_TO_KEEP} # Number of backup files to keep
 
+function get_time() {
+    date '+[%H:%M:%S]'
+}
+
 function print_usage() {
     script_name=$(basename "$0")
     echo "Usage:"

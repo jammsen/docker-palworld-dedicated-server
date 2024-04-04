@@ -82,7 +82,7 @@ compare_players() {
 
 # Function to announce a player join
 announce_join() {
-    time=$(date '+%H:%M:%S')
+    time=$(date '+[%H:%M:%S]')
     message="Player $1 has joined the server."
     echo "${time}: $message"
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
@@ -95,7 +95,7 @@ announce_join() {
 
 # Function to announce a player join
 announce_name_change() {
-    time=$(date '+%H:%M:%S')
+    time=$(date '+[%H:%M:%S]')
     message="Player $1 has changed their name to $2."
     echo "${time}: $message"
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
@@ -108,7 +108,7 @@ announce_name_change() {
 
 # Function to announce a player leave
 announce_leave() {
-    time=$(date '+%H:%M:%S')
+    time=$(date '+[%H:%M:%S]')
     message="Player $1 has left the server."
     echo "${time}: $message"
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then

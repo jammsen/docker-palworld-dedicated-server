@@ -7,6 +7,10 @@ source /includes/colors.sh
 source /includes/server.sh
 source /includes/webhook.sh
 
+function get_time() {
+    date '+[%H:%M:%S]'
+}
+
 function schedule_restart() {
     ew ">>> Automatic restart was triggered..."
     PLAYER_DETECTION_PID=$(<PLAYER_DETECTION.PID)
