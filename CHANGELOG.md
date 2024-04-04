@@ -2,6 +2,12 @@
 
 [Back to main](README.md#changelog)
 
+## 2024-04-04
+
+- Fixed rcon-spaces from @Callum027 (#251)
+- Added new config options from new default-settings-file
+
+
 ## 2024-03-04
 
 - Fixed typo

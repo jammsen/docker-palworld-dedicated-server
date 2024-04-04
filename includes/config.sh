@@ -296,9 +296,25 @@ function setup_palworld_settings_ini() {
         e "> Setting BanListURL to '$BAN_LIST_URL'"
         sed -E -i "s~BanListURL=\"[^\"]*\"~BanListURL=\"$BAN_LIST_URL\"~" "$GAME_SETTINGS_FILE"
     fi
+    if [[ -n ${RESTAPI_ENABLED+x} ]]; then
+        e "> Setting RESTAPIEnabled to '$RESTAPI_ENABLED'"
+        sed -E -i "s/RESTAPIEnabled=[a-zA-Z]*/RESTAPIEnabled=$RESTAPI_ENABLED/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${RESTAPI_PORT+x} ]]; then
+        e "> Setting RESTAPIPort to '$RESTAPI_PORT'"
+        sed -E -i "s/RESTAPIPort=[0-9]*/RESTAPIPort=$RESTAPI_PORT/" "$GAME_SETTINGS_FILE"
+    fi
     if [[ -n ${SHOW_PLAYER_LIST+x} ]]; then
         e "> Setting bShowPlayerList to '$SHOW_PLAYER_LIST'"
         sed -E -i "s/bShowPlayerList=[a-zA-Z]*/bShowPlayerList=$SHOW_PLAYER_LIST/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${ALLOW_CONNECT_PLATFORM+x} ]]; then
+        e "> Setting AllowConnectPlatform to '$ALLOW_CONNECT_PLATFORM'"
+        sed -E -i "s/AllowConnectPlatform=[a-zA-Z]*/AllowConnectPlatform=$ALLOW_CONNECT_PLATFORM/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${ENABLE_WORLD_BACKUP+x} ]]; then
+        e "> Setting bIsUseBackupSaveData to '$ENABLE_WORLD_BACKUP'"
+        sed -E -i "s/bIsUseBackupSaveData=[a-zA-Z]*/bIsUseBackupSaveData=$ENABLE_WORLD_BACKUP/" "$GAME_SETTINGS_FILE"
     fi
     es ">>> Finished setting up PalWorldSettings.ini"
 }

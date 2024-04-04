@@ -169,7 +169,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
     REGION= \
     USEAUTH=true \
     BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt \
-    SHOW_PLAYER_LIST=false
+    RESTAPI_ENABLED=true \
+    RESTAPI_PORT=8212 \
+    SHOW_PLAYER_LIST=false \
+    ALLOW_CONNECT_PLATFORM=Steam \
+    ENABLE_WORLD_BACKUP=true
 
 EXPOSE 8211/udp
 EXPOSE 25575/tcp
