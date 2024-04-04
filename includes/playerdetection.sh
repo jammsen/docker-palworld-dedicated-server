@@ -9,19 +9,19 @@ player_detection_loop() {
     while true; do
         compare_players
         sleep "$RCON_PLAYER_DETECTION_CHECK_INTERVAL"
-    done 
+    done
 }
 
 # Function to compare current and previous player lists
 compare_players() {
     local old_players=("${current_players[@]}")
-    readarray -t current_players < <(rcon showplayers | tail -n +2)
+    readarray -t current_players < <(rcon showplayers 2> /dev/null | tail -n +2)
 
     for player_info in "${current_players[@]}"; do
         # Extract player name, UID, and Steam ID from player info
-        # This part sets the Internal Field Separator (IFS) variable to ','. 
-        # In Bash, the IFS variable determines how Bash recognizes word boundaries. 
-        # By default, it includes space, tab, and newline characters. 
+        # This part sets the Internal Field Separator (IFS) variable to ','.
+        # In Bash, the IFS variable determines how Bash recognizes word boundaries.
+        # By default, it includes space, tab, and newline characters.
         # By setting it to ',', we're telling Bash to split input lines at commas.
         # https://tldp.org/LDP/abs/html/internalvariables.html#IFSREF
         IFS=',' read -r -a player_data <<< "$player_info"
@@ -89,7 +89,7 @@ announce_join() {
         send_info_notification "$message"
     fi
     if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
-        broadcast_player_join "${1// /\-}"
+        broadcast_player_join "${1}"
     fi
 }
 
@@ -102,7 +102,7 @@ announce_name_change() {
         send_info_notification "$message"
     fi
     if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
-        broadcast_player_name_change "${1// /\-}" "${2// /\-}"
+        broadcast_player_name_change "${1}" "${2}"
     fi
 }
 
@@ -115,6 +115,6 @@ announce_leave() {
         send_info_notification "$message"
     fi
     if [[ -n $RCON_ENABLED ]] && [[ $RCON_ENABLED == "true" ]]; then
-        broadcast_player_leave "${1// /\-}"
+        broadcast_player_leave "${1}"
     fi
 }

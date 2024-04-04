@@ -8,12 +8,20 @@ source /includes/colors.sh
 # Arguments: <command>
 # Example: run_rcon_cli "showplayers"
 run_rcon_cli() {
-    local cmd=$*
     if [[ -z ${RCON_ENABLED+x} ]] || [[ "$RCON_ENABLED" != "true" ]]; then
         ew ">>> RCON is not enabled. Aborting RCON command ..."
         exit
     fi
-    output=$(rcon -c "$RCON_CONFIG_FILE" "${cmd}")
+    local command=$1
+    shift
+    if [ $# -ge 1 ]; then
+        # In the command value, replace ASCII space characters with
+        # unicode non-breaking space characters.
+        full_command="$command $(echo "$@" | tr ' ' '\240')"
+    else
+        full_command=$command
+    fi
+    output=$(rcon -c "$RCON_CONFIG_FILE" "$full_command" | tr -d '\0')
     ei_nn "> RCON: "; e "${output}"
 }
 
