@@ -29,7 +29,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
- RUN curl -fsSLO "$SUPERCRONIC_URL" \
+RUN curl -fsSLO "$SUPERCRONIC_URL" \
     && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
     && chmod +x "$SUPERCRONIC" \
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
@@ -71,7 +71,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     RESTART_ENABLED=false \
     RESTART_DEBUG_OVERRIDE=false \
     RESTART_CRON_EXPRESSION="0 18 * * *" \
-    # RCON-Playerdection - NEEDS RCON ENABLED!
+    # RCON-Playerdetection - NEEDS RCON ENABLED!
     RCON_PLAYER_DETECTION=true \
     RCON_PLAYER_DETECTION_STARTUP_DELAY=60 \
     RCON_PLAYER_DETECTION_CHECK_INTERVAL=15 \
@@ -169,7 +169,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
     REGION= \
     USEAUTH=true \
     BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt \
-    SHOW_PLAYER_LIST=false
+    RESTAPI_ENABLED=true \
+    RESTAPI_PORT=8212 \
+    SHOW_PLAYER_LIST=false \
+    ALLOW_CONNECT_PLATFORM=Steam \
+    ENABLE_WORLD_BACKUP=true
 
 EXPOSE 8211/udp
 EXPOSE 25575/tcp
