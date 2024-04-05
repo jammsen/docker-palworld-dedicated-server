@@ -4,8 +4,9 @@
 
 ## 2024-04-04
 
-- Fixed rcon-spaces from @Callum027 (#251)
+- Fixed rcon-spaces by @Callum027 (#251)
 - Added new config options from new default-settings-file
+- Bugfix - Change pidof selector to current name "PalServer-Linux-Shipping" by @thijsvanloef 
 
 
 ## 2024-03-04

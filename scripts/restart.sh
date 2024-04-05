@@ -53,8 +53,8 @@ function schedule_restart() {
         if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
             send_stop_notification
         fi
-        kill -SIGTERM "$(pidof PalServer-Linux-Test)"
-        tail --pid="$(pidof PalServer-Linux-Test)" -f 2>/dev/null
+        kill -SIGTERM "$(pidof PalServer-Linux-Shipping)"
+        tail --pid="$(pidof PalServer-Linux-Shipping)" -f 2>/dev/null
         kill -SIGTERM "${PLAYER_DETECTION_PID}"
         ew ">>> Server stopped gracefully"
         exit 143;
