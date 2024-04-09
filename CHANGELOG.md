@@ -2,6 +2,10 @@
 
 [Back to main](README.md#changelog)
 
+## 2024-04-09
+
+- Exclude save backup directory in backup @Dashboy1998  (#259)
+
 ## 2024-04-06
 
 - Disabled recursive Backups by default @Callum027 (#257)
