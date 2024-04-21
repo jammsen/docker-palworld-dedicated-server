@@ -100,7 +100,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     WEBHOOK_UPDATE_DESCRIPTION="Server is being updated" \
     WEBHOOK_UPDATE_COLOR="2849520" \
     # Config-setting - Warning: Every setting below here will be affected!
-    SERVER_SETTINGS_MODE=manual \
+    SERVER_SETTINGS_MODE=auto \
     # Gameserver-start-settings
     MULTITHREAD_ENABLED=true \
     COMMUNITY_SERVER=true \
