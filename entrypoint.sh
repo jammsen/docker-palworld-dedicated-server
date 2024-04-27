@@ -1,5 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC1091
+# https://stackoverflow.com/questions/27669950/difference-between-euid-and-uid
 
 set -e
 
@@ -10,7 +11,7 @@ APP_HOME=/home/$APP_USER
 source /includes/colors.sh
 
 if [[ "${EUID}" -ne 0 ]]; then
-    ee ">>> Docker user must be root! Please adjust how you started the container."
+    ee ">>> This Docker-Container must be run as root! Please adjust how you started the container, to fix this error."
     exit 1
 fi
 
@@ -33,7 +34,6 @@ chown "$APP_USER":"$APP_GROUP" /PalWorldSettings.ini.template
 chown -R "$APP_USER":"$APP_GROUP" /scripts
 chown -R "$APP_USER":"$APP_GROUP" /includes
 
-ew_nn "> id steam: "
-e "$(id steam)"
+ew_nn "> id steam: " ; e "$(id steam)"
 
 exec gosu $APP_USER:$APP_GROUP "$@"
