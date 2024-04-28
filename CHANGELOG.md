@@ -2,6 +2,12 @@
 
 [Back to main](README.md#changelog)
 
+## 2024-04-28
+
+- Log-Rotation by @Gornoka (#261)
+- Throw error when not run as root by @StaleLoafOfBread (#246)
+- Minimise user write access to container service file @Callum027 (#241)
+
 ## 2024-04-09
 
 - Exclude save backup directory in backup @Dashboy1998  (#259)
