@@ -19,7 +19,7 @@ body:
   - type: checkboxes
     id: understand-gamedev-info
     attributes:
-      label: You understand that im not a Game-Dev and my support is limited to the Docker-Image?
+      label: You understand that im not a Game-Dev or Game-Server-Dev and my support is primary for the Docker-Image and somewhat limited to the Game-Server?
       options:
         - label: Yes i do!
           required: true
