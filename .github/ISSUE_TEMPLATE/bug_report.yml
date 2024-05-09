@@ -7,13 +7,21 @@ body:
     attributes:
       value: |
         ## Important information
-        Thank you for taking the time to fill out this bug report! Please understand you are asking for support for the Docker-Image and Docker-Container. I'm NOT the creator of the Dedicated-Game-Server itself, i'm not involved in programming that. If you need help for that, you might want to ask here for topics related to that: https://tech.palworldgame.com/getting-started/deploy-dedicated-server
+        Thank you for taking the time to fill out this bug report in a sensible way and provide us with a clear information on your "Software and Hardware-Setup" and the "Steps to reproduce" your problem!
+        Please understand you are asking for support for the Docker-Image and Docker-Container. I'm NOT the creator of the Dedicated-Game-Server itself, i'm not involved in programming that. If you need help for that, you might want to ask here for topics related to that: https://tech.palworldgame.com/getting-started/deploy-dedicated-server
   - type: checkboxes
-    id: understand-important-info
+    id: understand-minimum-required-info
     attributes:
-      label: Have you read the Important information text above
+      label: You understand that if you dont provide clear information on your "Problem", "Software and Hardware-Setup" and the "Steps to reproduce" your issue will be closed without any help, because your not willing to do your part?
       options:
-        - label: Yes i did
+        - label: Yes i do!
+          required: true
+  - type: checkboxes
+    id: understand-gamedev-info
+    attributes:
+      label: You understand that im not a Game-Dev and my support is limited to the Docker-Image?
+      options:
+        - label: Yes i do!
           required: true
   - type: textarea
     id: current-behavior
@@ -41,7 +49,7 @@ body:
   - type: textarea
     id: reproduction
     attributes:
-      label: To Reproduce
+      label: Steps to reproduce
       description: What steps can i do to reproduce your problem?
       value: |
         Steps to reproduce the behavior:
