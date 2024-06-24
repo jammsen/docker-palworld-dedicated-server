@@ -192,6 +192,10 @@ A Helm chart to deploy this container can be found at [palworld-helm](https://gi
 
 ## FAQ
 
+### Does this image support Xbox Dedicated Servers?
+
+> Yes just change the value from `ALLOW_CONNECT_PLATFORM` from Steam to Xbox. See here for more documentation: https://tech.palworldgame.com/getting-started/for-xbox-dedicated-server
+
 ### How can I use the interactive console in Portainer with this image?
 
 > You can run this `docker exec -ti palworld-dedicated-server bash' or you could navigate to the **"Stacks"** tab in Portainer, select your stack, and click on the container name. Then click on the **"Exec console"** button.
