@@ -198,6 +198,10 @@ function setup_palworld_settings_ini() {
         e "> Setting GuildPlayerMaxNum to '$GUILD_PLAYER_MAX_NUM'"
         sed -E -i "s/GuildPlayerMaxNum=[0-9]*/GuildPlayerMaxNum=$GUILD_PLAYER_MAX_NUM/" "$GAME_SETTINGS_FILE"
     fi
+    if [[ -n ${BASE_CAMP_MAX_NUM_IN_GUILD+x} ]]; then
+        e "> Setting BaseCampMaxNumInGuild to '$BASE_CAMP_MAX_NUM_IN_GUILD'"
+        sed -E -i "s/BaseCampMaxNumInGuild=[0-9]*/BaseCampMaxNumInGuild=$BASE_CAMP_MAX_NUM_IN_GUILD/" "$GAME_SETTINGS_FILE"
+    fi
     if [[ -n ${PAL_EGG_DEFAULT_HATCHING_TIME+x} ]]; then
         e "> Setting PalEggDefaultHatchingTime to '$PAL_EGG_DEFAULT_HATCHING_TIME'"
         sed -E -i "s/PalEggDefaultHatchingTime=[+-]?([0-9]*[.])?[0-9]+/PalEggDefaultHatchingTime=$PAL_EGG_DEFAULT_HATCHING_TIME/" "$GAME_SETTINGS_FILE"
@@ -205,6 +209,10 @@ function setup_palworld_settings_ini() {
     if [[ -n ${WORK_SPEED_RATE+x} ]]; then
         e "> Setting WorkSpeedRate to '$WORK_SPEED_RATE'"
         sed -E -i "s/WorkSpeedRate=[+-]?([0-9]*[.])?[0-9]+/WorkSpeedRate=$WORK_SPEED_RATE/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${AUTO_SAVE_SPAN+x} ]]; then
+        e "> Setting AutoSaveSpan to '$AUTO_SAVE_SPAN'"
+        sed -E -i "s/AutoSaveSpan=[+-]?([0-9]*[.])?[0-9]+/AutoSaveSpan=$AUTO_SAVE_SPAN/" "$GAME_SETTINGS_FILE"
     fi
     if [[ -n ${IS_MULTIPLAY+x} ]]; then
         e "> Setting bIsMultiplay to '$IS_MULTIPLAY'"
@@ -237,6 +245,10 @@ function setup_palworld_settings_ini() {
     if [[ -n ${ENABLE_DEFENSE_OTHER_GUILD_PLAYER+x} ]]; then
         e "> Setting bEnableDefenseOtherGuildPlayer to '$ENABLE_DEFENSE_OTHER_GUILD_PLAYER'"
         sed -E -i "s/bEnableDefenseOtherGuildPlayer=[a-zA-Z]*/bEnableDefenseOtherGuildPlayer=$ENABLE_DEFENSE_OTHER_GUILD_PLAYER/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${INVISBIBLE_OTHER_GUILD_BASE_CAMP_AREA_FX+x} ]]; then
+        e "> Setting bInvisibleOtherGuildBaseCampAreaFX to '$INVISBIBLE_OTHER_GUILD_BASE_CAMP_AREA_FX'"
+        sed -E -i "s/bInvisibleOtherGuildBaseCampAreaFX=[a-zA-Z]*/bInvisibleOtherGuildBaseCampAreaFX=$INVISBIBLE_OTHER_GUILD_BASE_CAMP_AREA_FX/" "$GAME_SETTINGS_FILE"
     fi
     if [[ -n ${COOP_PLAYER_MAX_NUM+x} ]]; then
         e "> Setting CoopPlayerMaxNum to '$COOP_PLAYER_MAX_NUM'"
@@ -315,6 +327,10 @@ function setup_palworld_settings_ini() {
     if [[ -n ${ENABLE_WORLD_BACKUP+x} ]]; then
         e "> Setting bIsUseBackupSaveData to '$ENABLE_WORLD_BACKUP'"
         sed -E -i "s/bIsUseBackupSaveData=[a-zA-Z]*/bIsUseBackupSaveData=$ENABLE_WORLD_BACKUP/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${LOG_FORMAT_TYPE+x} ]]; then
+        e "> Setting LogFormatType to '$LOG_FORMAT_TYPE'"
+        sed -E -i "s/LogFormatType=[a-zA-Z]*/LogFormatType=$LOG_FORMAT_TYPE/" "$GAME_SETTINGS_FILE"
     fi
     es ">>> Finished setting up PalWorldSettings.ini"
 }
