@@ -332,6 +332,10 @@ function setup_palworld_settings_ini() {
         e "> Setting LogFormatType to '$LOG_FORMAT_TYPE'"
         sed -E -i "s/LogFormatType=[a-zA-Z]*/LogFormatType=$LOG_FORMAT_TYPE/" "$GAME_SETTINGS_FILE"
     fi
+    if [[ -n ${SUPPLY_DROP_SPAN+x} ]]; then
+        e "> Setting SupplyDropSpan to '$SUPPLY_DROP_SPAN'"
+        sed -E -i "s/SupplyDropSpan=[0-9]*/SupplyDropSpan=$SUPPLY_DROP_SPAN/" "$GAME_SETTINGS_FILE"
+    fi
     es ">>> Finished setting up PalWorldSettings.ini"
 }
 
