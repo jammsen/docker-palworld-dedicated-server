@@ -1,6 +1,17 @@
 # Changelog
 
 [Back to main](README.md#changelog)
+## 2024-09-20
+
+- added process-based Healthcheck @jammsen (#275)
+
+## 2024-08-15
+
+- added support for variable SUPPLY_DROP_SPAN @KyleDiao (#279)
+
+## 2024-08-12
+
+- added support to turn off backup-announcements, to have less spammy chat ingame, but errors will always be announced @Jadiction @jammsen (#272)
 
 ## 2024-06-24
 

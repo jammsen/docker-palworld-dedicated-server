@@ -64,6 +64,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     STEAMCMD_VALIDATE_FILES=true \
     # Backup-settings
     BACKUP_ENABLED=true \
+    BACKUP_ANNOUNCE_MESSAGES_ENABLED=true \
     BACKUP_CRON_EXPRESSION="0 * * * *" \
     BACKUP_RETENTION_POLICY=true \
     BACKUP_RETENTION_AMOUNT_TO_KEEP=72 \
@@ -177,7 +178,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SHOW_PLAYER_LIST=false \
     ALLOW_CONNECT_PLATFORM=Steam \
     ENABLE_WORLD_BACKUP=false \
-    LOG_FORMAT_TYPE=Text
+    LOG_FORMAT_TYPE=Text \
+    SUPPLY_DROP_SPAN=180
 
 EXPOSE 8211/udp
 EXPOSE 25575/tcp
@@ -207,6 +209,9 @@ RUN mkdir -p "$BACKUP_PATH" \
     && gosu nobody true
 
 VOLUME ["${GAME_ROOT}"]
+
+HEALTHCHECK --interval=10s --timeout=10s --start-period=30s --retries=3 \ 
+    CMD pgrep -x "PalServer-Linux" >/dev/null 2>&1 || exit 1
 
 ENTRYPOINT  ["/entrypoint.sh"]
 CMD ["/scripts/servermanager.sh"]
