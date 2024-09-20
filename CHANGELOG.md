@@ -1,6 +1,10 @@
 # Changelog
 
 [Back to main](README.md#changelog)
+## 2024-09-20
+
+- added process-based Healthcheck @jammsen (#275)
+
 ## 2024-08-12
 
 - added support to turn off backup-announcements, to have less spammy chat ingame, but errors will always be announced @Jadiction @jammsen (#272)
