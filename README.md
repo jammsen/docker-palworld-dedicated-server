@@ -24,6 +24,7 @@ ___
   - [Requirements](#requirements)
   - [Minimum system requirements](#minimum-system-requirements)
   - [Changelog](#changelog)
+  - [Credits / Shoutout / Contributions](#credits--shoutout--contributions)
   - [Getting started](#getting-started)
   - [Environment variables](#environment-variables)
   - [Docker-Compose examples](#docker-compose-examples)
@@ -34,6 +35,7 @@ ___
     - [Supported events](#supported-events)
   - [Deploy with Helm](#deploy-with-helm)
   - [FAQ](#faq)
+    - [Does this image support Xbox Dedicated Servers?](#does-this-image-support-xbox-dedicated-servers)
     - [How can I use the interactive console in Portainer with this image?](#how-can-i-use-the-interactive-console-in-portainer-with-this-image)
     - [How can I look into the config of my Palworld container?](#how-can-i-look-into-the-config-of-my-palworld-container)
     - [I'm seeing S\_API errors in my logs when I start the container?](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
@@ -72,6 +74,12 @@ To run this Docker image, you need a basic understanding of Docker, Docker-Compo
 ## Changelog
 
 You can find the [changelog here](CHANGELOG.md)
+
+## Credits / Shoutout / Contributions
+
+This 2 persons helped a lot along to way and made me and this project better! So if you do not like my version of the Docker image or looking for other features, feel free to check out the following 2 images:
+- [@thejcpalma](https://github.com/thejcpalma) - [https://github.com/thejcpalma/palworld-dedicated-server-docker](https://github.com/thejcpalma/palworld-dedicated-server-docker) - [https://hub.docker.com/r/thejcpalma/palworld-dedicated-server](https://hub.docker.com/r/thejcpalma/palworld-dedicated-server) - ❤️🫡
+- [@thijsvanloef](https://github.com/thijsvanloef) - [https://github.com/thijsvanloef/palworld-server-docker](https://github.com/thijsvanloef/palworld-server-docker) - [https://hub.docker.com/r/thijsvanloef/palworld-server-docker](https://hub.docker.com/r/thijsvanloef/palworld-server-docker) - ❤️🫡
 
 ## Getting started
 
