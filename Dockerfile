@@ -1,4 +1,4 @@
-FROM golang:1.22.0-bookworm as rconclibuilder
+FROM golang:1.22.0-bookworm AS rconclibuilder
 
 WORKDIR /build
 
@@ -16,7 +16,7 @@ RUN curl -fsSLO "$GORCON_RCONCLI_URL" \
     && rm -Rf "$GORCON_RCONCLI_DIR" \
     && go build -v ./cmd/gorcon
 
-FROM debian:bookworm-slim as supercronicverify
+FROM debian:bookworm-slim AS supercronicverify
 
 # Latest releases available at https://github.com/aptible/supercronic/releases
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 \
@@ -35,7 +35,7 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
-FROM --platform=linux/amd64 cm2network/steamcmd:root
+FROM cm2network/steamcmd:root
 
 LABEL maintainer="Sebastian Schmidt - https://github.com/jammsen/docker-palworld-dedicated-server"
 LABEL org.opencontainers.image.authors="Sebastian Schmidt"
@@ -109,6 +109,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     NETSERVERMAXTICKRATE=120 \
     # PalWorldSettings.ini settings
     DIFFICULTY=None \
+    RANDOMIZER_TYPE=None \
+    RANDOMIZER_SEED="" \ 
     DAYTIME_SPEEDRATE=1.000000 \
     NIGHTTIME_SPEEDRATE=1.000000 \
     EXP_RATE=1.000000 \
@@ -126,6 +128,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PAL_STAMINA_DECREACE_RATE=1.000000 \
     PAL_AUTO_HP_REGENE_RATE=1.000000 \
     PAL_AUTO_HP_REGENE_RATE_IN_SLEEP=1.000000 \
+    BUILD_OBJECT_HP_RATE=1.000000 \
     BUILD_OBJECT_DAMAGE_RATE=1.000000 \
     BUILD_OBJECT_DETERIORATION_DAMAGE_RATE=1.000000 \
     COLLECTION_DROP_RATE=1.000000 \
@@ -153,6 +156,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     AUTO_SAVE_SPAN=30.000000 \
     IS_MULTIPLAY=false \
     IS_PVP=false \
+    HARDCORE=false \
+    PAL_LOST=false \
     CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP=false \
     ENABLE_NON_LOGIN_PENALTY=true \
     ENABLE_FAST_TRAVEL=true \
@@ -160,6 +165,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     EXIST_PLAYER_AFTER_LOGOUT=false \
     ENABLE_DEFENSE_OTHER_GUILD_PLAYER=false \
     INVISBIBLE_OTHER_GUILD_BASE_CAMP_AREA_FX=false \
+    BUILD_AREA_LIMIT=false \
+    ITEM_WEIGHT_RATE=1.000000 \
     COOP_PLAYER_MAX_NUM=4 \
     MAX_PLAYERS=32 \
     SERVER_NAME="jammsen-docker-generated-###RANDOM###" \
@@ -176,10 +183,14 @@ ENV DEBIAN_FRONTEND=noninteractive \
     RESTAPI_ENABLED=true \
     RESTAPI_PORT=8212 \
     SHOW_PLAYER_LIST=false \
+    CHAT_POST_LIMIT_PER_MINUTE=10 \
     ALLOW_CONNECT_PLATFORM=Steam \
     ENABLE_WORLD_BACKUP=false \
     LOG_FORMAT_TYPE=Text \
-    SUPPLY_DROP_SPAN=180
+    SUPPLY_DROP_SPAN=180 \
+    ENABLE_PREDATOR_BOSS_PAL=true \
+    MAX_BUILDING_LIMIT_NUM=0 \
+    SERVER_REPLICATE_PAWN_CULL_DISTANCE=15000.000000
 
 EXPOSE 8211/udp
 EXPOSE 25575/tcp

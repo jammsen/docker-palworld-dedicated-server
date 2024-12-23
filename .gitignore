@@ -4,3 +4,4 @@ game/
 test/
 docker-compose-*.yml
 custom.env
+configs/DefaultPalWorldSettings.ini

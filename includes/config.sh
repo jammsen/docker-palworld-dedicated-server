@@ -46,6 +46,14 @@ function setup_palworld_settings_ini() {
         e "> Setting Difficulty to '$DIFFICULTY'"
         sed -E -i "s/Difficulty=[a-zA-Z]*/Difficulty=$DIFFICULTY/" "$GAME_SETTINGS_FILE"
     fi
+    if [[ -n ${RANDOMIZER_TYPE+x} ]]; then
+        e "> Setting RandomizerType to '$RANDOMIZER_TYPE'"
+        sed -E -i "s/RandomizerType=[a-zA-Z]*/RandomizerType=$RANDOMIZER_TYPE/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${RANDOMIZER_SEED+x} ]]; then
+        e "> Setting RandomizerSeed to '$RANDOMIZER_SEED'"
+        sed -E -i "s/RandomizerSeed=\"[^\"]*\"/RandomizerSeed=\"$RANDOMIZER_SEED\"/" "$GAME_SETTINGS_FILE"
+    fi
     if [[ -n ${DAYTIME_SPEEDRATE+x} ]]; then
         e "> Setting DayTimeSpeedRate to '$DAYTIME_SPEEDRATE'"
         sed -E -i "s/DayTimeSpeedRate=[+-]?([0-9]*[.])?[0-9]+/DayTimeSpeedRate=$DAYTIME_SPEEDRATE/" "$GAME_SETTINGS_FILE"
@@ -113,6 +121,10 @@ function setup_palworld_settings_ini() {
     if [[ -n ${PAL_AUTO_HP_REGENE_RATE_IN_SLEEP+x} ]]; then
         e "> Setting PalAutoHpRegeneRateInSleep to '$PAL_AUTO_HP_REGENE_RATE_IN_SLEEP'"
         sed -E -i "s/PalAutoHpRegeneRateInSleep=[+-]?([0-9]*[.])?[0-9]+/PalAutoHpRegeneRateInSleep=$PAL_AUTO_HP_REGENE_RATE_IN_SLEEP/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${BUILD_OBJECT_HP_RATE+x} ]]; then
+        e "> Setting BuildObjectHpRate to '$BUILD_OBJECT_HP_RATE'"
+        sed -E -i "s/BuildObjectHpRate=[+-]?([0-9]*[.])?[0-9]+/BuildObjectHpRate=$BUILD_OBJECT_HP_RATE/" "$GAME_SETTINGS_FILE"
     fi
     if [[ -n ${BUILD_OBJECT_DAMAGE_RATE+x} ]]; then
         e "> Setting BuildObjectDamageRate to '$BUILD_OBJECT_DAMAGE_RATE'"
@@ -222,6 +234,14 @@ function setup_palworld_settings_ini() {
         e "> Setting bIsPvP to $IS_PVP"
         sed -E -i "s/bIsPvP=[a-zA-Z]*/bIsPvP=$IS_PVP/" "$GAME_SETTINGS_FILE"
     fi
+    if [[ -n ${HARDCORE+x} ]]; then
+        e "> Setting bHardcore to $HARDCORE"
+        sed -E -i "s/bHardcore=[a-zA-Z]*/bHardcore=$HARDCORE/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${PAL_LOST+x} ]]; then
+        e "> Setting bPalLost to $PAL_LOST"
+        sed -E -i "s/bPalLost=[a-zA-Z]*/bPalLost=$PAL_LOST/" "$GAME_SETTINGS_FILE"
+    fi
     if [[ -n ${CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP+x} ]]; then
         e "> Setting bCanPickupOtherGuildDeathPenaltyDrop to '$CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP'"
         sed -E -i "s/bCanPickupOtherGuildDeathPenaltyDrop=[a-zA-Z]*/bCanPickupOtherGuildDeathPenaltyDrop=$CAN_PICKUP_OTHER_GUILD_DEATH_PENALTY_DROP/" "$GAME_SETTINGS_FILE"
@@ -249,6 +269,14 @@ function setup_palworld_settings_ini() {
     if [[ -n ${INVISBIBLE_OTHER_GUILD_BASE_CAMP_AREA_FX+x} ]]; then
         e "> Setting bInvisibleOtherGuildBaseCampAreaFX to '$INVISBIBLE_OTHER_GUILD_BASE_CAMP_AREA_FX'"
         sed -E -i "s/bInvisibleOtherGuildBaseCampAreaFX=[a-zA-Z]*/bInvisibleOtherGuildBaseCampAreaFX=$INVISBIBLE_OTHER_GUILD_BASE_CAMP_AREA_FX/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${BUILD_AREA_LIMIT+x} ]]; then
+        e "> Setting bBuildAreaLimit to '$BUILD_AREA_LIMIT'"
+        sed -E -i "s/bBuildAreaLimit=[a-zA-Z]*/bBuildAreaLimit=$BUILD_AREA_LIMIT/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${ITEM_WEIGHT_RATE+x} ]]; then
+        e "> Setting ItemWeightRate to '$ITEM_WEIGHT_RATE'"
+        sed -E -i "s/ItemWeightRate=[+-]?([0-9]*[.])?[0-9]+/ItemWeightRate=$ITEM_WEIGHT_RATE/" "$GAME_SETTINGS_FILE"
     fi
     if [[ -n ${COOP_PLAYER_MAX_NUM+x} ]]; then
         e "> Setting CoopPlayerMaxNum to '$COOP_PLAYER_MAX_NUM'"
@@ -320,6 +348,10 @@ function setup_palworld_settings_ini() {
         e "> Setting bShowPlayerList to '$SHOW_PLAYER_LIST'"
         sed -E -i "s/bShowPlayerList=[a-zA-Z]*/bShowPlayerList=$SHOW_PLAYER_LIST/" "$GAME_SETTINGS_FILE"
     fi
+    if [[ -n ${CHAT_POST_LIMIT_PER_MINUTE+x} ]]; then
+        e "> Setting ChatPostLimitPerMinute to '$CHAT_POST_LIMIT_PER_MINUTE'"
+        sed -E -i "s/ChatPostLimitPerMinute=[0-9]*/ChatPostLimitPerMinute=$CHAT_POST_LIMIT_PER_MINUTE/" "$GAME_SETTINGS_FILE"
+    fi
     if [[ -n ${ALLOW_CONNECT_PLATFORM+x} ]]; then
         e "> Setting AllowConnectPlatform to '$ALLOW_CONNECT_PLATFORM'"
         sed -E -i "s/AllowConnectPlatform=[a-zA-Z]*/AllowConnectPlatform=$ALLOW_CONNECT_PLATFORM/" "$GAME_SETTINGS_FILE"
@@ -335,6 +367,18 @@ function setup_palworld_settings_ini() {
     if [[ -n ${SUPPLY_DROP_SPAN+x} ]]; then
         e "> Setting SupplyDropSpan to '$SUPPLY_DROP_SPAN'"
         sed -E -i "s/SupplyDropSpan=[0-9]*/SupplyDropSpan=$SUPPLY_DROP_SPAN/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${ENABLE_PREDATOR_BOSS_PAL+x} ]]; then
+        e "> Setting EnablePredatorBossPal to '$ENABLE_PREDATOR_BOSS_PAL'"
+        sed -E -i "s/EnablePredatorBossPal=[a-zA-Z]*/EnablePredatorBossPal=$ENABLE_PREDATOR_BOSS_PAL/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${MAX_BUILDING_LIMIT_NUM+x} ]]; then
+        e "> Setting MaxBuildingLimitNum to '$MAX_BUILDING_LIMIT_NUM'"
+        sed -E -i "s/MaxBuildingLimitNum=[0-9]*/MaxBuildingLimitNum=$MAX_BUILDING_LIMIT_NUM/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${SERVER_REPLICATE_PAWN_CULL_DISTANCE+x} ]]; then
+        e "> Setting ServerReplicatePawnCullDistance to '$SERVER_REPLICATE_PAWN_CULL_DISTANCE'"
+        sed -E -i "s/ServerReplicatePawnCullDistance=[+-]?([0-9]*[.])?[0-9]+/ServerReplicatePawnCullDistance=$SERVER_REPLICATE_PAWN_CULL_DISTANCE/" "$GAME_SETTINGS_FILE"
     fi
     es ">>> Finished setting up PalWorldSettings.ini"
 }
