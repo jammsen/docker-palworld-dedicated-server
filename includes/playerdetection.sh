@@ -4,6 +4,8 @@ source /includes/colors.sh
 source /includes/rcon.sh
 source /includes/webhook.sh
 
+current_players=()
+
 player_detection_loop() {
     sleep "$RCON_PLAYER_DETECTION_STARTUP_DELAY"
     while true; do
@@ -12,10 +14,44 @@ player_detection_loop() {
     done
 }
 
+rcon_showplayers_with_retry() {
+    local amount_of_retries=5
+    local wait_in_seconds=3
+    local command_output
+
+    for ((i=0; i<amount_of_retries; i++)); do
+        command_output=$(rcon showplayers 2> /dev/null)
+        if [[ $? -eq 0 ]]; then
+            # Check if the command executed successfully, regardless of content
+            if [[ -n "$command_output" ]]; then
+                # If there is output, process it into current_players
+                readarray -t current_players <<< "$(echo "$command_output" | tail -n +2)"
+            else
+                # If there is no output, clear the current_players array
+                current_players=()
+            fi
+            return 0
+        fi
+        sleep $wait_in_seconds
+    done
+
+    ew ">>> RCON command failed after $amount_of_retries attempts."
+    return 1
+}
+
 # Function to compare current and previous player lists
 compare_players() {
     local old_players=("${current_players[@]}")
-    readarray -t current_players < <(rcon showplayers 2> /dev/null | tail -n +2)
+
+    if ! rcon_showplayers_with_retry; then
+        ew "> Skipping player comparison due to RCON failure."
+        return
+    fi
+
+    # Do we need a case where current_players is empty?
+    # if [[ ${#current_players[@]} -eq 0 ]]; then
+    #     echo "No players currently on the server."
+    # fi
 
     for player_info in "${current_players[@]}"; do
         # Extract player name, UID, and Steam ID from player info
