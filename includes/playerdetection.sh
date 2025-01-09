@@ -21,14 +21,23 @@ rcon_showplayers_with_retry() {
 
     for ((i=0; i<amount_of_retries; i++)); do
         command_output=$(rcon showplayers 2> /dev/null)
+        if [[ -n $RCON_PLAYER_DEBUG ]] && [[ $RCON_PLAYER_DEBUG == "true" ]]; then
+            ew "Debug: command_output = '$command_output'"
+        fi
         if [[ $? -eq 0 ]]; then
             # Check if the command executed successfully, regardless of content
-            if [[ -n "$command_output" ]]; then
+            if [[ -n "$command_output" && "$(echo "$command_output" | wc -l)" -gt 1 ]]; then
                 # If there is output, process it into current_players
                 readarray -t current_players <<< "$(echo "$command_output" | tail -n +2)"
+                if [[ -n $RCON_PLAYER_DEBUG ]] && [[ $RCON_PLAYER_DEBUG == "true" ]]; then
+                    ew "Debug: current_players = ${current_players[*]}"
+                fi
             else
-                # If there is no output, clear the current_players array
+                # No player data
                 current_players=()
+                if [[ -n $RCON_PLAYER_DEBUG ]] && [[ $RCON_PLAYER_DEBUG == "true" ]]; then
+                    ew "Debug: No player data available."
+                fi
             fi
             return 0
         fi
@@ -48,12 +57,24 @@ compare_players() {
         return
     fi
 
+    if [[ -n $RCON_PLAYER_DEBUG ]] && [[ $RCON_PLAYER_DEBUG == "true" ]]; then
+        ew "Debug: current_players = ${current_players[*]}"
+    fi
+    if [[ ${#current_players[@]} -eq 0 ]]; then
+        e "No players currently on the server."
+        return
+    fi
+
+
     # Do we need a case where current_players is empty?
     # if [[ ${#current_players[@]} -eq 0 ]]; then
     #     echo "No players currently on the server."
     # fi
 
     for player_info in "${current_players[@]}"; do
+        if [[ -n $RCON_PLAYER_DEBUG ]] && [[ $RCON_PLAYER_DEBUG == "true" ]]; then
+            ew "For-Loop-Debug: player_info = '$player_info'"
+        fi
         # Extract player name, UID, and Steam ID from player info
         # This part sets the Internal Field Separator (IFS) variable to ','.
         # In Bash, the IFS variable determines how Bash recognizes word boundaries.
@@ -61,6 +82,13 @@ compare_players() {
         # By setting it to ',', we're telling Bash to split input lines at commas.
         # https://tldp.org/LDP/abs/html/internalvariables.html#IFSREF
         IFS=',' read -r -a player_data <<< "$player_info"
+
+        # Ensure player_data has the expected number of elements
+        if [[ ${#player_data[@]} -lt 3 ]]; then
+            ew "Error: Malformed player data: '$player_info'"
+            continue
+        fi
+
         local steamid="${player_data[-1]}"
         local playeruid="${player_data[-2]}"
         local name="${player_data[*]::${#player_data[@]}-2}"

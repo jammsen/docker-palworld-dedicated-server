@@ -54,10 +54,10 @@ do
        player_detection_loop &
        PLAYER_DETECTION_PID="$!"
        echo $PLAYER_DETECTION_PID > PLAYER_DETECTION.PID
-       e "> Player detection thread started with pid ${PLAYER_DETECTION_PID}"
+       ew "> Player detection thread started with pid ${PLAYER_DETECTION_PID}"
     fi
 
-    e "> Server main thread started with pid ${START_MAIN_PID}"
+    ew "> Server main thread started with pid ${START_MAIN_PID}"
     wait ${START_MAIN_PID}
 
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
