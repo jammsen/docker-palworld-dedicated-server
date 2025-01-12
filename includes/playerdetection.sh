@@ -23,18 +23,24 @@ rcon_showplayers_with_retry() {
         command_output=$(rcon showplayers 2> /dev/null)
         if [[ -n $RCON_PLAYER_DEBUG ]] && [[ $RCON_PLAYER_DEBUG == "true" ]]; then
             ew "Debug: command_output = '$command_output'"
+            ew "Exitcode was: $?"
         fi
         if [[ $? -eq 0 ]]; then
             # Check if the command executed successfully, regardless of content
             if [[ -n "$command_output" && "$(echo "$command_output" | wc -l)" -gt 1 ]]; then
-                # If there is output, process it into current_players
+                # If there is output, we assume rconcli returned at least a single header line
+                # then we try to process process it into current_players
+                # Example output for empty server is:
+                # root@contaierid:/home/steam/steamcmd# rcon showplayers
+                # name,playeruid,steamid
                 readarray -t current_players <<< "$(echo "$command_output" | tail -n +2)"
                 if [[ -n $RCON_PLAYER_DEBUG ]] && [[ $RCON_PLAYER_DEBUG == "true" ]]; then
                     ew "Debug: current_players = ${current_players[*]}"
                 fi
             else
-                # No player data
-                current_players=()
+                # If there is no error exit code but data is missing at least 1 line, something is off
+                # therefore we shouldnt set current_players to empty?
+                # current_players=()
                 if [[ -n $RCON_PLAYER_DEBUG ]] && [[ $RCON_PLAYER_DEBUG == "true" ]]; then
                     ew "Debug: No player data available."
                 fi
