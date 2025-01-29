@@ -5,6 +5,15 @@
 
 - added unit-tests (Thanks to @thijsvanloef for the base) @jammsen (#291)
 
+
+## 2025-01-14
+
+- Fixed Player detection loop bug @jammsen (#287)
+
+## 2025-01-11
+
+- Fixed startup script failure if missing appmanifest @holysoles (#288)
+
 ## 2024-12-23
 
 - added new configs for Palworld: Feybreak @jammsen (#283)
