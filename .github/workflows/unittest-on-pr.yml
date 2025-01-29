@@ -41,6 +41,8 @@ jobs:
           -p 8211:8211/udp \
           -p 8212:8212/tcp \
           -p 25575:25575/tcp \
+          -e ADMIN_PASSWORD=123 \
+          -e SERVER_PASSWORD=456 \
           -v ./game:/palworld/ \
           --restart unless-stopped \
           --stop-timeout 30 \
