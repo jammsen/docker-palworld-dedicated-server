@@ -43,7 +43,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Run unit tests
-        uses: ./.github/workflows/unittest-on-build.yml@main
+        uses: ./.github/actions/unittest-on-build
         with:
           image_tag: develop
 
