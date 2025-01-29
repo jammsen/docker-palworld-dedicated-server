@@ -1,7 +1,6 @@
 ---
 name: unit-test-component-run-on-build
 on:
-  pull_request: # Run tests on all pull requests
   workflow_call: # Allow this workflow to be called by other workflows
     inputs:
       image_tag:
