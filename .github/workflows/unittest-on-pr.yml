@@ -43,6 +43,7 @@ jobs:
           -p 25575:25575/tcp \
           -e ADMIN_PASSWORD=123 \
           -e SERVER_PASSWORD=456 \
+          -e SERVER_SETTINGS_MODE=auto \
           -v ./game:/palworld/ \
           --restart unless-stopped \
           --stop-timeout 30 \
