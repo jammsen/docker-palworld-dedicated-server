@@ -194,6 +194,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SERVER_REPLICATE_PAWN_CULL_DISTANCE=15000.000000
 
 EXPOSE 8211/udp
+EXPOSE 8212/tcp
 EXPOSE 25575/tcp
 
 # Install minimum required packages for dedicated server
