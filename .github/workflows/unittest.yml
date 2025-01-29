@@ -37,8 +37,8 @@
     
           - name: Wait for server to start
             run: |
-                TIMEOUT_SECONDS=240
                 START_TIME=$(date +%s)
+                echo "TIMEOUT_SECONDS: ${{ vars.TIMEOUT_SECONDS }}"
     
                 # Set the timezone to Germany (Central European Time)
                 export TZ=Europe/Berlin
@@ -47,8 +47,8 @@
                   CURRENT_TIME=$(date +%s)
                   ELAPSED_TIME=$((CURRENT_TIME - START_TIME))
     
-                  if [ $ELAPSED_TIME -gt $TIMEOUT_SECONDS ]; then
-                    echo "Timeout reached. Server failed to start within $TIMEOUT_SECONDS seconds."
+                  if [ $ELAPSED_TIME -gt ${{ vars.TIMEOUT_SECONDS }} ]; then
+                    echo "Timeout reached. Server failed to start within ${{ vars.TIMEOUT_SECONDS }} seconds."
                     printf "\e[0;32m%s\e[0m\n" "*****Container LOGS*****"
                     docker logs palworld-dedicated-server
                     exit 1
