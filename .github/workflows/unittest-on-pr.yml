@@ -1,5 +1,5 @@
 ---
-name: Unit-test
+name: unit-test-component-run-on-pr
 on:
   pull_request: # Run tests on all pull requests
 
