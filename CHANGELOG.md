@@ -5,7 +5,6 @@
 
 - added unit-tests (Thanks to @thijsvanloef for the base) @jammsen (#291)
 
-
 ## 2025-01-14
 
 - Fixed Player detection loop bug @jammsen (#287)
