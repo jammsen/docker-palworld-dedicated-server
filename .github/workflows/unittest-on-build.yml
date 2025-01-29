@@ -17,6 +17,16 @@
         name: Docker - Test Linux-amd64 image
         runs-on: ubuntu-latest
         steps:
+          - name: Get Runner Info
+            run: |
+              id
+              pwd
+              git --version
+              docker version
+              echo "TIMEOUT_SECONDS: ${{ vars.TIMEOUT_SECONDS }}"
+
+
+
           - name: Checkout
             uses: actions/checkout@v4
     
