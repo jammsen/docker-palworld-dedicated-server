@@ -1,6 +1,9 @@
 # Changelog
 
 [Back to main](README.md#changelog)
+## 2025-01-29
+
+- added unit-tests (Thanks to @thijsvanloef for the base) @jammsen (#291)
 
 ## 2025-01-14
 
