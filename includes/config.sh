@@ -380,6 +380,16 @@ function setup_palworld_settings_ini() {
         e "> Setting ServerReplicatePawnCullDistance to '$SERVER_REPLICATE_PAWN_CULL_DISTANCE'"
         sed -E -i "s/ServerReplicatePawnCullDistance=[+-]?([0-9]*[.])?[0-9]+/ServerReplicatePawnCullDistance=$SERVER_REPLICATE_PAWN_CULL_DISTANCE/" "$GAME_SETTINGS_FILE"
     fi
+    # bAllowGlobalPalboxExport
+    if [[ -n ${ALLOW_GLOBAL_PALBOX_EXPORT+x} ]]; then
+        e "> Setting bAllowGlobalPalboxExport to '$ALLOW_GLOBAL_PALBOX_EXPORT'"
+        sed -E -i "s/bAllowGlobalPalboxExport=[a-zA-Z]*/bAllowGlobalPalboxExport=$ALLOW_GLOBAL_PALBOX_EXPORT/" "$GAME_SETTINGS_FILE"
+    fi
+    #bAllowGlobalPalboxImport
+    if [[ -n ${ALLOW_GLOBAL_PALBOX_IMPORT+x} ]]; then
+        e "> Setting bAllowGlobalPalboxImport to '$ALLOW_GLOBAL_PALBOX_IMPORT'"
+        sed -E -i "s/bAllowGlobalPalboxImport=[a-zA-Z]*/bAllowGlobalPalboxImport=$ALLOW_GLOBAL_PALBOX_IMPORT/" "$GAME_SETTINGS_FILE"
+    fi
     es ">>> Finished setting up PalWorldSettings.ini"
 }
 
