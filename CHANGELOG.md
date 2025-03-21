@@ -1,6 +1,11 @@
 # Changelog
 
 [Back to main](README.md#changelog)
+
+## 2025-03-21
+
+- added support for new variables CrossplayPlatforms,bAllowGlobalPalboxExport,bAllowGlobalPalboxImport @KyleDiao (#294)
+
 ## 2025-01-29
 
 - added unit-tests (Thanks to @thijsvanloef for the base) @jammsen (#291)

@@ -352,9 +352,9 @@ function setup_palworld_settings_ini() {
         e "> Setting ChatPostLimitPerMinute to '$CHAT_POST_LIMIT_PER_MINUTE'"
         sed -E -i "s/ChatPostLimitPerMinute=[0-9]*/ChatPostLimitPerMinute=$CHAT_POST_LIMIT_PER_MINUTE/" "$GAME_SETTINGS_FILE"
     fi
-    if [[ -n ${ALLOW_CONNECT_PLATFORM+x} ]]; then
-        e "> Setting AllowConnectPlatform to '$ALLOW_CONNECT_PLATFORM'"
-        sed -E -i "s/AllowConnectPlatform=[a-zA-Z]*/AllowConnectPlatform=$ALLOW_CONNECT_PLATFORM/" "$GAME_SETTINGS_FILE"
+    if [[ -n ${CROSSPLAY_PLATFORMS+x} ]]; then
+        e "> Setting CrossplayPlatforms to '$CROSSPLAY_PLATFORMS'"
+        sed -E -i "s/CrossplayPlatforms=\([a-zA-Z,]*\)/CrossplayPlatforms=$CROSSPLAY_PLATFORMS/" "$GAME_SETTINGS_FILE"
     fi
     if [[ -n ${ENABLE_WORLD_BACKUP+x} ]]; then
         e "> Setting bIsUseBackupSaveData to '$ENABLE_WORLD_BACKUP'"
@@ -379,6 +379,14 @@ function setup_palworld_settings_ini() {
     if [[ -n ${SERVER_REPLICATE_PAWN_CULL_DISTANCE+x} ]]; then
         e "> Setting ServerReplicatePawnCullDistance to '$SERVER_REPLICATE_PAWN_CULL_DISTANCE'"
         sed -E -i "s/ServerReplicatePawnCullDistance=[+-]?([0-9]*[.])?[0-9]+/ServerReplicatePawnCullDistance=$SERVER_REPLICATE_PAWN_CULL_DISTANCE/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${ALLOW_GLOBAL_PALBOX_EXPORT+x} ]]; then
+        e "> Setting bAllowGlobalPalboxExport to '$ALLOW_GLOBAL_PALBOX_EXPORT'"
+        sed -E -i "s/bAllowGlobalPalboxExport=[a-zA-Z]*/bAllowGlobalPalboxExport=$ALLOW_GLOBAL_PALBOX_EXPORT/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${ALLOW_GLOBAL_PALBOX_IMPORT+x} ]]; then
+        e "> Setting bAllowGlobalPalboxImport to '$ALLOW_GLOBAL_PALBOX_IMPORT'"
+        sed -E -i "s/bAllowGlobalPalboxImport=[a-zA-Z]*/bAllowGlobalPalboxImport=$ALLOW_GLOBAL_PALBOX_IMPORT/" "$GAME_SETTINGS_FILE"
     fi
     es ">>> Finished setting up PalWorldSettings.ini"
 }
