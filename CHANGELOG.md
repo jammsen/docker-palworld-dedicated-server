@@ -1,6 +1,12 @@
 # Changelog
 
 [Back to main](README.md#changelog)
+
+## 2025-03-22
+
+- Added complete coverage of new v0.4.0 and v0.5.0 variable changes @jammsen (#294)
+- Added counter for all settings in the log, we are now at 87 gameserver settings, this makes logging and searching easier, also debugging in issues
+
 ## 2025-03-20
 
 - Adding first part of new v0.5.0 changes @jammsen (#294)
