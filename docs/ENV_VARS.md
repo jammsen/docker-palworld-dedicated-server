@@ -35,6 +35,7 @@ These settings control the behavior of the Docker container:
 | WEBHOOK_CONTENT_TITLE                | If set to a value this will add the "content" segment for the webhook, set to empty removes it                                                      | Status update                  | String                                |
 | WEBHOOK_*                            | See below the table "Webhook environment variables"                                                                                                 |                                | String                                |
 | SERVER_SETTINGS_MODE                 | Determines whether settings can be modified via environment variables or via file, except `COMMUNITY_SERVER` and `MULTITHREAD_ENABLED`!             | `auto`                         | Enum                                  |
+| ENABLE_UE4SS                         | Set to enabled will install the UE4SS injectable LUA scripting system, allowing for serverside mods                                                 | false                          | Boolean                               |
 
 ### SERVER_SETTINGS_MODE explained
 
@@ -61,6 +62,12 @@ The `TZ` setting affects logging output and the backup function. [TZ identifiers
 ### Cron expression
 
 The `BACKUP_CRON_EXPRESSION` setting affects the backup function. In a Cron-Expression, you define an interval for when to run jobs. This image uses Supercronic for crons, see https://github.com/aptible/supercronic#crontab-format or https://crontab-generator.org
+
+### UE4SS Mod Install Directories
+
+When ENABLE_UE4SS is set to true, mods found in `game/ue4ss/Mods/` and `game/Pal/Content/Paks/LogicMods` will be loaded during server start-up (where `game/` is the folder that has been volume mounted onto the container as `/palworld`)
+
+To force download and setup steps to run again, delete the `game/PalServerUE4SS.sh` file and restart the server
 
 ## Gameserver-Settings
 

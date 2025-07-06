@@ -195,7 +195,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     MAX_BUILDING_LIMIT_NUM=0 \
     SERVER_REPLICATE_PAWN_CULL_DISTANCE=15000.000000 \
     ALLOW_GLOBAL_PALBOX_EXPORT=true \
-    ALLOW_GLOBAL_PALBOX_IMPORT=false
+    ALLOW_GLOBAL_PALBOX_IMPORT=false \
+    ENABLE_UE4SS=false
 
 EXPOSE 8211/udp
 EXPOSE 8212/tcp
@@ -206,7 +207,7 @@ COPY --from=rconclibuilder /build/gorcon /usr/local/bin/rcon
 COPY --from=supercronicverify /usr/local/bin/supercronic /usr/local/bin/supercronic
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs \
+    && apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs crudini unzip \
     && apt-get autoremove -y --purge \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
