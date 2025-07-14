@@ -407,6 +407,14 @@ function setup_palworld_settings_ini() {
         e_with_counter "bAllowGlobalPalboxImport to '$ALLOW_GLOBAL_PALBOX_IMPORT'"
         sed -E -i "s/bAllowGlobalPalboxImport=[a-zA-Z]*/bAllowGlobalPalboxImport=$ALLOW_GLOBAL_PALBOX_IMPORT/" "$GAME_SETTINGS_FILE"
     fi
+    if [[ -n ${EQUIPMENT_DURABILITY_DAMAGE_RATE+x} ]]; then
+        e_with_counter "EquipmentDurabilityDamageRate to '$EQUIPMENT_DURABILITY_DAMAGE_RATE'"
+        sed -E -i "s/EquipmentDurabilityDamageRate=[+-]?([0-9]*[.])?[0-9]+/EquipmentDurabilityDamageRate=$EQUIPMENT_DURABILITY_DAMAGE_RATE/" "$GAME_SETTINGS_FILE"
+    fi
+    if [[ -n ${ITEM_CONTAINER_FORCE_MARK_DIRTY_INTERVAL+x} ]]; then
+        e_with_counter "ItemContainerForceMarkDirtyInterval to '$ITEM_CONTAINER_FORCE_MARK_DIRTY_INTERVAL'"
+        sed -E -i "s/ItemContainerForceMarkDirtyInterval=[+-]?([0-9]*[.])?[0-9]+/ItemContainerForceMarkDirtyInterval=$ITEM_CONTAINER_FORCE_MARK_DIRTY_INTERVAL/" "$GAME_SETTINGS_FILE"
+    fi
     es ">>> Finished setting up PalWorldSettings.ini"
 }
 
