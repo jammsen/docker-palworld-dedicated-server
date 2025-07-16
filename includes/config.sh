@@ -3,7 +3,7 @@
 source /includes/colors.sh
 
 current_setting=1
-settings_amount=87
+settings_amount=89
 
 function setup_engine_ini() {
     pattern1="OnlineSubsystemUtils.IpNetDriver"
