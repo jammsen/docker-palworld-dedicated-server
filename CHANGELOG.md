@@ -2,6 +2,11 @@
 
 [Back to main](README.md#changelog)
 
+## 2025-07-17
+
+- Added new config-settings for v0.6.0 @GlitchApotamus  (#301)
+- Added different mechanics for ci/cd pipeline unit-tests and timeouts for PRs
+
 ## 2025-03-22
 
 - Added complete coverage of new v0.4.0 and v0.5.0 variable changes @jammsen (#294)

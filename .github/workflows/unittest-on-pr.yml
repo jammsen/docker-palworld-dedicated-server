@@ -10,6 +10,7 @@ concurrency:
 jobs:
   unit-test-amd64:
     name: Docker - Test Linux-amd64 image
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: Get Runner Info
