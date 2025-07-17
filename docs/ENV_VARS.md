@@ -167,7 +167,8 @@ Information sources and credits to the following websites:
 | SERVER_REPLICATE_PAWN_CULL_DISTANCE       | ServerReplicatePawnCullDistance      | Pal sync distance from player cm. Min 5000 ~ Max 15000                                                                                                                          | 15000.000000                                           | Float         |
 | ALLOW_GLOBAL_PALBOX_EXPORT                | bAllowGlobalPalboxExport             | If set to True, saving to the global palbox is possible.                                                                                                                        | true                                                   | Boolean       |
 | ALLOW_GLOBAL_PALBOX_IMPORT                | bAllowGlobalPalboxImport             | If set to True, importing from the global palbox is possible.                                                                                                                   | false                                                  | Boolean       |
-
+| EQUIPMENT_DURABILITY_DAMAGE_RATE                | EquipmentDurabilityDamageRate             | Equipment Durability Loss Multiplierpossible.                                                                                                                   | 1.000000                                                  | Float       |
+| ITEM_CONTAINER_FORCE_MARK_DIRTY_INTERVAL                | ItemContainerForceMarkDirtyInterval             | Interval for force sync when open the container. (sec)                                                                                                                  | 1.000000                                                  | Float       |
 
 ** Updates to descriptions taken from [this reddit post](https://www.reddit.com/r/Palworld/comments/19bumby/settings_explanation/) **
 
