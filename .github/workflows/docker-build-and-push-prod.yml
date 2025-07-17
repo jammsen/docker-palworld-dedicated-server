@@ -3,10 +3,11 @@ name: docker-build-and-push-prod-ci
 on:
   push:
     branches:
-      - 'master'
+      - master
 
 jobs:
   docker-build-gameserver-image:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

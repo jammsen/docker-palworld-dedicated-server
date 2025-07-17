@@ -3,10 +3,11 @@ name: docker-build-and-push-develop-ci
 on:
   push:
     branches:
-      - "develop"
+      - develop
 
 jobs:
   docker-build-gameserver-image:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

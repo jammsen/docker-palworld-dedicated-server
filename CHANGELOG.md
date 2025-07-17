@@ -5,7 +5,7 @@
 ## 2025-07-17
 
 - Added new config-settings for v0.6.0 @GlitchApotamus  (#301)
-- Added different mechanics for ci/cd pipeline unit-tests
+- Added different mechanics for ci/cd pipeline unit-tests and timeouts for PRs
 
 ## 2025-03-22
 
