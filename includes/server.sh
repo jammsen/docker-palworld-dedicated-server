@@ -3,10 +3,14 @@
 source /includes/colors.sh
 source /includes/rcon.sh
 source /includes/webhook.sh
+source /includes/ue4ss.sh
 
 function start_server() {
     cd "$GAME_ROOT" || exit
     setup_configs
+    setup_ue4ss
+    local valid_ue4ss=$?
+
     ei ">>> Preparing to start the gameserver"
     START_OPTIONS=()
     if [[ -n $COMMUNITY_SERVER ]] && [[ $COMMUNITY_SERVER == "true" ]]; then
@@ -20,39 +24,8 @@ function start_server() {
     if [[ -n $WEBHOOK_ENABLED ]] && [[ $WEBHOOK_ENABLED == "true" ]]; then
         send_start_notification
     fi
-    if [[ -n $ENABLE_UE4SS ]] && [[ $ENABLE_UE4SS == "true" ]]; then
-        if [ ! -f "./PalServerUE4SS.sh" ]; then
-            e "> Installing UE4SS and setting up LD_PRELOAD"
-            UE4SS_ROOT=${GAME_ROOT}/ue4ss
-            mkdir -p ${UE4SS_ROOT}
-
-            # Install UE4SS linux build as per https://github.com/UE4SS-RE/RE-UE4SS/issues/364#issuecomment-2578762122
-            curl -fsSLo ${UE4SS_ROOT}/UE4SS.zip https://github.com/Yangff/RE-UE4SS/releases/download/linux-experiment/UE4SS_0.0.0.zip
-            unzip -uo ${UE4SS_ROOT}/UE4SS.zip -d ${UE4SS_ROOT}
-            rm ${UE4SS_ROOT}/UE4SS.zip
-
-            sed -i "s|^\(GuiConsoleEnabled =\).*|\1 0|" ${UE4SS_ROOT}/UE4SS-settings.ini
-            sed -i "s|^\(bUseUObjectArrayCache =\).*|\1 false|" ${UE4SS_ROOT}/UE4SS-settings.ini
-
-            # BPModLoaderMod workaround
-            curl -fsSLo ${UE4SS_ROOT}/Mods/BPModLoaderMod/Scripts/main.lua https://raw.githubusercontent.com/Okaetsu/RE-UE4SS/refs/heads/logicmod-temp-fix/assets/Mods/BPModLoaderMod/Scripts/main.lua
-
-            # Update MemberVariableLayout as per https://github.com/UE4SS-RE/RE-UE4SS/issues/802#issuecomment-2698705933
-            curl -fsSLo ${UE4SS_ROOT}/MemberVariableLayout.ini https://raw.githubusercontent.com/UE4SS-RE/RE-UE4SS/main/assets/MemberVarLayoutTemplates/MemberVariableLayout_5_01_Template.ini
-            crudini --set ${UE4SS_ROOT}/MemberVariableLayout.ini UEnum CppForm 0x58
-            crudini --set ${UE4SS_ROOT}/MemberVariableLayout.ini UEnum CppType 0x30
-            crudini --set ${UE4SS_ROOT}/MemberVariableLayout.ini UEnum EnumDisplayNameFn 0x60
-            crudini --del ${UE4SS_ROOT}/MemberVariableLayout.ini UEnum EnumFlags
-            crudini --set ${UE4SS_ROOT}/MemberVariableLayout.ini UEnum EnumFlags_Internal 0x5C
-            crudini --set ${UE4SS_ROOT}/MemberVariableLayout.ini UEnum EnumPackage 0x68
-            crudini --set ${UE4SS_ROOT}/MemberVariableLayout.ini UEnum Names 0x48
-
-            cp ./PalServer.sh ./PalServerUE4SS.sh
-            sed -i 's|^\("$UE_PROJECT_ROOT/Pal/Binaries/Linux/PalServer-Linux-Shipping" Pal "$@"\)|LD_PRELOAD=${GAME_ROOT}/ue4ss/libUE4SS.so \1|' ./PalServerUE4SS.sh
-        fi
-    fi
     es ">>> Starting the gameserver"
-    if [[ -n $ENABLE_UE4SS ]] && [[ $ENABLE_UE4SS == "true" ]]; then
+    if [[ $valid_ue4ss -eq 0 ]]; then
         ./PalServerUE4SS.sh "${START_OPTIONS[@]}"
     else
         ./PalServer.sh "${START_OPTIONS[@]}"

@@ -65,7 +65,7 @@ The `BACKUP_CRON_EXPRESSION` setting affects the backup function. In a Cron-Expr
 
 ### UE4SS Mod Install Directories
 
-When ENABLE_UE4SS is set to true, mods found in `game/ue4ss/Mods/` and `game/Pal/Content/Paks/LogicMods` will be loaded during server start-up (where `game/` is the folder that has been volume mounted onto the container as `/palworld`)
+When ENABLE_UE4SS is set to true, mods found in `game/Pal/Binaries/Linux/ue4ss/Mods/` and `game/Pal/Content/Paks/LogicMods` will be loaded during server start-up (where `game/` is the folder that has been volume mounted onto the container as `/palworld`)
 
 To force download and setup steps to run again, delete the `game/PalServerUE4SS.sh` file and restart the server
 

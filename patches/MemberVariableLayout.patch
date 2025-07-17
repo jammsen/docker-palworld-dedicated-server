@@ -1,0 +1,20 @@
+--- a/MemberVariableLayout.ini	2025-07-15 20:51:57.652876157 +1200
++++ b/MemberVariableLayout.ini	2025-07-15 20:57:27.922310239 +1200
+@@ -33,12 +33,12 @@
+ SignatureFunction = 0x78
+ 
+ [UEnum]
+-CppForm = 0x50
++CppForm = 0x58
+ CppType = 0x30
+-EnumDisplayNameFn = 0x58
+-EnumFlags = 0x54
+-EnumPackage = 0x60
+-Names = 0x40
++EnumDisplayNameFn = 0x60
++EnumPackage = 0x68
++Names = 0x48
++EnumFlags_Internal = 0x5C
+ 
+ [UFunction]
+ EventGraphCallOffset = 0xD0

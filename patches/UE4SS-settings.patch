@@ -1,0 +1,20 @@
+--- a/UE4SS-settings.ini	2025-07-15 20:56:27.288742369 +1200
++++ b/UE4SS-settings.ini	2025-07-15 20:56:05.320449689 +1200
+@@ -21,7 +21,7 @@
+ ; Whether to create UObject listeners in GUObjectArray to create a fast cache for use instead of iterating GUObjectArray.
+ ; Setting this to false can help if you're experiencing a crash on startup.
+ ; Default: true
+-bUseUObjectArrayCache = true
++bUseUObjectArrayCache = false
+ 
+ [EngineVersionOverride]
+ MajorVersion = 
+@@ -85,7 +85,7 @@
+ [Debug]
+ ; Whether to enable the external UE4SS debug console.
+ ConsoleEnabled = 1
+-GuiConsoleEnabled = 1
++GuiConsoleEnabled = 0
+ GuiConsoleVisible = 1
+ 
+ ; Multiplier for Font Size within the Debug Gui
