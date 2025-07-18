@@ -23,7 +23,8 @@ runs:
         pwd
         git --version
         docker version
-        echo "TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}"
+        echo "Repository value of TIMEOUT_SECONDS is: ${{ inputs.timeout_seconds }}"
+        echo "This should be set on develop or main branch!"
 
     - name: Run server
       shell: bash
@@ -33,6 +34,8 @@ runs:
         -p 8211:8211/udp \
         -p 8212:8212/tcp \
         -p 25575:25575/tcp \
+        -e PUID=7351 \
+        -e PGID=2431 \
         -e ADMIN_PASSWORD=123 \
         -e SERVER_PASSWORD=456 \
         -e SERVER_SETTINGS_MODE=auto \
@@ -45,7 +48,8 @@ runs:
       shell: bash
       run: |
         START_TIME=$(date +%s)
-        echo "TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}"
+        TIMEOUT_SECONDS=${{ inputs.timeout_seconds || '300' }}
+        echo "TIMEOUT_SECONDS: $TIMEOUT_SECONDS"
 
         # Set the timezone to Germany (Central European Time)
         export TZ=Europe/Berlin
@@ -54,8 +58,8 @@ runs:
           CURRENT_TIME=$(date +%s)
           ELAPSED_TIME=$((CURRENT_TIME - START_TIME))
 
-          if [ $ELAPSED_TIME -gt ${{ inputs.timeout_seconds }} ]; then
-            echo "Timeout reached. Server failed to start within ${{ inputs.timeout_seconds }} seconds."
+          if [ $ELAPSED_TIME -gt $TIMEOUT_SECONDS ]; then
+            echo "Timeout reached. Server failed to start within $TIMEOUT_SECONDS seconds."
             printf "\e[0;32m%s\e[0m\n" "*****Container LOGS*****"
             docker logs palworld-dedicated-server
             exit 1
