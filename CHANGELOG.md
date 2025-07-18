@@ -2,6 +2,10 @@
 
 [Back to main](README.md#changelog)
 
+## 3099-02-29
+
+- Some weird changelog entry, please dont merge xD
+
 ## 2025-07-17
 
 - Added new config-settings for v0.6.0 @GlitchApotamus  (#301)
