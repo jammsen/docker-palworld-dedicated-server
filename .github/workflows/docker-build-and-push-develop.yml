@@ -19,17 +19,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Get short SHA
+        id: slug
+        run: echo "GIT_SHORT_SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> "$GITHUB_OUTPUT"
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
-            jammsen/palworld-dedicated-server
+            ${{ secrets.DOCKERHUB_USERNAME }}/palworld-dedicated-server
             ghcr.io/${{ github.repository }}
-
-      - name: Get short SHA
-        id: slug
-        run: echo "GIT_SHORT_SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> "$GITHUB_OUTPUT"
+          tags: |
+            type=ref,event=branch
+            type=raw,value=${{ steps.slug.outputs.GIT_SHORT_SHA7 }}
 
       - name: Build the images
         uses: docker/build-push-action@v5
@@ -37,10 +40,7 @@ jobs:
           context: .
           push: false
           load: true
-          tags: |
-            ${{ steps.meta.outputs.tags }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/palworld-dedicated-server:${{ steps.slug.outputs.GIT_SHORT_SHA7 }}
-            ghcr.io/${{ secrets.DOCKERHUB_USERNAME }}/docker-palworld-dedicated-server:${{ steps.slug.outputs.GIT_SHORT_SHA7 }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Run unit tests
@@ -67,8 +67,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: |
-            ${{ steps.meta.outputs.tags }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/palworld-dedicated-server:${{ steps.slug.outputs.GIT_SHORT_SHA7 }}
-            ghcr.io/${{ secrets.DOCKERHUB_USERNAME }}/docker-palworld-dedicated-server:${{ steps.slug.outputs.GIT_SHORT_SHA7 }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
