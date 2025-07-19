@@ -2,6 +2,10 @@
 
 [Back to main](README.md#changelog)
 
+## 2025-07-18
+
+- Updated supercronic to release v0.2.34 @GlitchApotamus (#304)
+
 ## 2025-07-17
 
 - Added new config-settings for v0.6.0 @GlitchApotamus  (#301)
