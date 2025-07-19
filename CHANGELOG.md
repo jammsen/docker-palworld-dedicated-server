@@ -4,7 +4,7 @@
 
 ## 2025-07-18
 
-- Updated supercronic to latest release
+- Updated supercronic to release v0.2.34 @GlitchApotamus (#304)
 
 ## 2025-07-17
 
