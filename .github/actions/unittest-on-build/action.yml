@@ -23,6 +23,8 @@ runs:
         pwd
         git --version
         docker version
+        free -m
+        cat /proc/cpuinfo | grep "model name"
         echo "Repository value of TIMEOUT_SECONDS is: ${{ inputs.timeout_seconds }}"
         echo "This should be set on develop or main branch!"
 

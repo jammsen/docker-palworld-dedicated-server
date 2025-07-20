@@ -19,6 +19,8 @@ jobs:
           pwd
           git --version
           docker version
+          free -m
+          cat /proc/cpuinfo | grep "model name"
           echo "Repository value of TIMEOUT_SECONDS is: ${{ vars.TIMEOUT_SECONDS }}"
           echo "This should not be set on a PR from a different source!"
 
