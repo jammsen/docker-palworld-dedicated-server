@@ -1,4 +1,4 @@
-FROM golang:1.22.0-bookworm AS rconclibuilder
+FROM golang:1.26.3-bookworm AS rconclibuilder
 
 WORKDIR /build
 
