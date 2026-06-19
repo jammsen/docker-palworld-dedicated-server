@@ -22,7 +22,7 @@ FROM debian:bookworm-slim@sha256:0104b334637a5f19aa9c983a91b54c89887c0984081f206
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.45/supercronic-linux-${TARGETARCH} \
     SUPERCRONIC_SHA1SUM_AMD64=e894b193bea75a5ee644e700c59e30eedc804cf7 \
     SUPERCRONIC_SHA1SUM_ARM64=20ce6dace414a64f0632f4092d6d3745db6085ad \
-    SUPERCRONIC=supercronic-linux-amd64
+    SUPERCRONIC=supercronic-linux-${TARGETARCH}
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests ca-certificates curl \
