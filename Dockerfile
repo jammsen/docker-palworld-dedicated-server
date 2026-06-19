@@ -5,8 +5,8 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Latest releases available at https://github.com/aptible/supercronic/releases
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.46/supercronic-linux-${TARGETARCH} \
-    SUPERCRONIC_SHA1SUM_AMD64=5bcefed628e32adc08e32634db2d10e9230dbca0 \
     SUPERCRONIC_SHA1SUM_ARM64=639ab81a72771990790df7ee87d9acfe88e5fa83 \
+    SUPERCRONIC_SHA1SUM_AMD64=5bcefed628e32adc08e32634db2d10e9230dbca0 \
     SUPERCRONIC=supercronic-linux-${TARGETARCH}
 
 RUN apt-get update \
