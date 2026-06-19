@@ -50,7 +50,7 @@ do
     start_main &
     START_MAIN_PID="$!"
 
-    if [[ -n $RCON_PLAYER_DETECTION ]] && [[ "${RCON_PLAYER_DETECTION,,}" == "true" ]] && [[ -n $RCON_ENABLED ]] && [[ "${RCON_ENABLED,,}" == "true" ]]; then
+    if [[ -n $PLAYER_DETECTION_ENABLED ]] && [[ "${PLAYER_DETECTION_ENABLED,,}" == "true" ]] && [[ -n $RESTAPI_ENABLED ]] && [[ "${RESTAPI_ENABLED,,}" == "true" ]]; then
        player_detection_loop &
        PLAYER_DETECTION_PID="$!"
        echo $PLAYER_DETECTION_PID > PLAYER_DETECTION.PID

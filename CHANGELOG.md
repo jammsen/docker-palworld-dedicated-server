@@ -2,6 +2,31 @@
 
 [Back to main](README.md#changelog)
 
+## 2026-06-19
+
+> [!WARNING]
+> **Breaking change!** This release removes RCON support entirely and replaces it with the Palworld REST API.
+> - Update your `default.env`: rename `RCON_PLAYER_DETECTION_ENABLED` → `PLAYER_DETECTION_ENABLED`, `RCON_PLAYER_DETECTION_DEBUG` → `PLAYER_DETECTION_DEBUG`, `RCON_PLAYER_DETECTION_STARTUP_DELAY` → `PLAYER_DETECTION_STARTUP_DELAY`, `RCON_PLAYER_DETECTION_CHECK_INTERVAL` → `PLAYER_DETECTION_CHECK_INTERVAL`. Add `RESTAPI_TIMEOUT=10`.
+> - Update your `compose.yml`: remove the `25575/tcp` RCON port mapping if present.
+> - Ensure `RESTAPI_ENABLED=true` and `RESTAPI_PORT=8212` are set.
+
+- Replaced deprecated RCON/gorcon tooling with the Palworld REST API - by @jammsen (closes #308)
+  - Removed `gorcon` Go binary and multi-stage Docker build stage
+  - Removed `includes/rcon.sh`, `scripts/rconcli.sh`, `configs/rcon.yaml`
+  - Added `includes/restapi.sh`: transport-layer library (`restapi_get`, `restapi_post`) and all semantic broadcast/save/shutdown helpers
+  - Added `scripts/restapicli.sh`: user-facing CLI, symlinked to `/usr/local/bin/restapicli`; commands: `info`, `players`, `metrics`, `save`, `announce`, `kick`, `ban`, `unban`, `banlist`, `shutdown`
+  - Rewrote `includes/playerdetection.sh`: player state stored as compact JSON objects, all field extraction via `jq`, Unicode player names fully supported
+  - Added `jq` as runtime dependency for JSON parsing
+  - Renamed `RCON_PLAYER_*` environment variables to `PLAYER_DETECTION_*`
+  - Added `RESTAPI_TIMEOUT` environment variable
+  - Removed RCON port (`25575/tcp`) from Docker `EXPOSE` and compose examples
+  - Changed `RCON_ENABLED` default to `false` in Dockerfile and `default.env` — RCON is deprecated by Pocketpair; the setting only affects the game server INI, not container tooling
+  - Fixed player name sanitization: strips only ASCII control characters, backslash and double-quote, preserving Chinese/Japanese/Unicode characters
+  - Added player moderation commands to `restapicli`: `kick`, `ban`, `unban` (via REST API), `banlist` (reads local ban file from disk — no REST API needed)
+  - Fixed typos in `backupmanager.sh` output strings (`out of backup N file(s)` → `out of N backup file(s)`, `backups(s)` → `backup(s)`)
+  - Fixed `-user` → `--user` in README backup manager examples
+  - Updated `docs/ENV_VARS.md`, `README.md`, and `default.env` accordingly
+
 ## 2026-05-23
 
 - gosu from 1.17 to 1.19 and supercronic from 0.2.34 to 0.2.45 - by @jammsen (#312)

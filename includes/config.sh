@@ -104,39 +104,16 @@ function setup_palworld_settings_ini() {
     es ">>> Finished setting up PalWorldSettings.ini"
 }
 
-function setup_rcon_yaml () {
-    if [[ -n ${RCON_ENABLED+x} ]] && [[ "${RCON_ENABLED,,}" == "true" ]] ; then
-        ei ">>> RCON is enabled - Setting up rcon.yaml ..."
-        if [[ -n ${RCON_PORT+x} ]] && [[ -n ${ADMIN_PASSWORD+x} ]]; then
-            TEMP_FILE=$(mktemp)
-            if envsubst '$RCON_PORT $ADMIN_PASSWORD' < "$RCON_CONFIG_FILE" > "$TEMP_FILE"; then
-                mv "$TEMP_FILE" "$RCON_CONFIG_FILE"
-            else
-                ee "Failed to process rcon.yaml"
-                rm -f "$TEMP_FILE"
-                return 1
-            fi
-        else
-            ee "> RCON_PORT and/or ADMIN_PASSWORD are not set; please set both for RCON to work!"
-        fi
-        es ">>> Finished setting up 'rcon.yaml' config file"
-    else
-        ei ">>> RCON is disabled, skipping 'rcon.yaml' config file!"
-    fi
-}
-
 function setup_configs() {
     if [[ -n ${SERVER_SETTINGS_MODE} ]] && [[ ${SERVER_SETTINGS_MODE} == "auto" ]]; then
         ew ">>> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', using environment variables to configure the server"
         setup_engine_ini
         setup_palworld_settings_ini
-        setup_rcon_yaml
     elif [[ -n ${SERVER_SETTINGS_MODE} ]] && [[ ${SERVER_SETTINGS_MODE} == "rcononly" ]]; then
-        ew ">>> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', using environment variables to ONLY configure RCON!"
-        ew ">>> ALL SETTINGS excluding setup of rcon.yaml has to be done manually by the user!"
-        setup_rcon_yaml
+        ew ">>> SERVER_SETTINGS_MODE 'rcononly' is deprecated — RCON tooling has been replaced by the REST API."
+        ew ">>> No settings will be applied. Switch to 'auto' or 'manual' mode."
     else
         ew ">>> SERVER_SETTINGS_MODE is set to '${SERVER_SETTINGS_MODE}', NOT using environment variables to configure the server!"
-        ew ">>> ALL SETTINGS including setup of rcon.yaml has to be done manually by the user!"
+        ew ">>> ALL SETTINGS have to be done manually by the user!"
     fi
 }

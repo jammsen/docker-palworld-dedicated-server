@@ -1,3 +1,0 @@
-default:
-  address: "127.0.0.1:${RCON_PORT}"
-  password: "${ADMIN_PASSWORD}"

@@ -1,30 +1,12 @@
-FROM golang:1.26.3-bookworm@sha256:386d475a660466863d9f8c766fec64d7fdad3edac2c6a05020c09534d71edb4b AS rconclibuilder
-
-WORKDIR /build
-
-ENV CGO_ENABLED=0 \
-    GORCON_RCONCLI_URL=https://github.com/gorcon/rcon-cli/archive/refs/tags/v0.10.3.tar.gz \
-    GORCON_RCONCLI_DIR=rcon-cli-0.10.3 \
-    GORCON_RCONCLI_TGZ=v0.10.3.tar.gz \
-    GORCON_RCONCLI_TGZ_SHA1SUM=33ee8077e66bea6ee097db4d9c923b5ed390d583
-
-RUN curl -fsSLO "$GORCON_RCONCLI_URL" \
-    && echo "${GORCON_RCONCLI_TGZ_SHA1SUM}  ${GORCON_RCONCLI_TGZ}" | sha1sum -c - \
-    && tar -xzf "$GORCON_RCONCLI_TGZ" \
-    && mv "$GORCON_RCONCLI_DIR"/* ./ \
-    && rm "$GORCON_RCONCLI_TGZ" \
-    && rm -Rf "$GORCON_RCONCLI_DIR" \
-    && go build -v ./cmd/gorcon
-
 FROM debian:bookworm-slim@sha256:0104b334637a5f19aa9c983a91b54c89887c0984081f2068983107a6f6c21eeb AS supercronicverify
 ARG TARGETARCH
 # install supercronic
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Latest releases available at https://github.com/aptible/supercronic/releases
-ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.45/supercronic-linux-${TARGETARCH} \
-    SUPERCRONIC_SHA1SUM_AMD64=e894b193bea75a5ee644e700c59e30eedc804cf7 \
-    SUPERCRONIC_SHA1SUM_ARM64=20ce6dace414a64f0632f4092d6d3745db6085ad \
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.46/supercronic-linux-${TARGETARCH} \
+    SUPERCRONIC_SHA1SUM_AMD64=5bcefed628e32adc08e32634db2d10e9230dbca0 \
+    SUPERCRONIC_SHA1SUM_ARM64=639ab81a72771990790df7ee87d9acfe88e5fa83 \
     SUPERCRONIC=supercronic-linux-${TARGETARCH}
 
 RUN apt-get update \
@@ -64,7 +46,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     GAME_SETTINGS_FILE="/palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini" \
     GAME_ENGINE_FILE="/palworld/Pal/Saved/Config/LinuxServer/Engine.ini" \
     STEAMCMD_PATH="/home/steam/steamcmd" \
-    RCON_CONFIG_FILE="/home/steam/steamcmd/rcon.yaml" \
     PALWORLD_TEMPLATE_FILE="/PalWorldSettings.ini.template" \
     BACKUP_PATH="/palworld/backups" \
     # Container-setttings
@@ -84,11 +65,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
     RESTART_ENABLED=false \
     RESTART_DEBUG_OVERRIDE=false \
     RESTART_CRON_EXPRESSION="0 18 * * *" \
-    # RCON-Playerdetection - NEEDS RCON ENABLED!
-    RCON_PLAYER_DETECTION=true \
-    RCON_PLAYER_DEBUG=false \
-    RCON_PLAYER_DETECTION_STARTUP_DELAY=60 \
-    RCON_PLAYER_DETECTION_CHECK_INTERVAL=15 \
+    # Player Detection - NEEDS REST API ENABLED!
+    PLAYER_DETECTION_ENABLED=true \
+    PLAYER_DETECTION_DEBUG=false \
+    PLAYER_DETECTION_STARTUP_DELAY=60 \
+    PLAYER_DETECTION_CHECK_INTERVAL=15 \
     # Custom-script-settings
     CUSTOM_SCRIPT_ENABLED=false \
     CUSTOM_SCRIPT_PATH="/palworld/custom-script.sh" \
@@ -195,13 +176,14 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SERVER_PASSWORD=serverPasswordHere \
     PUBLIC_PORT=8211 \
     PUBLIC_IP= \
-    RCON_ENABLED=true \
+    RCON_ENABLED=false \
     RCON_PORT=25575 \
     REGION= \
     USEAUTH=true \
     BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt \
     RESTAPI_ENABLED=true \
     RESTAPI_PORT=8212 \
+    RESTAPI_TIMEOUT=10 \
     SHOW_PLAYER_LIST=false \
     CHAT_POST_LIMIT_PER_MINUTE=10 \
     CROSSPLAY_PLATFORMS="(Steam,Xbox,PS5,Mac)" \
@@ -227,15 +209,13 @@ ENV BOX64_DYNAREC_STRONGMEM=1 \
 
 EXPOSE 8211/udp
 EXPOSE 8212/tcp
-EXPOSE 25575/tcp
 
 # Install minimum required packages for dedicated server
-COPY --from=rconclibuilder /build/gorcon /usr/local/bin/rcon
 COPY --from=supercronicverify /usr/local/bin/supercronic /usr/local/bin/supercronic
 COPY --from=tianon/gosu /gosu /usr/local/bin/gosu
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs gettext-base \
+    && apt-get install -y --no-install-recommends --no-install-suggests gettext-base jq procps xdg-user-dirs \
     && apt-get autoremove -y --purge \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -243,19 +223,17 @@ RUN apt-get update \
 COPY --chmod=755 entrypoint.sh /
 COPY --chmod=755 scripts/ /scripts
 COPY --chmod=755 includes/ /includes
-COPY --chmod=644 configs/rcon.yaml /home/steam/steamcmd/rcon.yaml
 COPY --chmod=644 configs/PalWorldSettings.ini.template /
 
 RUN mkdir -p "$BACKUP_PATH" \
     && ln -s /scripts/backupmanager.sh /usr/local/bin/backup \
-    && ln -s /scripts/rconcli.sh /usr/local/bin/rconcli \
+    && ln -s /scripts/restapicli.sh /usr/local/bin/restapicli \
     && ln -s /scripts/restart.sh /usr/local/bin/restart
 
 RUN gosu --version \
     && gosu nobody true
 
-RUN rconcli --version \
-    && rcon --version
+RUN restapicli --version
 
 RUN supercronic --version
 

@@ -1,7 +1,7 @@
 # shellcheck disable=SC2148,SC1091
 
 source /includes/colors.sh
-source /includes/rcon.sh
+source /includes/restapi.sh
 source /includes/webhook.sh
 
 function check_and_run_custom_script() {
@@ -90,7 +90,7 @@ function start_server() {
 function stop_server() {
     ew ">>> Stopping server..."
     kill -SIGTERM "${PLAYER_DETECTION_PID}"
-    if [[ -n $RCON_ENABLED ]] && [[ "${RCON_ENABLED,,}" == "true" ]]; then
+    if [[ -n $RESTAPI_ENABLED ]] && [[ "${RESTAPI_ENABLED,,}" == "true" ]]; then
         save_and_shutdown_server
     fi
 	kill -SIGTERM "$(pidof PalServer-Linux-Shipping)"

@@ -2,10 +2,10 @@
 # shellcheck disable=SC1091,SC2012,SC2004
 
 source /includes/colors.sh
-source /includes/rcon.sh
+source /includes/restapi.sh
 
 # Default values if the environment variables exist
-LOCAL_BACKUP_ANNOUNCE_MESSAGES_ENABLED=${BACKUP_ANNOUNCE_MESSAGES_ENABLED} # Defines if messages should be announced via rcon
+LOCAL_BACKUP_ANNOUNCE_MESSAGES_ENABLED=${BACKUP_ANNOUNCE_MESSAGES_ENABLED} # Defines if messages should be announced via REST API
 LOCAL_BACKUP_PATH=${BACKUP_PATH} # Directory where the backup files are stored
 LOCAL_GAME_PATH=${GAME_PATH} # Directory where the game save files are stored
 LOCAL_GAME_SAVE_PATH=${GAME_SAVE_PATH} # Directory where the game save files are stored
@@ -138,15 +138,17 @@ function create_backup() {
     mkdir -p "${LOCAL_BACKUP_PATH}"
 
     if [[ -n $LOCAL_BACKUP_ANNOUNCE_MESSAGES_ENABLED ]] && [[ "${LOCAL_BACKUP_ANNOUNCE_MESSAGES_ENABLED,,}" == "true" ]]; then
-        rconcli broadcast "$(get_time) Saving in 5 seconds..."
+        restapi_announce "$(get_time) Saving in 5 seconds..."
         sleep 5
-        rconcli broadcast "$(get_time) Saving world..."
-        rconcli save
-        rconcli broadcast "$(get_time) Saving done"
+        restapi_announce "$(get_time) Saving world..."
+        restapi_save
+        restapi_announce "$(get_time) Saving done"
         sleep 15
-        rconcli broadcast "$(get_time) Creating backup..."
+        restapi_announce "$(get_time) Creating backup..."
     else
-        rconcli save
+        if [[ -n $RESTAPI_ENABLED ]] && [[ "${RESTAPI_ENABLED,,}" == "true" ]]; then
+            restapi_save
+        fi
     fi
 
 
@@ -186,7 +188,7 @@ function list_backups() {
         es ">>> Listing ${total_file_count} backup file(s)!"
     else
         file_list=$(echo "${files}" | head -n "${num_backup_entries}")
-        es ">>> Listing ${num_backup_entries} out of backup ${total_file_count} file(s)"
+        es ">>> Listing ${num_backup_entries} out of ${total_file_count} backup file(s)"
     fi
 
     for file in $file_list; do
@@ -230,7 +232,7 @@ function clean_backups() {
         if [[ ${num_files} -lt ${num_files_to_keep} ]]; then
             num_files_to_keep="${num_files}"
         fi
-        es ">>> ${num_files_to_delete} backup(s) cleaned, keeping ${num_files_to_keep} backups(s)"
+        es ">>> ${num_files_to_delete} backup(s) cleaned, keeping ${num_files_to_keep} backup(s)"
     else
         ei "> No backups to clean"
     fi

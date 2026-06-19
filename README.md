@@ -7,12 +7,22 @@
 ![Image Size](https://img.shields.io/docker/image-size/jammsen/palworld-dedicated-server/latest)
 [![Discord](https://img.shields.io/discord/532141442731212810?logo=discord&label=Discord&link=https%3A%2F%2Fdiscord.gg%2F7tacb9Q6tj)](https://discord.gg/7tacb9Q6tj)
 
+This Docker image includes a Palworld Dedicated Server based on Linux and Docker.
+
+
+
 > [!TIP]
 > Do you want to chat with the community?
 >
 > **[Join us on Discord](https://discord.gg/7tacb9Q6tj)**
 
-This Docker image includes a Palworld Dedicated Server based on Linux and Docker.
+___
+
+> [!WARNING]
+> **Heads-up — RCON has been removed.** This image no longer uses RCON for any container tooling. All server management (player detection, backups, restarts, CLI) now runs via the Palworld REST API.
+> - `RCON_ENABLED` now defaults to `false` — this only controls the game server INI setting, not container functionality.
+> - Make sure `RESTAPI_ENABLED=true` is set in your `default.env`.
+> - See the [Changelog](#changelog) for the full migration guide and renamed environment variables.
 
 ___
 
@@ -40,8 +50,8 @@ ___
   - [Getting started](#getting-started)
   - [Environment variables](#environment-variables)
   - [Docker-Compose examples](#docker-compose-examples)
-    - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
-  - [Run RCON commands](#run-rcon-commands)
+    - [Gameserver with REST API](#gameserver-with-rest-api)
+  - [Run REST API commands](#run-rest-api-commands)
   - [Backup Manager](#backup-manager)
   - [Webhook integration](#webhook-integration)
     - [Supported events](#supported-events)
@@ -117,7 +127,7 @@ See [this file](/docs/ENV_VARS.md) for the documentation
 
 ## Docker-Compose examples
 
-### Gameserver with RCON-CLI-Tool
+### Gameserver with REST API
 
 <!-- compose-start -->
 ```yaml
@@ -136,12 +146,8 @@ services:
         published: 8211 # Gamerserver port on your host
         protocol: udp
         mode: host
-      - target: 8212 # Gameserver API port inside of the container
-        published: 8212 # Gameserver API port on your host
-        protocol: tcp
-        mode: host
-      - target: 25575 # RCON port inside of the container
-        published: 25575 # RCON port on your host
+      - target: 8212 # Gameserver REST API port inside of the container
+        published: 8212 # Gameserver REST API port on your host
         protocol: tcp
         mode: host
     env_file:
@@ -152,38 +158,63 @@ services:
 ```
 <!-- compose-end -->
 
-## Run RCON commands
+## Run REST API commands
 
 > [!NOTE]
-> Please research the RCON-Commands on the official source: https://tech.palworldgame.com/settings-and-operation/commands
+> Please research the REST API commands on the official source: https://docs.palworldgame.com/category/rest-api
 
-You can use `docker exec palworld-dedicated-server rconcli <command>` right on your terminal/shell.
+You can use `docker exec palworld-dedicated-server restapicli <command>` right on your terminal/shell.
 
 ```shell
-$ docker exec palworld-dedicated-server rconcli showplayers
-name,playeruid,steamid
+$ docker exec palworld-dedicated-server restapicli players
+> Players: {"players": [...]}
 
-$ docker exec palworld-dedicated-server rconcli info
-Welcome to Pal Server[v0.1.4.1] jammsen-docker-generated-20384
+$ docker exec palworld-dedicated-server restapicli info
+> Server info: {"version": "v0.7.3.90464", "servername": "...", ...}
 
-$ docker exec palworld-dedicated-server rconcli save
-Complete Save
+$ docker exec palworld-dedicated-server restapicli metrics
+> Metrics: {"currentplayernum": 1, "serverfps": 120, ...}
+
+$ docker exec palworld-dedicated-server restapicli save
+> Saving world...
+> World saved.
+
+$ docker exec palworld-dedicated-server restapicli announce "Hello players!"
+> Announced: Hello players!
+
+$ docker exec palworld-dedicated-server restapicli kick steam_76000000000000123 "Goodbye!"
+> Kicked: steam_76000000000000123
+
+$ docker exec palworld-dedicated-server restapicli ban steam_76000000000000123 "You are banned."
+> Banned: steam_76000000000000123
+
+$ docker exec palworld-dedicated-server restapicli unban steam_76000000000000123
+> Unbanned: steam_76000000000000123
+
+$ docker exec palworld-dedicated-server restapicli banlist
+> Ban list (2 entries):
+steam_76000000000000123
+steam_76000000000000456
+
+$ docker exec palworld-dedicated-server restapicli shutdown 60 "Server restarting soon"
+> Shutting down server in 60s...
+> Shutdown issued.
 ```
 
 ## Backup Manager
 
 > [!WARNING]
-> If RCON is disabled, the backup manager won't do saves via RCON before creating a backup and will report warnings.
+> If `RESTAPI_ENABLED` is set to `false`, the backup manager will not announce backup start/success/failure in-game and will not trigger a world save before creating a backup.
 > This means that the backup will be created from the last auto-save of the server.
 > This can lead to data-loss and/or savegame corruption.
 >
-> **Recommendation:** Please make sure that RCON is enabled before using the backup manager.
+> **Recommendation:** Please make sure that `RESTAPI_ENABLED=true` is set before using the backup manager.
 
 > [!WARNING]
-> Please use in the following part always the `-user steam` option or your files will written as root
+> Please use in the following part always the `--user steam` option or your files will be written as root
 
 
-Usage: `docker exec -user steam palworld-dedicated-server backup [command] [arguments]`
+Usage: `docker exec --user steam palworld-dedicated-server backup [command] [arguments]`
 
 | Command | Argument           | Required/Optional | Default Value                     | Values           | Description                                                                                                                                                                          |
 | ------- | ------------------ | ----------------- | --------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -194,25 +225,25 @@ Usage: `docker exec -user steam palworld-dedicated-server backup [command] [argu
 Examples:
 
 ```shell
-$ docker exec -user steam palworld-dedicated-server backup
-> Backup 'saved-20240203_032855.tar.gz' created successfully.
+$ docker exec --user steam palworld-dedicated-server backup create
+>>> Backup 'saved-20240203_032855.tar.gz' created successfully
 ```
 
 ```shell
-$ docker exec -user steam palworld-dedicated-server backup list
-> Listing 2 backup file(s)!
+$ docker exec --user steam palworld-dedicated-server backup list
+>>> Listing 2 backup file(s)!
 2024-02-03 03:28:55 | saved-20240203_032855.tar.gz
 2024-02-03 03:28:00 | saved-20240203_032800.tar.gz
 ```
 
 ```shell
-$ docker exec -user steam palworld-dedicated-server backup_clean 3
-> 1 backup(s) cleaned, keeping 2 backups(s).
+$ docker exec --user steam palworld-dedicated-server backup clean 3
+>>> 1 backup(s) cleaned, keeping 2 backup(s).
 ```
 
 ```shell
-$ docker exec -user steam palworld-dedicated-server backup_list   
-> Listing 1 out of backup 2 file(s).
+$ docker exec --user steam palworld-dedicated-server backup list 1
+>>> Listing 1 out of 2 backup file(s).
 2024-02-03 03:30:00 | saved-20240203_033000.tar.gz
 ```
 
@@ -278,5 +309,5 @@ A Helm chart to deploy this container can be found at [palworld-helm](https://gi
 
 - CM2Network SteamCMD - Debian-based (Officially recommended by Valve - https://developer.valvesoftware.com/wiki/SteamCMD#Docker)
 - Supercronic - https://github.com/aptible/supercronic
-- rcon-cli - https://github.com/gorcon/rcon-cli
+- jq - https://jqlang.org/
 - Palworld Dedicated Server (APP-ID: 2394010 - https://steamdb.info/app/2394010/config/)
