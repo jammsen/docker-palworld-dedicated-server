@@ -120,8 +120,13 @@ jobs:
   unit-test-arm64:
     name: Docker - Test Linux-arm64 image
     timeout-minutes: 15
-    runs-on: [self-hosted, ARM64]
+    runs-on: ubuntu-latest
     steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          image: tonistiigi/binfmt:qemu-v8.1.5
+
       - name: Get Runner Info
         run: |
           id
