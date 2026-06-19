@@ -19,8 +19,9 @@ RUN curl -fsSLO "$GORCON_RCONCLI_URL" \
 FROM debian:bookworm-slim@sha256:0104b334637a5f19aa9c983a91b54c89887c0984081f2068983107a6f6c21eeb AS supercronicverify
 
 # Latest releases available at https://github.com/aptible/supercronic/releases
-ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.45/supercronic-linux-amd64 \
-    SUPERCRONIC_SHA1SUM=e894b193bea75a5ee644e700c59e30eedc804cf7 \
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.45/supercronic-linux-${TARGETARCH} \
+    SUPERCRONIC_SHA1SUM_AMD64=e894b193bea75a5ee644e700c59e30eedc804cf7 \
+    SUPERCRONIC_SHA1SUM_ARM64=20ce6dace414a64f0632f4092d6d3745db6085ad \
     SUPERCRONIC=supercronic-linux-amd64
 
 RUN apt-get update \
@@ -29,13 +30,22 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN curl -fsSLO "$SUPERCRONIC_URL" \
+ARG TARGETARCH
+RUN case "${TARGETARCH}" in \
+        "amd64") SUPERCRONIC_SHA1SUM=${SUPERCRONIC_SHA1SUM_AMD64} ;; \
+        "arm64") SUPERCRONIC_SHA1SUM=${SUPERCRONIC_SHA1SUM_ARM64} ;; \
+    esac \
+    && curl -fsSLO "$SUPERCRONIC_URL" \
     && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
     && chmod +x "$SUPERCRONIC" \
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
-FROM cm2network/steamcmd:root@sha256:e6b6b3503bf0e41feafe12dc709c90151afba193e1292cac55d28a7d470b1493
+FROM cm2network/steamcmd:root@sha256:e6b6b3503bf0e41feafe12dc709c90151afba193e1292cac55d28a7d470b1493 AS base-amd64
+# Ignoring --platform=arm64 as this is required for the multi-arch build to continue to work on amd64 hosts
+FROM --platform=arm64 sonroyaalmerol/steamcmd-arm64:root-trixie-2026-06-07 AS base-arm64
+ARG TARGETARCH
+FROM base-${TARGETARCH}
 
 LABEL maintainer="Sebastian Schmidt - https://github.com/jammsen/docker-palworld-dedicated-server"
 LABEL org.opencontainers.image.authors="Sebastian Schmidt"
@@ -201,7 +211,16 @@ ENV DEBIAN_FRONTEND=noninteractive \
     ALLOW_GLOBAL_PALBOX_IMPORT=false \
     EQUIPMENT_DURABILITY_DAMAGE_RATE=1.000000 \
     ITEM_CONTAINER_FORCE_MARK_DIRTY_INTERVAL=1.000000
-    
+
+# Sane Box64 config defaults
+# Not needed for AMD64 build but will figure out how to exclude later
+ENV BOX64_DYNAREC_STRONGMEM=1 \
+    BOX64_DYNAREC_BIGBLOCK=1 \
+    BOX64_DYNAREC_SAFEFLAGS=1 \
+    BOX64_DYNAREC_FASTROUND=1 \
+    BOX64_DYNAREC_FASTNAN=1 \
+    BOX64_DYNAREC_X87DOUBLE=0
+
 EXPOSE 8211/udp
 EXPOSE 8212/tcp
 EXPOSE 25575/tcp
