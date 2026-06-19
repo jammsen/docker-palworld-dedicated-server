@@ -17,6 +17,7 @@ RUN curl -fsSLO "$GORCON_RCONCLI_URL" \
     && go build -v ./cmd/gorcon
 
 FROM debian:bookworm-slim@sha256:0104b334637a5f19aa9c983a91b54c89887c0984081f2068983107a6f6c21eeb AS supercronicverify
+ARG TARGETARCH
 # install supercronic
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -32,7 +33,6 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ARG TARGETARCH
 RUN case "${TARGETARCH}" in \
         "amd64") SUPERCRONIC_SHA1SUM=${SUPERCRONIC_SHA1SUM_AMD64} ;; \
         "arm64") SUPERCRONIC_SHA1SUM=${SUPERCRONIC_SHA1SUM_ARM64} ;; \
