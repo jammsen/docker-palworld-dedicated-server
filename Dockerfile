@@ -116,6 +116,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     WEBHOOK_UPDATE_TITLE="Updating server" \
     WEBHOOK_UPDATE_DESCRIPTION="Server is being updated" \
     WEBHOOK_UPDATE_COLOR="2849520" \
+    # ARM64 Settings
+    ARM64_DEVICE=generic \
     # Config-setting - Warning: Every setting below here will be affected!
     SERVER_SETTINGS_MODE=manual \
     # Gameserver-start-settings

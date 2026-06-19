@@ -50,6 +50,14 @@ function check_and_run_custom_script() {
     fi
 }
 
+function create_arm_script() {
+    # create an arm64 version of ./PalServer.sh
+    cp ./PalServer.sh ./PalServer-arm64.sh
+    
+    sed -i "s|\(\"\$UE_PROJECT_ROOT\/Pal\/Binaries\/Linux\/PalServer-Linux-Shipping\" Pal \"\$@\"\)|LD_LIBRARY_PATH=/home/steam/steamcmd/linux64:\$LD_LIBRARY_PATH /usr/local/bin/box64 \1|" ./PalServer-arm64.sh
+    chmod +x ./PalServer-arm64.sh
+}
+
 function start_server() {
     cd "$GAME_ROOT" || exit
     setup_configs
@@ -69,7 +77,14 @@ function start_server() {
     check_and_run_custom_script
 
     es ">>> Starting the gameserver"
-    ./PalServer.sh "${START_OPTIONS[@]}"
+    # Get the architecture using dpkg
+    architecture=$(dpkg --print-architecture)
+    if [ "$architecture" == "arm64" ]; then
+        create_arm_script
+        ./PalServer-arm64.sh "${START_OPTIONS[@]}"
+    else
+        ./PalServer.sh "${START_OPTIONS[@]}"
+    fi
 }
 
 function stop_server() {
