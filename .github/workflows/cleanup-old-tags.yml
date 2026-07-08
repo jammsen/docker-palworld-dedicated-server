@@ -1,0 +1,52 @@
+name: Cleanup old Docker image tags
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old versions (pass 1)
+        uses: actions/delete-package-versions@v5
+        with:
+          owner: jammsen
+          package-name: docker-palworld-dedicated-server
+          package-type: container
+          min-versions-to-keep: 30
+          ignore-versions: '^(latest|master|develop)$'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete old versions (pass 2)
+        uses: actions/delete-package-versions@v5
+        with:
+          owner: jammsen
+          package-name: docker-palworld-dedicated-server
+          package-type: container
+          min-versions-to-keep: 30
+          ignore-versions: '^(latest|master|develop)$'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete old versions (pass 3)
+        uses: actions/delete-package-versions@v5
+        with:
+          owner: jammsen
+          package-name: docker-palworld-dedicated-server
+          package-type: container
+          min-versions-to-keep: 30
+          ignore-versions: '^(latest|master|develop)$'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete old versions (pass 4)
+        uses: actions/delete-package-versions@v5
+        with:
+          owner: jammsen
+          package-name: docker-palworld-dedicated-server
+          package-type: container
+          min-versions-to-keep: 30
+          ignore-versions: '^(latest|master|develop)$'
+          token: ${{ secrets.GITHUB_TOKEN }}
