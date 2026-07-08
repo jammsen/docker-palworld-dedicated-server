@@ -2,6 +2,13 @@
 
 [Back to main](README.md#changelog)
 
+## 2026-07-04
+
+- Added SteamCMD self-healing via `run_steamcmd` helper in `includes/server.sh` - by @jammsen
+  - All SteamCMD calls (fresh install, update, update+validate) now retry up to 3 times on failure
+  - On each failure SteamCMD's self-update state (`steamcmd/package`) is cleared, fixing the misleading "Steamcmd needs to be online to update" crash-loop caused by corrupt update state persisting in the container's writable layer across `restart: always`
+  - After 3 failed attempts the container exits with a clear error message and lets the Docker restart policy retry with pre-cleaned state
+
 ## 2026-06-19
 
 > [!WARNING]

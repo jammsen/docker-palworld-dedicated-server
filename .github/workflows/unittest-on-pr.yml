@@ -27,7 +27,7 @@ jobs:
           echo "This should not be set on a PR from a different source!"
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4

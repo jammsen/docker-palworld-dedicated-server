@@ -87,12 +87,29 @@ function stop_server() {
     exit 143;
 }
 
+function run_steamcmd() {
+    local attempt exit_code
+    for attempt in 1 2 3; do
+        exit_code=0
+        # The '||' prevents set -e from aborting on a non-zero exit so we can retry
+        "${STEAMCMD_PATH}"/steamcmd.sh "$@" || exit_code=$?
+        if [[ $exit_code -eq 0 ]]; then
+            return 0
+        fi
+        ew ">>> SteamCMD failed with exit code ${exit_code} (attempt ${attempt}/3) - clearing SteamCMD update state and retrying"
+        rm -rf "${STEAMCMD_PATH}/package"
+        sleep 5
+    done
+    ee ">>> SteamCMD failed 3 times in a row - giving up, container will restart"
+    exit 1
+}
+
 function fresh_install_server() {
     ei ">>> Doing a fresh install of the gameserver..."
     if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
         send_install_notification
     fi
-    "${STEAMCMD_PATH}"/steamcmd.sh +force_install_dir "$GAME_ROOT" +login anonymous +app_update 2394010 validate +quit
+    run_steamcmd +force_install_dir "$GAME_ROOT" +login anonymous +app_update 2394010 validate +quit
     es "> Done installing the gameserver"
 }
 
@@ -108,14 +125,14 @@ function update_server() {
         if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
             send_update_notification
         fi
-        "${STEAMCMD_PATH}"/steamcmd.sh +force_install_dir "$GAME_ROOT" +login anonymous +app_update 2394010 validate +quit
+        run_steamcmd +force_install_dir "$GAME_ROOT" +login anonymous +app_update 2394010 validate +quit
         es ">>> Done updating and validating the gameserver files"
     else
         ei ">>> Doing an update of the gameserver files..."
         if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
             send_update_notification
         fi
-        "${STEAMCMD_PATH}"/steamcmd.sh +force_install_dir "$GAME_ROOT" +login anonymous +app_update 2394010 +quit
+        run_steamcmd +force_install_dir "$GAME_ROOT" +login anonymous +app_update 2394010 +quit
         es ">>> Done updating the gameserver files"
     fi
 }
