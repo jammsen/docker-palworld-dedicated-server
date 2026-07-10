@@ -14,7 +14,7 @@ jobs:
       - name: Delete old versions (pass 1 out of X)
         uses: actions/delete-package-versions@v5
         with:
-          owner: jammsen
+          owner: ${{ github.repository_owner }}
           package-name: docker-palworld-dedicated-server
           package-type: container
           min-versions-to-keep: 15
