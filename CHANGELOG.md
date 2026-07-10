@@ -2,6 +2,27 @@
 
 [Back to main](README.md#changelog)
 
+## 2026-07-10
+
+> [!WARNING]
+> **Changed defaults!** With the Palworld 1.0 release several defaults were aligned to the new vanilla values. If you relied on the old image defaults (without setting the variable yourself), review these:
+> - `DEATH_PENALTY`: `All` is now `Item`
+> - `PAL_EGG_DEFAULT_HATCHING_TIME`: `72.000000` is now `1.000000`
+> - `IS_START_LOCATION_SELECT_BY_MAP`: `true` is now `false`
+> - `BAN_LIST_URL`: `https://api.palworldgame.com/api/banlist.txt` is now `https://b.palworldgame.com/api/banlist.txt` — **the old URL returns an empty ban list since 1.0, update your env files!**
+> - `CHAT_POST_LIMIT_PER_MINUTE`: `10` is now `30`
+> - `ENABLE_WORLD_BACKUP`: `false` is now `true`
+> Strong recommendation to either update your default.env or re-create from new base!
+
+- Added full support for the Palworld 1.0 release - by @jammsen (#321)
+  - Added all 30 new `PalWorldSettings.ini` settings as environment variables, including `ALLOW_CLIENT_MOD`, `ENABLE_FAST_TRAVEL_ONLY_BASE_CAMP`, `IS_SHOW_JOIN_LEFT_MESSAGE`, `PHYSICS_ACTIVE_DROP_ITEM_MAX_NUM`, respawn penalties (`BLOCK_RESPAWN_TIME`, `RESPAWN_PENALTY_*`), PvP drop items (`ADDITIONAL_DROP_ITEM_*`, `DISPLAY_PVP_ITEM_NUM_*`), voice chat (`ENABLE_VOICE_CHAT`, `VOICE_CHAT_*`), stat-point toggles (`ALLOW_ENHANCE_STAT_*`), guild management (`GUILD_REJOIN_COOLDOWN_MINUTES`, `AUTO_TRANSFER_MASTER_*`, `MAX_GUILDS_PER_FRAME`), `DENY_TECHNOLOGY_LIST`, `ITEM_CORRUPTION_MULTIPLIER`, `MONSTER_FARM_ACTION_SPEED_RATE`, `ENABLE_BUILDING_PLAYER_UID_DISPLAY` and more — see `docs/ENV_VARS.md` for the complete list (89 raised to 119 settings)
+  - Reordered `configs/PalWorldSettings.ini.template`, `default.env`, `Dockerfile` and the `docs/ENV_VARS.md` table to match the exact ordering of the official `DefaultPalWorldSettings.ini`, so users can compare configs side by side
+  - Changed defaults to the new 1.0 vanilla values (see warning above)
+  - Wired up the update-with-validation webhook notification: `STEAMCMD_VALIDATE_FILES=true` updates now send their own message via new `WEBHOOK_UPDATE_VALIDATION_TITLE/DESCRIPTION/COLOR` variables (vars existed briefly in Feb 2024 but were never connected to code)
+  - Fixed stale `WEBHOOK_RESTART_DESCRIPTION` in `default.env` — replaced by `WEBHOOK_RESTART_DELAYED_DESCRIPTION` and `WEBHOOK_RESTART_NOW_DESCRIPTION`, which the restart webhook actually uses
+  - Overhauled `docs/ENV_VARS.md`: descriptions synced with the official docs (docs.palworldgame.com), corrected misleading descriptions (`EXIST_PLAYER_AFTER_LOGOUT`, `CHARACTER_RECREATE_IN_HARDCORE`, `COOP_PLAYER_MAX_NUM`, randomizer settings), rebuilt the webhook table to match `webhook.sh` (added missing install/restart/debug rows, removed ghost rows), marked the 5 officially undocumented 1.0 settings as best-guess, fixed table formatting/alignment
+  - Restored the per-setting counter log at server start (`> (001/119) Setting DIFFICULTY to 'None'`), which was lost in the envsubst refactor (#311) — the new `log_settings_with_counter` in `includes/config.sh` iterates the envsubst selector list, so the total is computed at runtime and can never drift out of date again; logs the resolved `SERVER_NAME` after `###RANDOM###` substitution
+
 ## 2026-07-04
 
 - Added SteamCMD self-healing via `run_steamcmd` helper in `includes/server.sh` - by @jammsen
