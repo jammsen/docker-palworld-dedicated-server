@@ -61,6 +61,9 @@ send_stop_notification() {
 send_update_notification() {
   send_webhook_notification "$WEBHOOK_UPDATE_TITLE" "$WEBHOOK_UPDATE_DESCRIPTION" "$WEBHOOK_UPDATE_COLOR"
 }
+send_update_validation_notification() {
+  send_webhook_notification "$WEBHOOK_UPDATE_VALIDATION_TITLE" "$WEBHOOK_UPDATE_VALIDATION_DESCRIPTION" "$WEBHOOK_UPDATE_VALIDATION_COLOR"
+}
 send_info_notification() {
   send_webhook_notification "$WEBHOOK_INFO_TITLE" "$1" "$WEBHOOK_INFO_COLOR"
 }

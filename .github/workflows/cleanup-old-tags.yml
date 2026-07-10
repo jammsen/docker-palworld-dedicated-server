@@ -1,0 +1,22 @@
+name: Cleanup old Docker image tags
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old versions (pass 1 out of X)
+        uses: actions/delete-package-versions@v5
+        with:
+          owner: ${{ github.repository_owner }}
+          package-name: docker-palworld-dedicated-server
+          package-type: container
+          min-versions-to-keep: 15
+          ignore-versions: '^(latest|master|develop)$'
+          token: ${{ secrets.GITHUB_TOKEN }}

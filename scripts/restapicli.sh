@@ -15,6 +15,8 @@ print_usage() {
     e "  info                           Show server info (version, name, description)"
     e "  players                        List connected players (raw JSON)"
     e "  metrics                        Show server metrics (fps, player count, uptime...)"
+    e "  settings                       Show the server settings (raw JSON)"
+    e "  gamedata                       Show a snapshot of all world actors (raw JSON, can be huge - pipe to jq or a file)"
     e "  save                           Save the world"
     e "  announce <message>             Broadcast a message to all players"
     e "  kick <userid> [msg]            Kick a player by Steam userid (steam_XXXXXXX)"
@@ -78,6 +80,16 @@ run_restapicli() {
             local output
             output=$(restapi_get "metrics") || exit 1
             ei_nn "> Metrics: "; e "${output}"
+            ;;
+        settings)
+            local output
+            output=$(restapi_get "settings") || exit 1
+            ei_nn "> Settings: "; e "${output}"
+            ;;
+        gamedata)
+            local output
+            output=$(restapi_get "game-data") || exit 1
+            ei_nn "> Game data: "; e "${output}"
             ;;
         save)
             ei "> Saving world..."

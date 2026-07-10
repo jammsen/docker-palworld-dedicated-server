@@ -175,6 +175,16 @@ $ docker exec palworld-dedicated-server restapicli info
 $ docker exec palworld-dedicated-server restapicli metrics
 > Metrics: {"currentplayernum": 1, "serverfps": 120, ...}
 
+$ docker exec palworld-dedicated-server restapicli settings
+> Settings: {"Difficulty": "None", "DayTimeSpeedRate": 1.0, ...}
+
+$ docker exec palworld-dedicated-server restapicli gamedata
+> Game data: {"Time": "2026-07-10 12:00:00", "FPS": 120, "ActorData": [...]}
+# Warning: snapshot of ALL world actors - output can be huge, pipe it to jq or a file
+# Note: The game currently answers "PalGameDataBridge GameData API is not enabled" -
+# Pocketpair documents the endpoint but has not exposed any way to enable it on
+# dedicated servers yet (no INI setting, no launch argument). Tracked in #321.
+
 $ docker exec palworld-dedicated-server restapicli save
 > Saving world...
 > World saved.
