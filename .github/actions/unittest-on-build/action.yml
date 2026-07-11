@@ -40,6 +40,7 @@ runs:
         -e PGID=2431 \
         -e ADMIN_PASSWORD=123 \
         -e SERVER_PASSWORD=456 \
+        -e RESTART_ENABLED=true \
         -e SERVER_SETTINGS_MODE=auto \
         -v ./game:/palworld/ \
         --restart unless-stopped \
