@@ -16,7 +16,7 @@ print_usage() {
     e "  players                        List connected players (raw JSON)"
     e "  metrics                        Show server metrics (fps, player count, uptime...)"
     e "  settings                       Show the server settings (raw JSON)"
-    e "  gamedata                       Show a snapshot of all world actors (raw JSON, can be huge - pipe to jq or a file)"
+    e "  gamedata                       Show a snapshot of all world actors (raw JSON, can be huge - pipe to jq or a file; needs GAMEDATA_API_ENABLED=true)"
     e "  save                           Save the world"
     e "  announce <message>             Broadcast a message to all players"
     e "  kick <userid> [msg]            Kick a player by Steam userid (steam_XXXXXXX)"
@@ -87,6 +87,10 @@ run_restapicli() {
             ei_nn "> Settings: "; e "${output}"
             ;;
         gamedata)
+            if [[ -z ${GAMEDATA_API_ENABLED+x} ]] || [[ "${GAMEDATA_API_ENABLED,,}" != "true" ]]; then
+                ew ">>> Game Data API is not enabled. Set GAMEDATA_API_ENABLED=true and reprovision the container. Aborting ..."
+                exit 1
+            fi
             local output
             output=$(restapi_get "game-data") || exit 1
             ei_nn "> Game data: "; e "${output}"

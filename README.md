@@ -52,6 +52,8 @@ ___
   - [Docker-Compose examples](#docker-compose-examples)
     - [Gameserver with REST API](#gameserver-with-rest-api)
   - [Run REST API commands](#run-rest-api-commands)
+    - [Administration commands](#administration-commands)
+    - [Diagnostics \& data commands](#diagnostics--data-commands)
   - [Backup Manager](#backup-manager)
   - [Webhook integration](#webhook-integration)
     - [Supported events](#supported-events)
@@ -165,13 +167,48 @@ services:
 
 You can use `docker exec palworld-dedicated-server restapicli <command>` right on your terminal/shell.
 
+### Administration commands
+
+Day-to-day server and player management — announcements, moderation, quick lookups, saving and shutdown.
+
 ```shell
-$ docker exec palworld-dedicated-server restapicli players
-> Players: {"players": [...]}
+$ docker exec palworld-dedicated-server restapicli announce "Hello players!"
+> Announced: Hello players!
+
+$ docker exec palworld-dedicated-server restapicli ban steam_76000000000000123 "You are banned."
+> Banned: steam_76000000000000123
+
+$ docker exec palworld-dedicated-server restapicli banlist
+> Ban list (2 entries):
+steam_76000000000000123
+steam_76000000000000456
 
 $ docker exec palworld-dedicated-server restapicli info
 > Server info: {"version": "v0.7.3.90464", "servername": "...", ...}
 
+$ docker exec palworld-dedicated-server restapicli kick steam_76000000000000123 "Goodbye!"
+> Kicked: steam_76000000000000123
+
+$ docker exec palworld-dedicated-server restapicli players
+> Players: {"players": [...]}
+
+$ docker exec palworld-dedicated-server restapicli save
+> Saving world...
+> World saved.
+
+$ docker exec palworld-dedicated-server restapicli shutdown 60 "Server restarting soon"
+> Shutting down server in 60s...
+> Shutdown issued.
+
+$ docker exec palworld-dedicated-server restapicli unban steam_76000000000000123
+> Unbanned: steam_76000000000000123
+```
+
+### Diagnostics & data commands
+
+Read-only raw JSON dumps of server state — from a quick metrics overview up to a full world actor snapshot.
+
+```shell
 $ docker exec palworld-dedicated-server restapicli metrics
 > Metrics: {"currentplayernum": 1, "serverfps": 120, ...}
 
@@ -179,37 +216,83 @@ $ docker exec palworld-dedicated-server restapicli settings
 > Settings: {"Difficulty": "None", "DayTimeSpeedRate": 1.0, ...}
 
 $ docker exec palworld-dedicated-server restapicli gamedata
-> Game data: {"Time": "2026-07-10 12:00:00", "FPS": 120, "ActorData": [...]}
+> Game data: {"Time": "2026-07-13 21:26:54", "FPS": 118.77, "InGameTime": "14:03", "ActorData": [...]}
 # Warning: snapshot of ALL world actors - output can be huge, pipe it to jq or a file
-# Note: The game currently answers "PalGameDataBridge GameData API is not enabled" -
-# Pocketpair documents the endpoint but has not exposed any way to enable it on
-# dedicated servers yet (no INI setting, no launch argument). Tracked in #321.
-
-$ docker exec palworld-dedicated-server restapicli save
-> Saving world...
-> World saved.
-
-$ docker exec palworld-dedicated-server restapicli announce "Hello players!"
-> Announced: Hello players!
-
-$ docker exec palworld-dedicated-server restapicli kick steam_76000000000000123 "Goodbye!"
-> Kicked: steam_76000000000000123
-
-$ docker exec palworld-dedicated-server restapicli ban steam_76000000000000123 "You are banned."
-> Banned: steam_76000000000000123
-
-$ docker exec palworld-dedicated-server restapicli unban steam_76000000000000123
-> Unbanned: steam_76000000000000123
-
-$ docker exec palworld-dedicated-server restapicli banlist
-> Ban list (2 entries):
-steam_76000000000000123
-steam_76000000000000456
-
-$ docker exec palworld-dedicated-server restapicli shutdown 60 "Server restarting soon"
-> Shutting down server in 60s...
-> Shutdown issued.
+# Note: Needs GAMEDATA_API_ENABLED=true, which starts the server with the
+# -enable-gamedata-api launch option. See the example output below and the
+# official endpoint documentation:
+# https://docs.palworldgame.com/api/rest-api/game-data
 ```
+
+<details>
+<summary>Example <code>gamedata</code> output (shortened, needs <code>GAMEDATA_API_ENABLED=true</code>)</summary>
+
+```json
+{
+  "Time": "2026-07-13 21:26:54",
+  "FPS": 118.77287292480469,
+  "AverageFPS": 118.79257965087891,
+  "InGameTime": "14:03",
+  "InGameDays": 4,
+  "ActorData": [
+    {
+      "Type": "Character",
+      "InstanceID": "4DCC09FB000000000000000000000000 : 0487098280F5417DB596B73ED985A5BC",
+      "UnitType": "Player",
+      "NickName": "jammsen123",
+      "TrainerInstanceID": "",
+      "TrainerNickName": "",
+      "TrainerClass": "",
+      "userid": "steam_XXXXXXXXXXXXXX123",
+      "ip": "1.2.3.4",
+      "level": 2,
+      "HP": 1,
+      "MaxHP": 500,
+      "GuildID": "06362322142040BFBBC718C816B49E6D",
+      "GuildName": "Unnamed Guild",
+      "Class": "BP_Player_Female_C",
+      "Action": "",
+      "AI_Action": "",
+      "LocationX": -357583.59375,
+      "LocationY": 268633.40625,
+      "LocationZ": 7951.2998046875,
+      "RotationX": 0,
+      "RotationY": 0,
+      "RotationZ": 68.5,
+      "Stage": "None",
+      "IsActive": "true"
+    },
+    {
+      "Type": "Character",
+      "InstanceID": "00000000000000000000000000000000 : 0CCB7376B14641599BB08EA339FED55E",
+      "UnitType": "NPC",
+      "NickName": "Scouting Party Survivor",
+      "level": 22,
+      "HP": 1211,
+      "MaxHP": 1211,
+      "Class": "BP_NPC_Female_Soldier_C",
+      "Action": "BP_Action_NPC_GroundSit",
+      "AI_Action": "BP_AIAction_NPC_Relax_GroundSit",
+      ...
+    },
+    {
+      "Type": "Character",
+      "InstanceID": "00000000000000000000000000000000 : 8B1215C3C7D546AB83D4E647BC1AA421",
+      "UnitType": "WildPal",
+      "NickName": "Lamball",
+      "level": 2,
+      "HP": 585,
+      "MaxHP": 585,
+      "Class": "BP_SheepBall_C",
+      "AI_Action": "BP_AIAction_WildLife",
+      ...
+    },
+    ...
+  ]
+}
+```
+
+</details>
 
 ## Backup Manager
 

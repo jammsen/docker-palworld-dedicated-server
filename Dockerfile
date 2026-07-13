@@ -93,6 +93,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     # Gameserver-start-settings
     MULTITHREAD_ENABLED=true \
     COMMUNITY_SERVER=true \
+    GAMEDATA_API_ENABLED=false \
     # Engine.ini settings
     NETSERVERMAXTICKRATE=120 \
     # PalWorldSettings.ini settings

@@ -63,6 +63,10 @@ function start_server() {
         e "> Setting Multi-Core-Enhancements to enabled"
         START_OPTIONS+=("-useperfthreads" "-NoAsyncLoadingThread" "-UseMultithreadForDS")
     fi
+    if [[ -n $GAMEDATA_API_ENABLED ]] && [[ "${GAMEDATA_API_ENABLED,,}" == "true" ]]; then
+        e "> Setting Game-Data-API to enabled"
+        START_OPTIONS+=("-enable-gamedata-api")
+    fi
     if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
         send_start_notification
     fi

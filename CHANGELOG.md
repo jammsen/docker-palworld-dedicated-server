@@ -2,6 +2,14 @@
 
 [Back to main](README.md#changelog)
 
+## 2026-07-13
+
+- Added `GAMEDATA_API_ENABLED` environment variable (default `false`) - by @jammsen (#325) and @dEeds83 (#321)
+  - Set to `true`, the gameserver is started with the `-enable-gamedata-api` launch option, which unlocks the [`GET /game-data`](https://docs.palworldgame.com/api/rest-api/game-data) REST API endpoint (world actor snapshot) — this resolves the "GameData API is not enabled" limitation noted in the 2026-07-10 release (#321)
+  - `restapicli gamedata` now aborts with a clear hint if `GAMEDATA_API_ENABLED` is not set to `true`
+  - Restructured the "Run REST API commands" README section: examples are now sorted alphabetically and split into "Administration commands" (announce, ban, banlist, info, kick, players, save, shutdown, unban) and "Diagnostics & data commands" (metrics, settings, gamedata), followed by a collapsible real-world example of the `gamedata` output
+  - Updated `docs/ENV_VARS.md`, `README.md`, `default.env` and `Dockerfile` accordingly
+
 ## 2026-07-10
 
 > [!WARNING]

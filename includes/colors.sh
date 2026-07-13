@@ -57,7 +57,7 @@ function colorful_echos() {
     BASE="\e[97m"              # Clean color
     CLEAN="\e[0m"              # Clean color
     ERROR="\e[91m"       # Red color for error
-    INFO="\e[94m"         # Blue color for info
+    INFO="\e[38;5;68m"    # Light blue (256-color) for info
     SUCCESS="\e[92m"      # Green color for success
     WARNING="\e[93m"      # Yellow color for warning
 
