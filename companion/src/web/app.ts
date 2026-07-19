@@ -4,6 +4,7 @@ import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import type { CompanionConfig } from "../config.js";
 import { log } from "../logger.js";
 import type { MetricsCollector } from "../metrics/collector.js";
+import { parseBanlist, type BanlistEntry } from "../palworld/banlist.js";
 import type { PalworldClient } from "../palworld/client.js";
 import { settingsByKey, validateSettingValue } from "../settings/schema.js";
 import type { SettingsStore } from "../settings/store.js";
@@ -142,13 +143,10 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
     return c.html(DashboardPage({ t: c.get("t"), language: c.get("language"), snapshot, csrf }));
   });
 
-  const readBanlist = async (): Promise<string[]> => {
+  const readBanlist = async (): Promise<BanlistEntry[]> => {
     try {
       const { readFile } = await import("node:fs/promises");
-      return (await readFile(config.banlistFile, "utf8"))
-        .split("\n")
-        .map((line) => line.trim())
-        .filter((line) => line.length > 0);
+      return parseBanlist(await readFile(config.banlistFile, "utf8"));
     } catch {
       return [];
     }

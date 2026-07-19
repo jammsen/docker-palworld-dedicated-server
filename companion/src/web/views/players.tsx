@@ -1,4 +1,5 @@
 import type { StatusSnapshot } from "../../metrics/collector.js";
+import type { BanlistEntry } from "../../palworld/banlist.js";
 import { Layout } from "./layout.js";
 
 export interface PlayersPageProps {
@@ -6,7 +7,7 @@ export interface PlayersPageProps {
   language: string;
   snapshot: StatusSnapshot;
   csrf: string;
-  banlist: string[];
+  banlist: BanlistEntry[];
   actionResult?: "kicked" | "banned" | "unbanned" | "failed";
 }
 
@@ -100,12 +101,12 @@ export function PlayersPage({ t, language, snapshot, csrf, banlist, actionResult
             {banlist.map((entry) => (
               <tr>
                 <td>
-                  <code>{entry}</code>
+                  <code>{entry.raw}</code>
                 </td>
                 <td>
                   <form method="post" action="/players/unban" class="inline">
                     <input type="hidden" name="_csrf" value={csrf} />
-                    <input type="hidden" name="userid" value={entry} />
+                    <input type="hidden" name="userid" value={entry.userid} />
                     <button type="submit" class="linklike">
                       {t("players.unban")}
                     </button>
