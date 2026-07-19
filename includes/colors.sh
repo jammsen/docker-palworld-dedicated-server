@@ -27,6 +27,10 @@ function ew() {
     colorful_echos --newline --warning "${@}"
 }
 
+function eo() {
+    colorful_echos --newline --overwritten "${@}"
+}
+
 # Aliases for colorful echos without newlines
 function e_nn() { 
     colorful_echos --base "${@}"
@@ -48,6 +52,10 @@ function ew_nn() {
     colorful_echos --warning "${@}"
 }
 
+function eo_nn() {
+    colorful_echos --overwritten "${@}"
+}
+
 # This creates a wrapper for echo to add colors
 function colorful_echos() {
     # --newline: append the line break inside the SAME write as the message.
@@ -66,9 +74,10 @@ function colorful_echos() {
     INFO="\e[38;5;68m"    # Light blue (256-color) for info
     SUCCESS="\e[92m"      # Green color for success
     WARNING="\e[93m"      # Yellow color for warning
+    OVERWRITTEN="\e[38;5;208m" # Warm orange (256-color) for overwritten values
 
     if [ $# -gt 2 ]; then
-        echo "Usage: $0 [--newline] [--success|--error|--info|--warning|--base] <message>"
+        echo "Usage: $0 [--newline] [--success|--error|--info|--warning|--overwritten|--base] <message>"
         exit 1
     fi
 
@@ -85,6 +94,8 @@ function colorful_echos() {
         color="$INFO"
     elif [ "$arg1" == "--warning" ]; then
         color="$WARNING"
+    elif [ "$arg1" == "--overwritten" ]; then
+        color="$OVERWRITTEN"
     elif [ "$arg1" == "--base" ]; then
         color="$BASE"
     else

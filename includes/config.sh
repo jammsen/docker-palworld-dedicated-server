@@ -4,6 +4,9 @@ source /includes/colors.sh
 
 current_setting=1
 settings_amount=0
+# Space-separated keys that apply_settings_overrides applied - used to color
+# the per-setting counter lines orange for overwritten values
+PANEL_OVERRIDDEN_KEYS=""
 
 # Whitelist of settings that envsubst substitutes into PalWorldSettings.ini.
 # Also the allow-list for panel overrides - keys outside this list (plus
@@ -97,10 +100,15 @@ function setup_engine_ini() {
 }
 
 function e_with_counter() {
+    local echo_fn="e"
+    if [[ "$1" == "--overwritten" ]]; then
+        echo_fn="eo"
+        shift
+    fi
     local padded_number
     padded_number=$(printf "%03d" $current_setting)
     # shellcheck disable=SC2145
-    e "> ($padded_number/$settings_amount) Setting $@"
+    "$echo_fn" "> ($padded_number/$settings_amount) Setting $@"
     current_setting=$((current_setting + 1))
 }
 
@@ -110,7 +118,11 @@ function log_settings_with_counter() {
     settings_amount=$(wc -w <<< "${ENVSUBST_SELECTORS}")
     for selector in ${ENVSUBST_SELECTORS}; do
         varname="${selector#\$}"
-        e_with_counter "${varname} to '${!varname}'"
+        if [[ " ${PANEL_OVERRIDDEN_KEYS} " == *" ${varname} "* ]]; then
+            e_with_counter --overwritten "${varname} to '${!varname}' (panel override)"
+        else
+            e_with_counter "${varname} to '${!varname}'"
+        fi
     done
 }
 
@@ -167,7 +179,8 @@ function apply_settings_overrides() {
             continue
         fi
         export "${key}=${value}"
-        e "> Overriding ${key} to '${value}' (panel override)"
+        PANEL_OVERRIDDEN_KEYS+=" ${key}"
+        eo "> Overriding ${key} to '${value}' (panel override)"
     done < "$overrides_file"
 }
 
