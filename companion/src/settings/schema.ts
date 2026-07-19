@@ -29,6 +29,8 @@ export interface SettingSpec {
   values?: string[];
   /** Not editable via the panel: changing it would break the companion/server access itself */
   excluded?: boolean;
+  /** Never render the value anywhere in the panel (passwords) */
+  secret?: boolean;
 }
 
 function f(key: string, def: string, group: SettingGroup, min = 0.1, max = 20, step = 0.1): SettingSpec {
@@ -55,8 +57,8 @@ export const settingsSchema: SettingSpec[] = [
   // Server identity & access
   s("SERVER_NAME", "jammsen-docker-generated-###RANDOM###", "server"),
   s("SERVER_DESCRIPTION", "Palworld-Dedicated-Server running in Docker by jammsen", "server"),
-  { ...s("ADMIN_PASSWORD", "adminPasswordHere", "server"), excluded: true },
-  { ...s("SERVER_PASSWORD", "serverPasswordHere", "server"), excluded: true },
+  { ...s("ADMIN_PASSWORD", "adminPasswordHere", "server"), excluded: true, secret: true },
+  { ...s("SERVER_PASSWORD", "serverPasswordHere", "server"), excluded: true, secret: true },
   i("MAX_PLAYERS", "32", "server", 1, 128),
   i("COOP_PLAYER_MAX_NUM", "4", "server", 1, 32),
   b("IS_MULTIPLAY", "false", "server"),

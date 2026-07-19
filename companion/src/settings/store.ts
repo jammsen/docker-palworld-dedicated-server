@@ -67,6 +67,10 @@ export class SettingsStore {
   async effectiveSettings(): Promise<EffectiveSetting[]> {
     const overrides = await this.readOverrides();
     return settingsSchema.map((spec) => {
+      if (spec.secret) {
+        // Never expose secret values to any consumer (UI, JSON, export)
+        return { spec, value: "", envValue: "", provenance: "env" as const };
+      }
       const envValue = this.envValue(spec);
       const override = overrides.get(spec.key);
       if (override !== undefined && !spec.excluded) {

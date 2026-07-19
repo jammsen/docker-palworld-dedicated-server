@@ -16,6 +16,9 @@ export interface SettingsPageProps {
 function SettingInput({ setting, readOnly }: { setting: EffectiveSetting; readOnly: boolean }) {
   const { spec, value } = setting;
   const disabled = readOnly || spec.excluded === true;
+  if (spec.secret) {
+    return <input type="password" value="" placeholder="••••••••" disabled />;
+  }
   if (spec.type === "bool") {
     return (
       <select name={spec.key} disabled={disabled}>
