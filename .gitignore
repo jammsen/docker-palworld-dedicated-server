@@ -1,7 +1,7 @@
 .idea/
 .vscode/
 game/
-test/
+/test/
 compose-*.yml
 docker-compose-*.yml
 custom.env
