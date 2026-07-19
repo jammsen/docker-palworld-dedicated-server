@@ -267,7 +267,7 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
     });
   });
 
-  app.post("/settings/restart", async (c) => {
+  app.post("/actions/restart", async (c) => {
     const t = c.get("t");
     log.warn(">>> Panel triggered a server restart");
     try {
@@ -277,7 +277,7 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
     } catch (error) {
       log.warn(`>>> Restart via REST API failed: ${String(error)}`);
     }
-    return c.html(`<meta http-equiv="refresh" content="5; url=/settings" /><p>${t("settings.restartTriggered")}</p>`);
+    return c.html(`<meta http-equiv="refresh" content="5; url=/" /><p>${t("settings.restartTriggered")}</p>`);
   });
 
   return app;

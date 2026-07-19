@@ -96,6 +96,30 @@ h2 {
   display: inline-block;
 }
 
+.banner-row {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+.banner-row > *,
+.banner-row .status-banner {
+  margin: 0;
+}
+
+.banner-row .status-banner {
+  display: flex;
+  align-items: center;
+}
+
+.banner-row form.inline {
+  display: flex;
+}
+
+.banner-row button[type="submit"] {
+  padding: 0.5rem 0.75rem;
+}
+
 .tiles {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));

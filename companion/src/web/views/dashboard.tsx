@@ -38,7 +38,15 @@ export function DashboardPage({ t, language, snapshot, csrf }: DashboardPageProp
       <h1>{snapshot.serverName}</h1>
       {game ? (
         <div>
-          <p class="status-banner online">🟢 {t("status.serverOnline")}</p>
+          <div class="banner-row">
+            <p class="status-banner online">🟢 {t("status.serverOnline")}</p>
+            <form method="post" action="/actions/restart" class="inline" data-confirm={t("status.restartConfirm")}>
+              <input type="hidden" name="_csrf" value={csrf} />
+              <button type="submit" title={t("status.restartHint")}>
+                🔄 {t("status.restart")}
+              </button>
+            </form>
+          </div>
           <div class="tiles">
             <StatTile label={`⏱️ ${t("status.uptime")}`} value={formatDuration(game.uptime)} />
             <StatTile label={`👥 ${t("status.population")}`} value={`${game.currentplayernum} / ${game.maxplayernum}`} />

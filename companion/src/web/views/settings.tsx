@@ -74,7 +74,7 @@ export function SettingsPage({ t, language, csrf, settings, readOnly, restartPen
       {restartPending ? (
         <div class="status-banner warn restart-banner">
           <span>🔄 {t("settings.restartPending")}</span>
-          <form method="post" action="/settings/restart" class="inline">
+          <form method="post" action="/actions/restart" class="inline">
             <input type="hidden" name="_csrf" value={csrf} />
             <button type="submit">{t("settings.restartNow")}</button>
           </form>
