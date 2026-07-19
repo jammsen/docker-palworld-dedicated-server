@@ -135,10 +135,38 @@ export class SettingsStore {
     }
   }
 
-  /** Render all effective values as a .env-style export for host-side syncing */
-  async exportEnv(): Promise<string> {
+  /**
+   * Render the effective settings as a .env export for host-side syncing.
+   *
+   * Mirrors the shipped default.env template line by line - same key order,
+   * same section comments - so users can diff it against their own default.env
+   * (e.g. VS Code "Select for Compare"). Only known gameserver settings get
+   * their value replaced; comments, secrets and non-gameserver lines (backup,
+   * webhook, ...) stay verbatim, because the container cannot see the host's
+   * actual default.env values for those.
+   */
+  async exportEnv(template?: string): Promise<string> {
     const settings = await this.effectiveSettings();
-    const lines = settings.filter((s) => !s.spec.excluded).map((s) => `${s.spec.key}=${s.value}`);
-    return `# Effective Palworld settings exported by the companion panel\n# Generated: ${new Date().toISOString()}\n${lines.join("\n")}\n`;
+    const byKey = new Map(settings.map((s) => [s.spec.key, s]));
+    const header = `# Effective Palworld settings exported by the companion panel\n# Generated: ${new Date().toISOString()}\n# Gameserver settings reflect the running configuration (env + panel overrides);\n# all other lines are the shipped defaults - the container cannot read your host default.env.\n`;
+
+    if (!template) {
+      // Fallback without a template: schema order, which groups related keys
+      const lines = settings.filter((s) => !s.spec.excluded).map((s) => `${s.spec.key}=${s.value}`);
+      return `${header}${lines.join("\n")}\n`;
+    }
+
+    const rendered = template
+      .split("\n")
+      .map((line) => {
+        const match = /^([A-Z0-9_]+)=(.*)$/.exec(line);
+        if (!match) return line; // comments, blanks - keep verbatim
+        const setting = byKey.get(match[1]!);
+        if (!setting || setting.spec.secret) return line; // unknown or secret - keep template value
+        const wasQuoted = /^".*"$/.test(match[2]!);
+        return `${match[1]}=${wasQuoted ? `"${setting.value}"` : setting.value}`;
+      })
+      .join("\n");
+    return `${header}${rendered}`;
   }
 }

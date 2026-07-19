@@ -107,10 +107,37 @@ describe("SettingsStore", () => {
     expect(content).toContain("EXP_RATE=5.000000\nMAX_PLAYERS=64\n");
   });
 
-  it("exports effective settings without excluded keys", async () => {
+  it("exports effective settings without excluded keys (no template)", async () => {
     const { store } = await makeStore({ EXP_RATE: "2.000000" });
     const exported = await store.exportEnv();
     expect(exported).toContain("EXP_RATE=2.000000");
     expect(exported).not.toContain("ADMIN_PASSWORD");
+  });
+
+  it("template export preserves order, comments, quoting and secret placeholders", async () => {
+    const { store } = await makeStore({ EXP_RATE: "2.000000" });
+    await store.applySubmission(new Map([["MAX_PLAYERS", "64"]]));
+    const template = [
+      "# Backup-settings",
+      "BACKUP_ENABLED=true",
+      "# PalWorldSettings.ini settings",
+      "EXP_RATE=1.000000",
+      "MAX_PLAYERS=32",
+      'SERVER_NAME="my server"',
+      "ADMIN_PASSWORD=adminPasswordHere",
+      "",
+    ].join("\n");
+    const exported = await store.exportEnv(template);
+    const lines = exported.split("\n").filter((line) => !line.startsWith("# Effective") && !line.startsWith("# Generated") && !line.startsWith("# Gameserver") && !line.startsWith("# all other"));
+    expect(lines).toEqual([
+      "# Backup-settings",
+      "BACKUP_ENABLED=true", // non-gameserver key: template line kept verbatim
+      "# PalWorldSettings.ini settings",
+      "EXP_RATE=2.000000", // env value applied
+      "MAX_PLAYERS=64", // panel override applied
+      'SERVER_NAME="jammsen-docker-generated-###RANDOM###"', // quoting style preserved
+      "ADMIN_PASSWORD=adminPasswordHere", // secret: template placeholder, never the real value
+      "",
+    ]);
   });
 });

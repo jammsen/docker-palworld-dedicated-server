@@ -258,12 +258,14 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
     return c.redirect("/settings");
   });
 
-  app.get("/settings/export", async (c) =>
-    c.body(await settings.exportEnv(), 200, {
+  app.get("/settings/export", async (c) => {
+    const { readFile } = await import("node:fs/promises");
+    const template = await readFile(config.envTemplateFile, "utf8").catch(() => undefined);
+    return c.body(await settings.exportEnv(template), 200, {
       "Content-Type": "text/plain; charset=utf-8",
       "Content-Disposition": 'attachment; filename="palworld-settings.env"',
-    }),
-  );
+    });
+  });
 
   app.post("/settings/restart", async (c) => {
     const t = c.get("t");

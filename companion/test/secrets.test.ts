@@ -46,5 +46,8 @@ describe("secret settings never leak", () => {
     const exported = await store.exportEnv();
     expect(exported).not.toContain(SECRET_ADMIN);
     expect(exported).not.toContain(SECRET_SERVER);
+    const templated = await store.exportEnv("ADMIN_PASSWORD=placeholder\nSERVER_PASSWORD=placeholder\n");
+    expect(templated).not.toContain(SECRET_ADMIN);
+    expect(templated).not.toContain(SECRET_SERVER);
   });
 });

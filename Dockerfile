@@ -252,6 +252,9 @@ COPY --from=supercronicverify /usr/local/bin/supercronic /usr/local/bin/supercro
 COPY --from=tianon/gosu /gosu /usr/local/bin/gosu
 COPY --from=node:22-bookworm-slim@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3 /usr/local/bin/node /usr/local/bin/node
 COPY --from=companionbuild /build/dist /companion
+# Ordering/comment template for the panel's settings export - keeps the export
+# line-compatible with the user's default.env for easy diffing
+COPY --chmod=644 default.env /companion/default.env
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests gettext-base jq procps xdg-user-dirs \
