@@ -8,6 +8,7 @@ export interface CompanionConfig {
   panel: PanelConfig | null;
   discord: DiscordStatusConfig | null;
   restapi: RestApiConfig;
+  serverName: string;
   serverSettingsMode: string;
   /** Reason strings for features that were requested but could not be enabled */
   warnings: string[];
@@ -103,6 +104,7 @@ export function parseConfig(env: Record<string, string | undefined>): CompanionC
     panel,
     discord,
     restapi,
+    serverName: env.SERVER_NAME || "Palworld Dedicated Server",
     serverSettingsMode: (env.SERVER_SETTINGS_MODE || "manual").toLowerCase(),
     warnings,
   };

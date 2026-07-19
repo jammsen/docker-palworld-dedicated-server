@@ -34,6 +34,15 @@ if (!config.panel && !config.discord) {
 } else {
   await mkdir(config.dataDir, { recursive: true });
 
+  const { StateStore } = await import("./state.js");
+  const { PalworldClient } = await import("./palworld/client.js");
+  const { MetricsCollector } = await import("./metrics/collector.js");
+
+  const state = new StateStore(config.dataDir);
+  await state.load();
+  const client = new PalworldClient(config.restapi);
+  const collector = new MetricsCollector(config, client, state);
+
   const shutdownHooks: Array<() => Promise<void> | void> = [];
 
   if (config.panel) {
@@ -46,7 +55,7 @@ if (!config.panel && !config.discord) {
 
   if (config.discord) {
     const { startDiscordStatus } = await import("./discord/updater.js");
-    const stop = await startDiscordStatus(config);
+    const stop = await startDiscordStatus(config, { collector, state });
     shutdownHooks.push(stop);
   }
 
