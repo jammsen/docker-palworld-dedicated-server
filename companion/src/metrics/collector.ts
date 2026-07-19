@@ -1,6 +1,7 @@
 import type { CompanionConfig } from "../config.js";
 import { log } from "../logger.js";
 import type { GameMetrics, GamePlayer, PalworldClient } from "../palworld/client.js";
+import { readServerNameFromIni } from "../palworld/ini.js";
 import type { StateStore } from "../state.js";
 import { readRamUsage, type RamUsage } from "../sys/cgroup.js";
 import { cpuUsagePercent, readProcStat, type CpuCoreSample } from "../sys/proc.js";
@@ -57,6 +58,13 @@ export class MetricsCollector {
         log.debug(`game REST API unreachable: ${String(error)}`);
         game = null;
       }
+    }
+
+    if (!this.cachedServerName) {
+      // /info not answered yet (or REST disabled): the generated INI holds the
+      // effective name, including the boot-time ###RANDOM### substitution the
+      // companion's own environment never sees
+      this.cachedServerName = (await readServerNameFromIni(this.config.gameSettingsFile)) ?? "";
     }
 
     let cpuCorePercents: number[] = [];
