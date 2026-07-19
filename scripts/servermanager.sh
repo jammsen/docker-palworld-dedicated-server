@@ -7,6 +7,7 @@
 set -e
 
 source /includes/colors.sh
+source /includes/companion.sh
 source /includes/config.sh
 source /includes/cron.sh
 source /includes/playerdetection.sh
@@ -16,6 +17,7 @@ source /includes/webhook.sh
 
 START_MAIN_PID=
 PLAYER_DETECTION_PID=
+COMPANION_PID=
 
 
 
@@ -55,6 +57,13 @@ do
        PLAYER_DETECTION_PID="$!"
        echo $PLAYER_DETECTION_PID > PLAYER_DETECTION.PID
        ew "> Player detection thread started with pid ${PLAYER_DETECTION_PID}"
+    fi
+
+    if [[ "${PANEL_ENABLED,,}" == "true" ]] || [[ "${DISCORD_STATUS_ENABLED,,}" == "true" ]]; then
+       companion_loop &
+       COMPANION_PID="$!"
+       echo $COMPANION_PID > COMPANION.PID
+       ew "> Companion service thread started with pid ${COMPANION_PID}"
     fi
 
     ew "> Server main thread started with pid ${START_MAIN_PID}"

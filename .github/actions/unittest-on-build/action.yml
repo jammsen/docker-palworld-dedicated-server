@@ -36,6 +36,7 @@ runs:
         -p 8211:8211/udp \
         -p 8212:8212/tcp \
         -p 25575:25575/tcp \
+        -p 8213:8213/tcp \
         -e PUID=7351 \
         -e PGID=2431 \
         -e ADMIN_PASSWORD=123 \
@@ -43,6 +44,8 @@ runs:
         -e RESTART_ENABLED=true \
         -e GAMEDATA_API_ENABLED=true \
         -e SERVER_SETTINGS_MODE=auto \
+        -e PANEL_ENABLED=true \
+        -e PANEL_PASSWORD=test-ci-password \
         -v ./game:/palworld/ \
         --restart unless-stopped \
         --stop-timeout 30 \
@@ -102,6 +105,12 @@ runs:
         nc -z -u -v 127.0.0.1 8211 || exit 2
         nc -z -v 127.0.0.1 8212 || exit 3
         nc -z -v 127.0.0.1 25575 || exit 4
+
+    - name: Test companion web panel
+      shell: bash
+      run: |
+        nc -z -v 127.0.0.1 8213 || exit 5
+        curl -fsS http://127.0.0.1:8213/api/health || exit 6
 
     - name: Stop server
       shell: bash

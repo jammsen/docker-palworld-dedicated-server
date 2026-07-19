@@ -6,3 +6,6 @@ compose-*.yml
 docker-compose-*.yml
 custom.env
 configs/DefaultPalWorldSettings.ini
+companion/node_modules/
+companion/dist/
+companion/tmp-gameroot/

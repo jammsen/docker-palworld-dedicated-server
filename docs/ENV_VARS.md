@@ -31,6 +31,16 @@ These settings control the behavior of the Docker container:
 | PLAYER_DETECTION_CHECK_INTERVAL      | Interval in seconds to wait for next check in the infinite loop                                                                                     | 15                             | Integer                               |
 | CUSTOM_SCRIPT_ENABLED                | Set to enabled will execute a custom script before the gameserver starts, see `CUSTOM_SCRIPT_PATH`                                                  | false                          | Boolean                               |
 | CUSTOM_SCRIPT_PATH                   | Absolute path to the custom script to execute; the file must exist at container runtime (e.g. mounted via a volume)                                 | /palworld/custom-script.sh     | String (absolute path)                |
+| COMPANION_DEBUG                      | Set to enabled will post companion-service debug messages to the console output                                                                     | false                          | Boolean                               |
+| COMPANION_STARTUP_DELAY              | Initial delay in seconds before the companion service (web panel / Discord status) starts                                                           | 15                             | Integer                               |
+| PANEL_ENABLED                        | Set to enabled will start the web operation panel on `PANEL_PORT`, NEEDS `PANEL_PASSWORD` and `RESTAPI_ENABLED` - see [Web panel](#web-panel)       | false                          | Boolean                               |
+| PANEL_PORT                           | Defines the port inside the container where the web panel is hosted                                                                                 | 8213                           | UInt16                                |
+| PANEL_USERNAME                       | The login username for the web panel                                                                                                                | admin                          | String                                |
+| PANEL_PASSWORD                       | The login password for the web panel - MUST be set to a non-empty value or the panel refuses to start                                               |                                | String                                |
+| PANEL_DEFAULT_LANGUAGE               | Default language of the web panel when the browser does not state a preference                                                                      | en                             | en, zh-CN                             |
+| DISCORD_STATUS_ENABLED               | Set to enabled will post ONE Discord status-card message and edit it in place, NEEDS `DISCORD_STATUS_WEBHOOK_URL` (or `WEBHOOK_URL`) and `RESTAPI_ENABLED` | false                    | Boolean                               |
+| DISCORD_STATUS_WEBHOOK_URL           | Discord webhook url for the status card; if empty, `WEBHOOK_URL` is used                                                                            |                                | Url                                   |
+| DISCORD_STATUS_UPDATE_INTERVAL       | Interval in seconds between status-card edits; values below 15 are clamped to 15 (webhook rate-limit safety)                                        | 30                             | Integer                               |
 | WEBHOOK_ENABLED                      | Set to enabled will send webhook notifications, NEEDS `WEBHOOK_URL`                                                                                 | false                          | Boolean                               |
 | WEBHOOK_DEBUG_ENABLED                | Set to enabled will enable feedback of curl and not use --silent                                                                                    | false                          | Boolean                               |
 | WEBHOOK_URL                          | Defines the url the webhook to send data to                                                                                                         |                                | Url                                   |
@@ -45,6 +55,17 @@ SERVER_SETTINGS_MODE accepts 2 values:
 - `rcononly`: RCON-Settings are modified by environment variables (RCON_ENABLED, RCON_PORT, ADMIN_PASSWORD), everything else has to be done by editing the file directly, other environment variables are ignored. Note: RCON is deprecated by Pocketpair — prefer `auto` mode.
 - `manual`: Settings are modified only by editing the file directly, environment variables are ignored
 
+
+### Web panel
+
+The web operation panel (`PANEL_ENABLED=true`) is served by the built-in companion service on `PANEL_PORT` (default 8213).
+
+> **Security warning:** The panel speaks plain HTTP and is meant for LAN/VPN use. Do **NOT** publish the panel port directly to the internet - put a reverse proxy with TLS (Caddy, Traefik, nginx) in front of it, or keep it LAN/VPN-only. The port mapping in `compose.yml` ships commented-out on purpose.
+
+- The panel refuses to start while `PANEL_PASSWORD` is empty - there is no default password.
+- Settings changed in the panel are stored on the game volume in `companion/settings-overrides.env` and survive container restarts and re-creation.
+- Setting precedence in `SERVER_SETTINGS_MODE=auto`: template default < environment variable (e.g. `default.env`) < panel override. If a change to your `default.env` seems to be ignored, a panel override likely outranks it - reset that setting in the panel.
+- In `SERVER_SETTINGS_MODE=manual` the settings editor is read-only; edit the INI file directly instead.
 
 ### Webhook environment variables
 

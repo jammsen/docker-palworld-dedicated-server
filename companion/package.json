@@ -1,0 +1,25 @@
+{
+  "name": "palworld-companion",
+  "version": "0.1.0",
+  "description": "Companion service for the Palworld dedicated server Docker image: web operation panel and Discord live status card",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "tsx watch src/index.ts",
+    "mock": "tsx dev/mock-palserver.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.0",
+    "hono": "^4.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  }
+}

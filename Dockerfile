@@ -17,6 +17,18 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
+FROM node:22-bookworm-slim@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3 AS companionbuild
+
+WORKDIR /build
+
+COPY companion/package.json companion/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+
+COPY companion/ ./
+RUN npm run typecheck \
+    && npm test \
+    && npm run build
+
 FROM cm2network/steamcmd:root@sha256:e6b6b3503bf0e41feafe12dc709c90151afba193e1292cac55d28a7d470b1493
 
 LABEL maintainer="Sebastian Schmidt - https://github.com/jammsen/docker-palworld-dedicated-server"
@@ -61,6 +73,19 @@ ENV DEBIAN_FRONTEND=noninteractive \
     # Custom-script-settings
     CUSTOM_SCRIPT_ENABLED=false \
     CUSTOM_SCRIPT_PATH="/palworld/custom-script.sh" \
+    # Companion-service-settings
+    COMPANION_DEBUG=false \
+    COMPANION_STARTUP_DELAY=15 \
+    # Web-panel-settings - NEEDS REST API ENABLED!
+    PANEL_ENABLED=false \
+    PANEL_PORT=8213 \
+    PANEL_USERNAME=admin \
+    PANEL_PASSWORD= \
+    PANEL_DEFAULT_LANGUAGE=en \
+    # Discord-status-settings - NEEDS REST API ENABLED!
+    DISCORD_STATUS_ENABLED=false \
+    DISCORD_STATUS_WEBHOOK_URL= \
+    DISCORD_STATUS_UPDATE_INTERVAL=30 \
     # Webhook-settings
     WEBHOOK_ENABLED=false \
     WEBHOOK_DEBUG_ENABLED=false \
@@ -220,10 +245,13 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 EXPOSE 8211/udp
 EXPOSE 8212/tcp
+EXPOSE 8213/tcp
 
 # Install minimum required packages for dedicated server
 COPY --from=supercronicverify /usr/local/bin/supercronic /usr/local/bin/supercronic
 COPY --from=tianon/gosu /gosu /usr/local/bin/gosu
+COPY --from=node:22-bookworm-slim@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3 /usr/local/bin/node /usr/local/bin/node
+COPY --from=companionbuild /build/dist /companion
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests gettext-base jq procps xdg-user-dirs \
@@ -247,6 +275,9 @@ RUN gosu --version \
 RUN restapicli --version
 
 RUN supercronic --version
+
+RUN node --version \
+    && node /companion/companion.mjs --version
 
 
 VOLUME ["${GAME_ROOT}"]

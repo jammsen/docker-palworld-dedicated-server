@@ -78,7 +78,15 @@ function start_server() {
 
 function stop_server() {
     ew ">>> Stopping server..."
-    kill -SIGTERM "${PLAYER_DETECTION_PID}"
+    if [[ -n $PLAYER_DETECTION_PID ]]; then
+        kill -SIGTERM "${PLAYER_DETECTION_PID}"
+    fi
+    if [[ -n $COMPANION_PID ]]; then
+        # Kill the node process first so it can do a final Discord "offline" edit,
+        # then the supervising loop so it does not restart it
+        pkill -TERM -f "node /companion/companion.mjs" 2>/dev/null || true
+        kill -SIGTERM "${COMPANION_PID}" 2>/dev/null || true
+    fi
     if [[ -n $RESTAPI_ENABLED ]] && [[ "${RESTAPI_ENABLED,,}" == "true" ]]; then
         save_and_shutdown_server
     fi
