@@ -240,6 +240,15 @@ th {
   font-size: 0.85rem;
 }
 
+.actions-cell {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.linklike.danger {
+  color: var(--error);
+}
+
 .save-row {
   position: sticky;
   bottom: 0;

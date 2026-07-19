@@ -11,6 +11,7 @@ export interface CompanionConfig {
   serverName: string;
   serverSettingsMode: string;
   gameSettingsFile: string;
+  banlistFile: string;
   /** Reason strings for features that were requested but could not be enabled */
   warnings: string[];
 }
@@ -108,6 +109,7 @@ export function parseConfig(env: Record<string, string | undefined>): CompanionC
     serverName: env.SERVER_NAME || "Palworld Dedicated Server",
     serverSettingsMode: (env.SERVER_SETTINGS_MODE || "manual").toLowerCase(),
     gameSettingsFile: env.GAME_SETTINGS_FILE || `${gameRoot}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`,
+    banlistFile: `${env.GAME_SAVE_PATH || `${gameRoot}/Pal/Saved`}/SaveGames/banlist.txt`,
     warnings,
   };
 }

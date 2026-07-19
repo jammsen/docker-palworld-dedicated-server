@@ -18,6 +18,7 @@ export function Layout({ t, language, activeNav, autoRefreshSeconds, csrf, child
         {autoRefreshSeconds ? <meta http-equiv="refresh" content={String(autoRefreshSeconds)} /> : null}
         <title>{t("app.title")}</title>
         <link rel="stylesheet" href="/assets/style.css" />
+        <script src="/assets/enhance.js" defer></script>
       </head>
       <body>
         <header class="topbar">
@@ -36,7 +37,7 @@ export function Layout({ t, language, activeNav, autoRefreshSeconds, csrf, child
               <span class="spacer" />
               <form method="post" action="/language" class="inline">
                 {csrf ? <input type="hidden" name="_csrf" value={csrf} /> : null}
-                <select name="lang" onchange="this.form.submit()">
+                <select name="lang" data-autosubmit>
                   <option value="en" selected={language === "en"}>
                     English
                   </option>
@@ -44,6 +45,9 @@ export function Layout({ t, language, activeNav, autoRefreshSeconds, csrf, child
                     中文
                   </option>
                 </select>
+                <button type="submit" class="linklike" data-autosubmit-fallback>
+                  ✓
+                </button>
               </form>
               <form method="post" action="/logout" class="inline">
                 {csrf ? <input type="hidden" name="_csrf" value={csrf} /> : null}

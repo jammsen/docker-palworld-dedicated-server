@@ -57,6 +57,8 @@ ___
   - [Backup Manager](#backup-manager)
   - [Webhook integration](#webhook-integration)
     - [Supported events](#supported-events)
+  - [Web operation panel](#web-operation-panel)
+  - [Discord live status card](#discord-live-status-card)
   - [Deploy with Helm](#deploy-with-helm)
   - [FAQ](#faq)
     - [Does this image support Xbox Dedicated Servers?](#does-this-image-support-xbox-dedicated-servers)
@@ -361,6 +363,35 @@ After enabling the server should send messages in a Discord-Compatible way to yo
 - Server updating
 - Server updating and validating
 
+## Web operation panel
+
+The image ships an optional, built-in web panel (no extra container needed) for administrating the gameserver in the browser:
+
+- **Dashboard** - server status, uptime, population, latency, server FPS, in-game day, RAM usage and per-CPU-core load
+- **Players** - online players with level/ping/buildings, kick/ban/unban and the ban list
+- **Settings editor** - every `PalWorldSettings.ini` value with validation, grouped and translated (English + 中文); saved changes are stored as overrides on the game volume and **survive container restarts and re-creation**
+- **One-click restart** with in-game announce and world save
+- Login-protected; sessions survive restarts
+
+Enable it in your `default.env` and uncomment the `8213` port mapping in your compose file:
+
+```shell
+PANEL_ENABLED=true
+PANEL_PASSWORD=choose-a-strong-password
+```
+
+> **Security warning:** The panel speaks plain HTTP - do **NOT** publish port 8213 to the internet. Use it LAN/VPN-only or put a TLS reverse proxy (Caddy, Traefik, nginx) in front. Details and all `PANEL_*` variables: [ENV_VARS.md](/docs/ENV_VARS.md#web-panel).
+
+## Discord live status card
+
+Instead of (or in addition to) event webhooks, the image can maintain **one single Discord message** that it keeps editing in place - a live server status card with uptime, population, latency, server FPS, RAM, per-core CPU bars, last restart and the online player list. No Discord bot account needed, a plain channel webhook is enough; the message survives container restarts (its id is stored on the game volume).
+
+```shell
+DISCORD_STATUS_ENABLED=true
+DISCORD_STATUS_WEBHOOK_URL="https://discord.com/api/webhooks/..."   # falls back to WEBHOOK_URL
+DISCORD_STATUS_UPDATE_INTERVAL=30
+```
+
 ## Deploy with Helm
 
 A Helm chart to deploy this container can be found at [palworld-helm](https://github.com/caleb-devops/palworld-helm).
@@ -401,6 +432,7 @@ A Helm chart to deploy this container can be found at [palworld-helm](https://gi
 ## Software used
 
 - CM2Network SteamCMD - Debian-based (Officially recommended by Valve - https://developer.valvesoftware.com/wiki/SteamCMD#Docker)
+- Node.js 22 + Hono - companion service (web panel and Discord status card)
 - Supercronic - https://github.com/aptible/supercronic
 - jq - https://jqlang.org/
 - Palworld Dedicated Server (APP-ID: 2394010 - https://steamdb.info/app/2394010/config/)

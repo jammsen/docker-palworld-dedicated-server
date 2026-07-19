@@ -8,6 +8,7 @@ import type { PalworldClient } from "../palworld/client.js";
 import { settingsByKey, validateSettingValue } from "../settings/schema.js";
 import type { SettingsStore } from "../settings/store.js";
 import { AuthService, SESSION_COOKIE } from "./auth.js";
+import { enhanceJs } from "./enhance.js";
 import { availableLanguages, resolveLanguage, translator } from "./i18n.js";
 import { DashboardPage } from "./views/dashboard.js";
 import { LoginPage } from "./views/login.js";
@@ -58,6 +59,7 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
   });
 
   app.get("/assets/style.css", (c) => c.body(styleCss, 200, { "Content-Type": "text/css" }));
+  app.get("/assets/enhance.js", (c) => c.body(enhanceJs, 200, { "Content-Type": "text/javascript" }));
 
   // Unauthenticated liveness endpoint for CI smoke tests and user monitoring
   app.get("/api/health", (c) =>
@@ -140,11 +142,58 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
     return c.html(DashboardPage({ t: c.get("t"), language: c.get("language"), snapshot, csrf }));
   });
 
+  const readBanlist = async (): Promise<string[]> => {
+    try {
+      const { readFile } = await import("node:fs/promises");
+      return (await readFile(config.banlistFile, "utf8"))
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+    } catch {
+      return [];
+    }
+  };
+
   app.get("/players", async (c) => {
     const snapshot = await collector.getFresh(SNAPSHOT_MAX_AGE_MS);
     const csrf = auth.csrfToken(getCookie(c, SESSION_COOKIE) ?? "");
-    return c.html(PlayersPage({ t: c.get("t"), language: c.get("language"), snapshot, csrf }));
+    const result = c.req.query("result");
+    return c.html(
+      PlayersPage({
+        t: c.get("t"),
+        language: c.get("language"),
+        snapshot,
+        csrf,
+        banlist: await readBanlist(),
+        ...(result === "kicked" || result === "banned" || result === "unbanned" || result === "failed"
+          ? { actionResult: result }
+          : {}),
+      }),
+    );
   });
+
+  const moderationAction = (action: "kick" | "ban" | "unban") => async (c: Context<AppEnv>) => {
+    const form = await c.req.parseBody();
+    const userid = typeof form.userid === "string" ? form.userid.trim() : "";
+    if (!/^[A-Za-z0-9_]+$/.test(userid)) {
+      return c.redirect("/players?result=failed");
+    }
+    try {
+      if (action === "kick") await client.kick(userid, "Kicked by an admin via the web panel");
+      else if (action === "ban") await client.ban(userid, "Banned by an admin via the web panel");
+      else await client.unban(userid);
+      log.warn(`>>> Panel moderation: ${action} ${userid}`);
+      const results = { kick: "kicked", ban: "banned", unban: "unbanned" } as const;
+      return c.redirect(`/players?result=${results[action]}`);
+    } catch (error) {
+      log.warn(`>>> Panel moderation ${action} failed: ${String(error)}`);
+      return c.redirect("/players?result=failed");
+    }
+  };
+
+  app.post("/players/kick", moderationAction("kick"));
+  app.post("/players/ban", moderationAction("ban"));
+  app.post("/players/unban", moderationAction("unban"));
 
   app.get("/api/status", async (c) => {
     const snapshot = await collector.getFresh(SNAPSHOT_MAX_AGE_MS);
