@@ -5,29 +5,26 @@
 # Use ANSI whenever possible. Makes logs compatible with almost all systems.
 
 # Aliases for colorful echos with newlines
-function e() { 
-    colorful_echos --base "${@}"
-    echo ""
+# The newline is part of the same single write as the message (see
+# colorful_echos) so concurrent threads cannot interleave mid-line.
+function e() {
+    colorful_echos --newline --base "${@}"
 }
 
-function ee() { 
-    colorful_echos --error "${@}"
-    echo ""
+function ee() {
+    colorful_echos --newline --error "${@}"
 }
 
-function ei() { 
-    colorful_echos --info "${@}"
-    echo ""
+function ei() {
+    colorful_echos --newline --info "${@}"
 }
 
-function es() { 
-    colorful_echos --success "${@}"
-    echo ""
+function es() {
+    colorful_echos --newline --success "${@}"
 }
 
-function ew() { 
-    colorful_echos --warning "${@}"
-    echo ""
+function ew() {
+    colorful_echos --newline --warning "${@}"
 }
 
 # Aliases for colorful echos without newlines
@@ -47,12 +44,21 @@ function es_nn() {
     colorful_echos --success "${@}"
 }
 
-function ew_nn() { 
+function ew_nn() {
     colorful_echos --warning "${@}"
 }
 
 # This creates a wrapper for echo to add colors
 function colorful_echos() {
+    # --newline: append the line break inside the SAME write as the message.
+    # Multiple threads (servermanager, start_main, player detection, companion)
+    # share stdout - a separate `echo ""` call for the newline lets another
+    # thread's output merge into the middle of a line.
+    local trailing_newline=""
+    if [ "$1" == "--newline" ]; then
+        trailing_newline="\n"
+        shift
+    fi
     # Set color constants
     BASE="\e[97m"              # Clean color
     CLEAN="\e[0m"              # Clean color
@@ -62,7 +68,7 @@ function colorful_echos() {
     WARNING="\e[93m"      # Yellow color for warning
 
     if [ $# -gt 2 ]; then
-        echo "Usage: $0 [--success|--error|--info|--warning|--base] <message>"
+        echo "Usage: $0 [--newline] [--success|--error|--info|--warning|--base] <message>"
         exit 1
     fi
 
@@ -82,7 +88,7 @@ function colorful_echos() {
     elif [ "$arg1" == "--base" ]; then
         color="$BASE"
     else
-        echo -ne "$message"
+        echo -ne "${message}${trailing_newline}"
         return 0
     fi
 
@@ -94,6 +100,7 @@ function colorful_echos() {
         message="${message:2}"
     done
 
-    # Print message with the specified color
-    echo -ne "${color}${message}${CLEAN}"
+    # Print message with the specified color - one single write per line, so
+    # parallel writers can only reorder whole lines, never merge into one
+    echo -ne "${color}${message}${CLEAN}${trailing_newline}"
 }
