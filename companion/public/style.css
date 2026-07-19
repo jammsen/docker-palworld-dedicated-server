@@ -191,6 +191,66 @@ th {
   color: var(--error);
 }
 
+.status-banner.warn {
+  border-color: var(--warn);
+}
+
+.status-banner.error-banner {
+  border-color: var(--error);
+}
+
+.restart-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.badge {
+  border-radius: 999px;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.6rem;
+  white-space: nowrap;
+}
+
+.badge.default {
+  background: var(--border);
+  color: var(--muted);
+}
+
+.badge.env {
+  background: #2c4a63;
+  color: #a8cbe8;
+}
+
+.badge.override {
+  background: var(--accent-dim);
+  color: #d9f0cc;
+}
+
+.badge.excluded {
+  background: #5c3535;
+  color: #e8b3ac;
+}
+
+.settings-table td {
+  vertical-align: middle;
+}
+
+.setting-key code {
+  font-size: 0.85rem;
+}
+
+.save-row {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 0.75rem 0;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
 .login-card {
   max-width: 22rem;
   margin: 4rem auto;

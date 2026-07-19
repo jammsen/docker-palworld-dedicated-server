@@ -30,6 +30,9 @@ export function Layout({ t, language, activeNav, autoRefreshSeconds, csrf, child
               <a href="/players" class={activeNav === "players" ? "active" : ""}>
                 {t("nav.players")}
               </a>
+              <a href="/settings" class={activeNav === "settings" ? "active" : ""}>
+                {t("nav.settings")}
+              </a>
               <span class="spacer" />
               <form method="post" action="/language" class="inline">
                 {csrf ? <input type="hidden" name="_csrf" value={csrf} /> : null}

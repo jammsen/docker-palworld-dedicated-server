@@ -1,13 +1,18 @@
 import { Hono } from "hono";
+import type { Context } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import type { CompanionConfig } from "../config.js";
 import { log } from "../logger.js";
 import type { MetricsCollector } from "../metrics/collector.js";
+import type { PalworldClient } from "../palworld/client.js";
+import { settingsByKey, validateSettingValue } from "../settings/schema.js";
+import type { SettingsStore } from "../settings/store.js";
 import { AuthService, SESSION_COOKIE } from "./auth.js";
 import { availableLanguages, resolveLanguage, translator } from "./i18n.js";
 import { DashboardPage } from "./views/dashboard.js";
 import { LoginPage } from "./views/login.js";
 import { PlayersPage } from "./views/players.js";
+import { SettingsPage } from "./views/settings.js";
 
 // Bundled at build time - no static file serving, no filesystem paths to resolve
 import styleCss from "../../public/style.css";
@@ -18,6 +23,8 @@ const LANG_COOKIE = "companion_lang";
 export interface AppDeps {
   auth: AuthService;
   collector: MetricsCollector;
+  settings: SettingsStore;
+  client: PalworldClient;
 }
 
 export interface AppEnv {
@@ -32,7 +39,7 @@ function clientIp(headerValue: string | undefined, fallback: string): string {
 }
 
 export function createApp(config: CompanionConfig, version: string, deps: AppDeps): Hono<AppEnv> {
-  const { auth, collector } = deps;
+  const { auth, collector, settings, client } = deps;
   const panel = config.panel;
   if (!panel) throw new Error("createApp called without panel config");
 
@@ -142,6 +149,86 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
   app.get("/api/status", async (c) => {
     const snapshot = await collector.getFresh(SNAPSHOT_MAX_AGE_MS);
     return c.json(snapshot);
+  });
+
+  const settingsReadOnly = config.serverSettingsMode !== "auto";
+
+  const renderSettings = async (c: Context<AppEnv>, extra: { saved?: number; errors?: string[] } = {}) => {
+    const effective = await settings.effectiveSettings();
+    const csrf = auth.csrfToken(getCookie(c, SESSION_COOKIE) ?? "");
+    return c.html(
+      SettingsPage({
+        t: c.get("t"),
+        language: c.get("language"),
+        csrf,
+        settings: effective,
+        readOnly: settingsReadOnly,
+        restartPending: await settings.restartPending(config.gameSettingsFile),
+        ...extra,
+      }),
+    );
+  };
+
+  app.get("/settings", (c) => {
+    const saved = c.req.query("saved");
+    return renderSettings(c, saved ? { saved: Number.parseInt(saved, 10) } : {});
+  });
+
+  app.post("/settings/save", async (c) => {
+    if (settingsReadOnly) return c.redirect("/settings");
+    const form = await c.req.parseBody();
+    const submitted = new Map<string, string>();
+    const errors: string[] = [];
+    for (const [key, value] of Object.entries(form)) {
+      const spec = settingsByKey.get(key);
+      if (!spec || spec.excluded || typeof value !== "string") continue;
+      const result = validateSettingValue(spec, value);
+      if (result.ok) {
+        submitted.set(key, value);
+      } else {
+        errors.push(`${key}: ${result.reason}`);
+      }
+    }
+    if (errors.length > 0) {
+      return renderSettings(c, { errors });
+    }
+    const changes = await settings.applySubmission(submitted);
+    log.info(`>>> Panel saved settings (${changes} override changes)`);
+    return c.redirect(`/settings?saved=${changes}`);
+  });
+
+  app.post("/settings/reset", async (c) => {
+    if (settingsReadOnly) return c.redirect("/settings");
+    const form = await c.req.parseBody();
+    const key = typeof form._reset === "string" ? form._reset : "";
+    if (key === "__all__") {
+      await settings.resetAllOverrides();
+      log.info(">>> Panel reset all settings-overrides");
+    } else if (settingsByKey.has(key)) {
+      await settings.resetOverride(key);
+      log.info(`>>> Panel reset settings-override for ${key}`);
+    }
+    return c.redirect("/settings");
+  });
+
+  app.get("/settings/export", async (c) =>
+    c.body(await settings.exportEnv(), 200, {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Content-Disposition": 'attachment; filename="palworld-settings.env"',
+    }),
+  );
+
+  app.post("/settings/restart", async (c) => {
+    const t = c.get("t");
+    log.warn(">>> Panel triggered a server restart");
+    try {
+      await client.announce("Server restart requested from the web panel");
+      await client.save();
+      await client.shutdown(10, "Saving done. Server restarting...");
+    } catch (error) {
+      log.warn(`>>> Restart via REST API failed: ${String(error)}`);
+    }
+    return c.html(`<meta http-equiv="refresh" content="5; url=/settings" /><p>${t("settings.restartTriggered")}</p>`);
   });
 
   return app;

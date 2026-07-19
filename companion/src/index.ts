@@ -47,9 +47,11 @@ if (!config.panel && !config.discord) {
 
   if (config.panel) {
     const { AuthService } = await import("./web/auth.js");
+    const { SettingsStore } = await import("./settings/store.js");
     const secret = await AuthService.ensureSecret(state);
     const auth = new AuthService(secret, config.panel.username, config.panel.password);
-    const app = createApp(config, VERSION, { auth, collector });
+    const settings = new SettingsStore(config.dataDir, process.env);
+    const app = createApp(config, VERSION, { auth, collector, settings, client });
     const server = serve({ fetch: app.fetch, port: config.panel.port, hostname: "0.0.0.0" }, (info) => {
       log.success(`>>> Web panel listening on port ${info.port}`);
     });
