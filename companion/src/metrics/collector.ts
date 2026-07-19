@@ -33,6 +33,15 @@ export class MetricsCollector {
     return this.lastSnapshot;
   }
 
+  // Serve a cached snapshot when it is fresh enough; the panel uses this so
+  // many open browser tabs never multiply the polling of the game API.
+  async getFresh(maxAgeMs: number): Promise<StatusSnapshot> {
+    if (this.lastSnapshot && Date.now() - this.lastSnapshot.at < maxAgeMs) {
+      return this.lastSnapshot;
+    }
+    return this.collect();
+  }
+
   async collect(): Promise<StatusSnapshot> {
     let game: GameMetrics | null = null;
     let players: GamePlayer[] = [];
@@ -52,10 +61,14 @@ export class MetricsCollector {
 
     let cpuCorePercents: number[] = [];
     try {
-      const cpuSample = await readProcStat();
-      if (this.previousCpuSample.length > 0) {
-        cpuCorePercents = cpuUsagePercent(this.previousCpuSample, cpuSample);
+      if (this.previousCpuSample.length === 0) {
+        // First collection: take a short double sample so the very first
+        // snapshot already has meaningful per-core percentages
+        this.previousCpuSample = await readProcStat();
+        await new Promise((resolve) => setTimeout(resolve, 500));
       }
+      const cpuSample = await readProcStat();
+      cpuCorePercents = cpuUsagePercent(this.previousCpuSample, cpuSample);
       this.previousCpuSample = cpuSample;
     } catch (error) {
       log.debug(`/proc/stat read failed: ${String(error)}`);

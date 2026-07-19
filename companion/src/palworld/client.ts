@@ -7,6 +7,7 @@ export interface GameMetrics {
   maxplayernum: number;
   uptime: number;
   days: number;
+  basecampnum?: number;
 }
 
 export interface GamePlayer {
