@@ -59,6 +59,7 @@ ___
     - [Supported events](#supported-events)
   - [Web operation panel](#web-operation-panel)
   - [Discord live status card](#discord-live-status-card)
+    - [Custom event icons](#custom-event-icons)
     - [Moving or recreating the status card](#moving-or-recreating-the-status-card)
   - [Deploy with Helm](#deploy-with-helm)
   - [FAQ](#faq)
@@ -369,7 +370,7 @@ After enabling the server should send messages in a Discord-Compatible way to yo
 
 The image ships an optional, built-in web panel (no extra container needed) for administrating the gameserver in the browser:
 
-- **Dashboard** - server status, uptime, population, latency, server FPS, in-game day, RAM usage and per-CPU-core load
+- **Dashboard** - server status, uptime, population, server frame time, server FPS, in-game day, RAM usage, per-CPU-core load and the last-events log (side by side for the full picture at a glance)
 - **Players** - online players with level/ping/buildings, kick/ban/unban and the ban list
 - **Settings editor** - every `PalWorldSettings.ini` value with validation, grouped and translated (English + 中文); saved changes are stored as overrides on the game volume and **survive container restarts and re-creation**
 - **One-click restart** with in-game announce and world save
@@ -386,13 +387,28 @@ PANEL_PASSWORD=choose-a-strong-password
 
 ## Discord live status card
 
-Instead of (or in addition to) event webhooks, the image can maintain **one single Discord message** that it keeps editing in place - a live server status card with uptime, population, latency, server FPS, RAM, per-core CPU bars, last restart and the online player list. No Discord bot account needed, a plain channel webhook is enough; the message survives container restarts (its id is stored on the game volume).
+Instead of (or in addition to) event webhooks, the image can maintain **one single Discord message** that it keeps editing in place - a live server status card with uptime, population, server frame time, server FPS, RAM, per-core CPU bars, last restart, the online player list (with platform icons) and a **last-events log** (player joins/leaves, server starting/updating/stopping, restarts, backups, settings changes). No Discord bot account needed, a plain channel webhook is enough; the message survives container restarts (its id is stored on the game volume).
+
+> **Dependency:** The player entries in the event log (and on the web dashboard) come from the built-in player detection - they require `PLAYER_DETECTION_ENABLED=true` (the default) and the REST API. Player detection is the single source for player events; with it disabled, the event log only contains server/system events.
 
 ```shell
 DISCORD_STATUS_ENABLED=true
 DISCORD_STATUS_WEBHOOK_URL="https://discord.com/api/webhooks/..."   # falls back to WEBHOOK_URL
 DISCORD_STATUS_UPDATE_INTERVAL=30
 ```
+
+### Custom event icons
+
+The last-events log ships with proper icons out of the box: the **`icons/modern-slate`** set, rendered from the maintainer's Discord server (same caveat as the platform emojis - upload your own for independence). Set any `DISCORD_STATUS_EMOJI_EVENT_*` variable to empty to fall back to unicode emojis (🟢 🔴 ✅ ⛔ ...).
+
+Prefer a different look? The repo ships **24 ready-made icon sets** in the [`icons/`](/icons) folder (13 events each, 128x128 PNGs) in four style families - `modern-*`, `cool-*`, `gaming-*` and `pal-*`. To switch to one (or your own icons):
+
+1. **Pick a set** from `icons/` (e.g. `icons/pal-sphere-classic/`).
+2. **Upload the 13 PNGs** to the Discord server your webhook lives in: Server Settings → Emoji → Upload Emoji. Name them so you can find them again, e.g. `pal_join`, `pal_leave`, `pal_rename`, `pal_online`, `pal_offline`, `pal_starting`, `pal_installing`, `pal_updating`, `pal_updating_validate`, `pal_stopping`, `pal_restart`, `pal_backup`, `pal_settings` (emoji names allow only letters, digits and underscores).
+3. **Get each token**: type the emoji with a leading backslash in any channel (e.g. `\:pal_join:`) and send - Discord prints the raw token like `<:pal_join:1234567890123456789>`. Copy the whole thing.
+4. **Paste the tokens** into the matching `DISCORD_STATUS_EMOJI_EVENT_*` variables in your `default.env` (see [ENV_VARS.md](/docs/ENV_VARS.md)) and recreate the container (`docker compose up -d`).
+
+Any variable left empty keeps its unicode default, so you can also replace just a few. Invalid tokens are rejected at startup with a warning. The web dashboard keeps the unicode emojis - Discord custom emojis only render inside Discord.
 
 ### Moving or recreating the status card
 
