@@ -135,12 +135,8 @@ function setup_palworld_settings_ini() {
         }
     fi
 
-    # if SERVER_NAME contains ###RANDOM###, replace it now
-    if [[ "${SERVER_NAME:-}" == *"###RANDOM###"* ]]; then
-        # generate a 6-char alphanumeric token
-        rand="$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)"
-        export SERVER_NAME="${SERVER_NAME//###RANDOM###/${rand}}"
-    fi
+    # if SERVER_NAME contains ###RANDOM###, replace it with a persistent token
+    apply_server_name_token
 
     # Copy default-config, which comes with SteamCMD to gameserver save location
     ew "> Copying PalWorldSettings.ini.template to ${GAME_SETTINGS_FILE}"
@@ -152,6 +148,31 @@ function setup_palworld_settings_ini() {
         return 1
     fi
     es ">>> Finished setting up PalWorldSettings.ini"
+}
+
+# Replace ###RANDOM### in SERVER_NAME with a random token that is generated
+# once and persisted on the game volume - the server keeps its identity across
+# restarts and container re-creation instead of re-rolling a new name every
+# boot. Delete the token file to force a new token on the next boot.
+function apply_server_name_token() {
+    if [[ "${SERVER_NAME:-}" != *"###RANDOM###"* ]]; then
+        return 0
+    fi
+    local token_file="${GAME_ROOT}/server-name.token"
+    local rand=""
+    if [[ -f "$token_file" ]]; then
+        rand="$(cat "$token_file")"
+    fi
+    # Generate when missing, or when the file content is not a plain token
+    # (defends the INI against a hand-edited file with quotes/newlines)
+    if [[ ! "$rand" =~ ^[A-Za-z0-9]{1,16}$ ]]; then
+        rand="$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 6)"
+        echo "$rand" > "$token_file"
+        ei "> Generated new server-name token '${rand}' (persisted in ${token_file})"
+    else
+        e "> Reusing server-name token '${rand}' from ${token_file}"
+    fi
+    export SERVER_NAME="${SERVER_NAME//###RANDOM###/${rand}}"
 }
 
 # Apply panel-written overrides from the game volume with highest precedence.

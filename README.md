@@ -67,6 +67,7 @@ ___
     - [I'm seeing S\_API errors in my logs when I start the container?](#im-seeing-s_api-errors-in-my-logs-when-i-start-the-container)
     - [I'm using Apple silicon type of hardware, can I run this?](#im-using-apple-silicon-type-of-hardware-can-i-run-this)
     - [I changed the `BaseCampWorkerMaxNum` setting, why didn't this update the server?](#i-changed-the-basecampworkermaxnum-setting-why-didnt-this-update-the-server)
+    - [How does the random part of the default server name work?](#how-does-the-random-part-of-the-default-server-name-work)
   - [Planned features in the future](#planned-features-in-the-future)
   - [Software used](#software-used)
 
@@ -424,6 +425,10 @@ A Helm chart to deploy this container can be found at [palworld-helm](https://gi
 
 > [!WARNING]
 > Adding `WorldOption.sav` will break `PalWorldSetting.ini`. So any new changes to the settings (either on the file or via ENV VARS), you will have to create a new `WorldOption.sav` and update it every time for those changes to have an effect.
+
+### How does the random part of the default server name work?
+
+> If `SERVER_NAME` contains `###RANDOM###` (the default), it is replaced with a random 6-character token so your server does not collide with every other unconfigured server in the browser list. The token is generated once and persisted in `server-name.token` in your game volume - your server keeps its name across restarts and container re-creation. Delete that file to roll a new token on the next start, or set a real `SERVER_NAME` to opt out entirely.
 
 ## Planned features in the future
 
