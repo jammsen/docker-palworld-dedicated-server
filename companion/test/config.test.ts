@@ -39,6 +39,18 @@ describe("parseConfig", () => {
     expect(config.warnings.some((w) => w.includes("WEBHOOK_URL"))).toBe(true);
   });
 
+  it("accepts valid custom platform emojis and rejects malformed ones", () => {
+    const config = parseConfig({
+      DISCORD_STATUS_ENABLED: "true",
+      DISCORD_STATUS_WEBHOOK_URL: "https://discord.com/api/webhooks/1/abc",
+      DISCORD_STATUS_EMOJI_STEAM: "<:steam:1123581321345589012>",
+      DISCORD_STATUS_EMOJI_XBOX: "not-an-emoji-token",
+    });
+    expect(config.discord?.platformEmoji.steam).toBe("<:steam:1123581321345589012>");
+    expect(config.discord?.platformEmoji.xbox).toBeUndefined();
+    expect(config.warnings.some((w) => w.includes("DISCORD_STATUS_EMOJI_XBOX"))).toBe(true);
+  });
+
   it("clamps the Discord update interval to the safety minimum", () => {
     const config = parseConfig({
       DISCORD_STATUS_ENABLED: "true",

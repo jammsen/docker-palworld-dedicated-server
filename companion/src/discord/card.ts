@@ -1,4 +1,5 @@
 import type { StatusSnapshot } from "../metrics/collector.js";
+import { platformEmojiFromUserId, type PlatformEmojiOverrides } from "../palworld/platform.js";
 import type { DiscordEmbedField, EmbedPayload } from "./transport.js";
 
 const COLOR_ONLINE = 3066993; // green
@@ -62,13 +63,15 @@ function cpuFields(corePercents: number[]): DiscordEmbedField[] {
   return fields;
 }
 
-function playersField(snapshot: StatusSnapshot): DiscordEmbedField | null {
+function playersField(snapshot: StatusSnapshot, platformEmoji: PlatformEmojiOverrides): DiscordEmbedField | null {
   if (snapshot.players.length === 0) return null;
   const lines: string[] = [];
   let used = 0;
   let shown = 0;
   for (const player of snapshot.players) {
-    const line = `${sanitizeName(player.name)} (Lv. ${player.level})`;
+    // Platform emoji outside the inline code (emojis don't render inside code),
+    // name inside backticks so stray markdown in names cannot break the embed
+    const line = `${platformEmojiFromUserId(player.userId, platformEmoji)} \`${sanitizeName(player.name)}\` (Lv. ${player.level})`;
     if (used + line.length + 1 > PLAYER_LIST_BUDGET) break;
     lines.push(line);
     used += line.length + 1;
@@ -78,11 +81,16 @@ function playersField(snapshot: StatusSnapshot): DiscordEmbedField | null {
   if (remaining > 0) lines.push(`…and ${remaining} more`);
   return {
     name: `Online (${snapshot.players.length})`,
-    value: `\`\`\`${lines.join("\n")}\`\`\``,
+    value: lines.join("\n"),
   };
 }
 
-export function buildStatusCard(snapshot: StatusSnapshot | null, state: CardState, serverName: string): EmbedPayload {
+export function buildStatusCard(
+  snapshot: StatusSnapshot | null,
+  state: CardState,
+  serverName: string,
+  platformEmoji: PlatformEmojiOverrides = {},
+): EmbedPayload {
   const fields: DiscordEmbedField[] = [];
   let color = COLOR_OFFLINE;
   let description: string | undefined;
@@ -99,13 +107,11 @@ export function buildStatusCard(snapshot: StatusSnapshot | null, state: CardStat
 
   if (snapshot && state === "online" && snapshot.game) {
     const game = snapshot.game;
-    const pings = snapshot.players.map((p) => p.ping).filter((p) => Number.isFinite(p) && p >= 0);
-    const avgPing = pings.length > 0 ? `${Math.round(pings.reduce((s, p) => s + p, 0) / pings.length)}ms` : "n/a";
 
     fields.push(
       { name: "⏱️ Uptime", value: `\`${formatDuration(game.uptime)}\``, inline: true },
       { name: "👥 Population", value: `\`${game.currentplayernum} / ${game.maxplayernum}\``, inline: true },
-      { name: "📡 Latency", value: `\`${avgPing}\``, inline: true },
+      { name: "⏲️ Frame time", value: `\`${game.serverframetime.toFixed(1)} ms\``, inline: true },
       { name: "⚡ Server FPS", value: `\`${game.serverfps}\``, inline: true },
       {
         name: "💾 RAM Usage",
@@ -124,7 +130,7 @@ export function buildStatusCard(snapshot: StatusSnapshot | null, state: CardStat
       });
     }
 
-    const players = playersField(snapshot);
+    const players = playersField(snapshot, platformEmoji);
     if (players) fields.push(players);
   }
 

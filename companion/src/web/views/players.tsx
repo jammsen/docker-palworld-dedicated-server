@@ -1,5 +1,6 @@
 import type { StatusSnapshot } from "../../metrics/collector.js";
 import type { BanlistEntry } from "../../palworld/banlist.js";
+import { platformFromUserId } from "../../palworld/platform.js";
 import { Layout } from "./layout.js";
 
 export interface PlayersPageProps {
@@ -28,7 +29,7 @@ function ModerationForm({
     <form method="post" action={action} class="inline" data-confirm={confirmText}>
       <input type="hidden" name="_csrf" value={csrf} />
       <input type="hidden" name="userid" value={userid} />
-      <button type="submit" class="linklike danger">
+      <button type="submit" class="btn-danger">
         {label}
       </button>
     </form>
@@ -56,6 +57,7 @@ export function PlayersPage({ t, language, snapshot, csrf, banlist, actionResult
             <tr>
               <th>{t("players.name")}</th>
               <th>{t("players.account")}</th>
+              <th>{t("players.platform")}</th>
               <th>{t("players.level")}</th>
               <th>{t("players.ping")}</th>
               <th>{t("players.buildings")}</th>
@@ -67,6 +69,7 @@ export function PlayersPage({ t, language, snapshot, csrf, banlist, actionResult
               <tr>
                 <td>{player.name}</td>
                 <td>{player.accountName}</td>
+                <td>{platformFromUserId(player.userId)}</td>
                 <td>{player.level}</td>
                 <td>{Math.round(player.ping)}ms</td>
                 <td>{player.building_count}</td>

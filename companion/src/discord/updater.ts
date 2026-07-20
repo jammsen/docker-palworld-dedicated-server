@@ -37,7 +37,7 @@ export async function startDiscordStatus(config: CompanionConfig, deps: DiscordS
       const snapshot = await collector.collect();
       const cardState: CardState = snapshot.serverUp ? "online" : "starting";
       const serverName = snapshot.serverName;
-      await transport.publish(buildStatusCard(snapshot, cardState, serverName));
+      await transport.publish(buildStatusCard(snapshot, cardState, serverName, discord.platformEmoji));
     } catch (error) {
       log.warn(`>>> Discord status update failed: ${String(error)}`);
     } finally {
@@ -54,7 +54,7 @@ export async function startDiscordStatus(config: CompanionConfig, deps: DiscordS
     clearInterval(timer);
     try {
       const snapshot = collector.latest();
-      await transport.publish(buildStatusCard(snapshot, "offline", snapshot?.serverName ?? config.serverName));
+      await transport.publish(buildStatusCard(snapshot, "offline", snapshot?.serverName ?? config.serverName, discord.platformEmoji));
       log.info(">>> Discord status card set to offline");
     } catch (error) {
       log.warn(`>>> Final Discord offline update failed: ${String(error)}`);

@@ -28,6 +28,8 @@ export interface PanelConfig {
 export interface DiscordStatusConfig {
   webhookUrl: string;
   updateIntervalSeconds: number;
+  /** Custom <:name:id> emoji per platform prefix (steam, xbox, ps5, mac) */
+  platformEmoji: Partial<Record<string, string>>;
 }
 
 export interface RestApiConfig {
@@ -84,7 +86,19 @@ export function parseConfig(env: Record<string, string | undefined>): CompanionC
           `DISCORD_STATUS_UPDATE_INTERVAL=${requested} is below the webhook rate-limit safety minimum - clamped to ${MIN_DISCORD_INTERVAL_SECONDS} seconds`,
         );
       }
-      discord = { webhookUrl, updateIntervalSeconds };
+      const platformEmoji: Partial<Record<string, string>> = {};
+      for (const platform of ["steam", "xbox", "ps5", "mac"] as const) {
+        const value = env[`DISCORD_STATUS_EMOJI_${platform.toUpperCase()}`];
+        if (!value) continue;
+        if (/^<a?:\w+:\d+>$/.test(value)) {
+          platformEmoji[platform] = value;
+        } else {
+          warnings.push(
+            `DISCORD_STATUS_EMOJI_${platform.toUpperCase()} is not a valid Discord emoji token (expected <:name:id>) - using the default marker`,
+          );
+        }
+      }
+      discord = { webhookUrl, updateIntervalSeconds, platformEmoji };
     }
   }
 

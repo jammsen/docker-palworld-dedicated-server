@@ -41,6 +41,10 @@ These settings control the behavior of the Docker container:
 | DISCORD_STATUS_ENABLED               | Set to enabled will post ONE Discord status-card message and edit it in place, NEEDS `DISCORD_STATUS_WEBHOOK_URL` (or `WEBHOOK_URL`) and `RESTAPI_ENABLED` | false                    | Boolean                               |
 | DISCORD_STATUS_WEBHOOK_URL           | Discord webhook url for the status card; if empty, `WEBHOOK_URL` is used                                                                            |                                | Url                                   |
 | DISCORD_STATUS_UPDATE_INTERVAL       | Interval in seconds between status-card edits; values below 15 are clamped to 15 (webhook rate-limit safety)                                        | 30                             | Integer                               |
+| DISCORD_STATUS_EMOJI_STEAM           | Emoji for Steam players in the status-card player list - see [Platform emojis](#platform-emojis) below                                              | `<:steam:1528444768697192488>` | `<:name:id>` or empty                 |
+| DISCORD_STATUS_EMOJI_XBOX            | Emoji for Xbox players - see [Platform emojis](#platform-emojis) below                                                                              | `<:xbox:1528444823835771020>`  | `<:name:id>` or empty                 |
+| DISCORD_STATUS_EMOJI_PS5             | Emoji for PS5 players - see [Platform emojis](#platform-emojis) below                                                                               | `<:ps5:1528444879695515748>`   | `<:name:id>` or empty                 |
+| DISCORD_STATUS_EMOJI_MAC             | Emoji for Mac players - see [Platform emojis](#platform-emojis) below                                                                               | `<:mac:1528444932132700332>`   | `<:name:id>` or empty                 |
 | WEBHOOK_ENABLED                      | Set to enabled will send webhook notifications, NEEDS `WEBHOOK_URL`                                                                                 | false                          | Boolean                               |
 | WEBHOOK_DEBUG_ENABLED                | Set to enabled will enable feedback of curl and not use --silent                                                                                    | false                          | Boolean                               |
 | WEBHOOK_URL                          | Defines the url the webhook to send data to                                                                                                         |                                | Url                                   |
@@ -55,6 +59,15 @@ SERVER_SETTINGS_MODE accepts 2 values:
 - `rcononly`: RCON-Settings are modified by environment variables (RCON_ENABLED, RCON_PORT, ADMIN_PASSWORD), everything else has to be done by editing the file directly, other environment variables are ignored. Note: RCON is deprecated by Pocketpair — prefer `auto` mode.
 - `manual`: Settings are modified only by editing the file directly, environment variables are ignored
 
+
+### Platform emojis
+
+The Discord status card marks each player in the online list with a platform emoji, detected from the platform prefix of their user id (`steam_...`, `xbox_...`).
+
+> **Caveat about the defaults:** The default `<:name:id>` tokens render from the maintainer's Discord server. Custom emojis in embeds are rendered by id from Discord's CDN, so they work in your channel too - but if those emojis ever get deleted, your card would show raw `<:steam:...>` text instead. For full independence, upload your own platform icons to **the same Discord server your webhook lives in** (Server Settings → Emoji → Upload Emoji), then get each token by typing `\:name:` in a channel and copy it into the variables.
+
+- Set a variable to **empty** to use a neutral colored-square marker instead (🟦 Steam, 🟩 Xbox, 🔹 PS5, ⚪ Mac).
+- Invalid token formats are rejected at startup with a warning and fall back to the colored square.
 
 ### Web panel
 

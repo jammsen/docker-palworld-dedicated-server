@@ -30,8 +30,6 @@ function UsageBar({ percent }: { percent: number }) {
 export function DashboardPage({ t, language, snapshot, csrf }: DashboardPageProps) {
   const game = snapshot.game;
   const ramPercent = snapshot.ram.totalBytes > 0 ? (snapshot.ram.usedBytes / snapshot.ram.totalBytes) * 100 : 0;
-  const pings = snapshot.players.map((p) => p.ping).filter((p) => Number.isFinite(p) && p >= 0);
-  const avgPing = pings.length > 0 ? `${Math.round(pings.reduce((s, p) => s + p, 0) / pings.length)}ms` : "n/a";
 
   return (
     <Layout t={t} language={language} activeNav="dashboard" autoRefreshSeconds={10} csrf={csrf}>
@@ -50,7 +48,7 @@ export function DashboardPage({ t, language, snapshot, csrf }: DashboardPageProp
           <div class="tiles">
             <StatTile label={`⏱️ ${t("status.uptime")}`} value={formatDuration(game.uptime)} />
             <StatTile label={`👥 ${t("status.population")}`} value={`${game.currentplayernum} / ${game.maxplayernum}`} />
-            <StatTile label={`📡 ${t("status.latency")}`} value={avgPing} />
+            <StatTile label={`⏲️ ${t("status.frametime")}`} value={`${game.serverframetime.toFixed(1)} ms`} />
             <StatTile label={`⚡ ${t("status.fps")}`} value={String(game.serverfps)} />
             <StatTile label={`📅 ${t("status.day")}`} value={String(game.days)} />
             <StatTile label={`🏕️ ${t("status.basecamps")}`} value={String(game.basecampnum ?? "-")} />
