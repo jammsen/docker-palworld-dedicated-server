@@ -59,6 +59,7 @@ ___
     - [Supported events](#supported-events)
   - [Web operation panel](#web-operation-panel)
   - [Discord live status card](#discord-live-status-card)
+    - [Moving or recreating the status card](#moving-or-recreating-the-status-card)
   - [Deploy with Helm](#deploy-with-helm)
   - [FAQ](#faq)
     - [Does this image support Xbox Dedicated Servers?](#does-this-image-support-xbox-dedicated-servers)
@@ -392,6 +393,13 @@ DISCORD_STATUS_ENABLED=true
 DISCORD_STATUS_WEBHOOK_URL="https://discord.com/api/webhooks/..."   # falls back to WEBHOOK_URL
 DISCORD_STATUS_UPDATE_INTERVAL=30
 ```
+
+### Moving or recreating the status card
+
+The card heals itself - whenever the stored message cannot be edited anymore, the companion simply posts a fresh card on the next update and remembers the new one:
+
+- **Recreate the card** (e.g. you want it below newer messages): just **delete the message in Discord**. Within one update interval a fresh card appears in the same channel. No restart needed.
+- **Move it to another channel**: point the webhook at the target channel (Discord: channel settings → Integrations → Webhooks → select it → change the channel) - or set `DISCORD_STATUS_WEBHOOK_URL` to a webhook of the target channel and recreate the container. The next update posts a fresh card in the new channel. **Delete the old message manually** - it stays behind and will not update anymore.
 
 ## Deploy with Helm
 
