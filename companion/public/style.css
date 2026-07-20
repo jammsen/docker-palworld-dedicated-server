@@ -265,12 +265,15 @@ th {
 }
 
 .actions-cell {
-  display: flex;
-  gap: 0.75rem;
+  white-space: nowrap;
 }
 
-.linklike.danger {
-  color: var(--error);
+.actions-cell form {
+  display: inline-block;
+}
+
+.actions-cell form + form {
+  margin-left: 0.5rem;
 }
 
 .save-row {
@@ -330,4 +333,22 @@ button[type="submit"] {
 button[type="submit"]:hover {
   background: var(--accent);
   color: #10130d;
+}
+
+/* Danger buttons - defined last so they win the source-order tie against the
+   generic green button[type="submit"] rule (equal specificity) */
+button.btn-danger {
+  background: #6e2a24;
+  border: 1px solid var(--error);
+  border-radius: 6px;
+  color: #ffffff;
+  padding: 0.3rem 0.85rem;
+  min-width: 4.5rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+button.btn-danger:hover {
+  background: var(--error);
+  color: #ffffff;
 }
