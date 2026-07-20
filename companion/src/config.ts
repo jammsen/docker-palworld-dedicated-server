@@ -1,5 +1,6 @@
 // Typed parsing and validation of the container environment.
 // Validation rules live here (not in bash) to keep the shell wiring minimal.
+import { ALL_EVENT_TYPES, EVENT_LOG_CAPACITY } from "./events.js";
 
 export interface CompanionConfig {
   debug: boolean;
@@ -30,6 +31,10 @@ export interface DiscordStatusConfig {
   updateIntervalSeconds: number;
   /** Custom <:name:id> emoji per platform prefix (steam, xbox, ps5, mac) */
   platformEmoji: Partial<Record<string, string>>;
+  /** Custom <:name:id> emoji per event type, replacing the unicode defaults on the card */
+  eventEmoji: Partial<Record<string, string>>;
+  /** How many events the card's last-events field shows (1..EVENT_LOG_CAPACITY) */
+  eventAmount: number;
 }
 
 export interface RestApiConfig {
@@ -98,7 +103,26 @@ export function parseConfig(env: Record<string, string | undefined>): CompanionC
           );
         }
       }
-      discord = { webhookUrl, updateIntervalSeconds, platformEmoji };
+      const eventEmoji: Partial<Record<string, string>> = {};
+      for (const type of ALL_EVENT_TYPES) {
+        const key = `DISCORD_STATUS_EMOJI_EVENT_${type.toUpperCase().replaceAll("-", "_")}`;
+        const value = env[key];
+        if (!value) continue;
+        if (/^<a?:\w+:\d+>$/.test(value)) {
+          eventEmoji[type] = value;
+        } else {
+          warnings.push(`${key} is not a valid Discord emoji token (expected <:name:id>) - using the unicode default`);
+        }
+      }
+
+      const requestedEvents = envInt(env.DISCORD_STATUS_EVENT_AMOUNT, 25);
+      const eventAmount = Math.min(Math.max(requestedEvents, 1), EVENT_LOG_CAPACITY);
+      if (eventAmount !== requestedEvents) {
+        warnings.push(
+          `DISCORD_STATUS_EVENT_AMOUNT=${requestedEvents} is outside the valid range 1-${EVENT_LOG_CAPACITY} - clamped to ${eventAmount}`,
+        );
+      }
+      discord = { webhookUrl, updateIntervalSeconds, platformEmoji, eventEmoji, eventAmount };
     }
   }
 
@@ -112,6 +136,14 @@ export function parseConfig(env: Record<string, string | undefined>): CompanionC
   if ((panel || discord) && !restapi.enabled) {
     warnings.push(
       "RESTAPI_ENABLED is not true - game data (players, metrics, actions) will be unavailable to the companion service",
+    );
+  }
+
+  // Player events come exclusively from the shell player-detection loop
+  // (single source of truth) - without it the event log has no joins/leaves
+  if ((panel || discord) && restapi.enabled && !envBool(env.PLAYER_DETECTION_ENABLED)) {
+    warnings.push(
+      "PLAYER_DETECTION_ENABLED is not true - player join/leave/rename events will not appear in the event log",
     );
   }
 

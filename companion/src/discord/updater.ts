@@ -37,7 +37,13 @@ export async function startDiscordStatus(config: CompanionConfig, deps: DiscordS
       const snapshot = await collector.collect();
       const cardState: CardState = snapshot.serverUp ? "online" : "starting";
       const serverName = snapshot.serverName;
-      await transport.publish(buildStatusCard(snapshot, cardState, serverName, discord.platformEmoji));
+      await transport.publish(
+        buildStatusCard(snapshot, cardState, serverName, {
+          platformEmoji: discord.platformEmoji,
+          eventEmoji: discord.eventEmoji,
+          eventAmount: discord.eventAmount,
+        }),
+      );
     } catch (error) {
       log.warn(`>>> Discord status update failed: ${String(error)}`);
     } finally {
@@ -53,8 +59,16 @@ export async function startDiscordStatus(config: CompanionConfig, deps: DiscordS
     stopped = true;
     clearInterval(timer);
     try {
-      const snapshot = collector.latest();
-      await transport.publish(buildStatusCard(snapshot, "offline", snapshot?.serverName ?? config.serverName, discord.platformEmoji));
+      // Pick up the shell's 'stopping' event written just before our SIGTERM,
+      // so the final card shows the complete log including the shutdown itself
+      const snapshot = await collector.refreshEventsOnly();
+      await transport.publish(
+        buildStatusCard(snapshot, "offline", snapshot?.serverName ?? config.serverName, {
+          platformEmoji: discord.platformEmoji,
+          eventEmoji: discord.eventEmoji,
+          eventAmount: discord.eventAmount,
+        }),
+      );
       log.info(">>> Discord status card set to offline");
     } catch (error) {
       log.warn(`>>> Final Discord offline update failed: ${String(error)}`);

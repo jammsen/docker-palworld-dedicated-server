@@ -11,6 +11,7 @@
 # Detection logic (userId/playerId comparison) is NOT affected — raw JSON from the API is used there.
 
 source /includes/colors.sh
+source /includes/companion.sh
 source /includes/restapi.sh
 source /includes/webhook.sh
 
@@ -142,6 +143,7 @@ announce_join() {
     time=$(date '+[%H:%M:%S]')
     message="Player $1 has joined the server."
     echo "${time}: $message"
+    log_companion_event join "$1"
     if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
         send_info_notification "$message"
     fi
@@ -155,6 +157,7 @@ announce_name_change() {
     time=$(date '+[%H:%M:%S]')
     message="Player $1 has changed their name to $2."
     echo "${time}: $message"
+    log_companion_event rename "$1" "$2"
     if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
         send_info_notification "$message"
     fi
@@ -168,6 +171,7 @@ announce_leave() {
     time=$(date '+[%H:%M:%S]')
     message="Player $1 has left the server."
     echo "${time}: $message"
+    log_companion_event leave "$1"
     if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
         send_info_notification "$message"
     fi

@@ -1,4 +1,7 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import type { CompanionConfig } from "../config.js";
+import { appendEvents, eventKey, parseShellEvents, serverStateEvents, type ServerEvent } from "../events.js";
 import { log } from "../logger.js";
 import type { GameMetrics, GamePlayer, PalworldClient } from "../palworld/client.js";
 import { readServerNameFromIni } from "../palworld/ini.js";
@@ -15,6 +18,8 @@ export interface StatusSnapshot {
   cpuCorePercents: number[];
   ram: RamUsage;
   lastRestartAt: number | null;
+  /** Recent server events, newest last */
+  events: ServerEvent[];
 }
 
 // Samples game + system metrics. One collector instance feeds both the Discord
@@ -23,12 +28,60 @@ export class MetricsCollector {
   private previousCpuSample: CpuCoreSample[] = [];
   private cachedServerName = "";
   private lastSnapshot: StatusSnapshot | null = null;
+  private seenShellEvents: Set<string> | null = null;
 
   constructor(
     private readonly config: CompanionConfig,
     private readonly client: PalworldClient,
     private readonly state: StateStore,
   ) {}
+
+  /** Record an event originating inside the companion itself (e.g. panel settings save) */
+  async recordEvent(event: ServerEvent): Promise<void> {
+    const events = appendEvents(this.state.get().events ?? [], [event]);
+    await this.state.update({ events });
+    if (this.lastSnapshot) this.lastSnapshot = { ...this.lastSnapshot, events };
+  }
+
+  /**
+   * Cheap event-only refresh for the SIGTERM path: ingest the shell event file
+   * (e.g. the 'stopping' marker written moments earlier) without touching the
+   * game REST API, which is going down at that point. Returns the freshest
+   * snapshot for the final Discord card edit.
+   */
+  async refreshEventsOnly(): Promise<StatusSnapshot | null> {
+    const newEvents = await this.ingestShellEvents();
+    if (newEvents.length > 0) {
+      const events = appendEvents(this.state.get().events ?? [], newEvents);
+      await this.state.update({ events });
+      if (this.lastSnapshot) this.lastSnapshot = { ...this.lastSnapshot, events };
+    }
+    return this.lastSnapshot;
+  }
+
+  // Ingest events written by the shell side (includes/companion.sh
+  // log_companion_event). Dedupe by event key: the file is re-read whole each
+  // tick (it is trimmed to <=200 lines), and on companion restart the keys of
+  // already-persisted events prevent re-ingestion.
+  private async ingestShellEvents(): Promise<ServerEvent[]> {
+    let content: string;
+    try {
+      content = await readFile(join(this.config.dataDir, "events.log"), "utf8");
+    } catch {
+      return [];
+    }
+    if (this.seenShellEvents === null) {
+      this.seenShellEvents = new Set((this.state.get().events ?? []).map(eventKey));
+    }
+    const fresh: ServerEvent[] = [];
+    for (const event of parseShellEvents(content)) {
+      const key = eventKey(event);
+      if (this.seenShellEvents.has(key)) continue;
+      this.seenShellEvents.add(key);
+      fresh.push(event);
+    }
+    return fresh;
+  }
 
   latest(): StatusSnapshot | null {
     return this.lastSnapshot;
@@ -95,6 +148,20 @@ export class MetricsCollector {
       }
     }
 
+    // Events: the shell side is the single source for everything it observes
+    // (player detection, SteamCMD, restarts, backups) via the event file; the
+    // companion only contributes REST up/down transitions. No previous
+    // snapshot (companion just started) means no transition to detect.
+    let events = this.state.get().events ?? [];
+    const newEvents = await this.ingestShellEvents();
+    if (this.lastSnapshot !== null) {
+      newEvents.push(...serverStateEvents(this.lastSnapshot.serverUp, game !== null, Date.now()));
+    }
+    if (newEvents.length > 0) {
+      events = appendEvents(events, newEvents);
+      await this.state.update({ events });
+    }
+
     this.lastSnapshot = {
       at: Date.now(),
       serverUp: game !== null,
@@ -104,6 +171,7 @@ export class MetricsCollector {
       cpuCorePercents,
       ram,
       lastRestartAt,
+      events,
     };
     return this.lastSnapshot;
   }

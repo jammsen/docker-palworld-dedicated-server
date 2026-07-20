@@ -1,10 +1,14 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
+import type { ServerEvent } from "./events.js";
+
 export interface CompanionState {
   discordMessageId?: string;
   sessionSecret?: string;
   lastRestartAt?: number;
+  /** Ring buffer of recent server events (joins/leaves/up/down), newest last */
+  events?: ServerEvent[];
 }
 
 // Persistent state on the game volume - survives container restarts AND re-creation

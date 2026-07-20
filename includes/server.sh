@@ -1,6 +1,7 @@
 # shellcheck disable=SC2148,SC1091
 
 source /includes/colors.sh
+source /includes/companion.sh
 source /includes/restapi.sh
 source /includes/webhook.sh
 
@@ -73,11 +74,13 @@ function start_server() {
     check_and_run_custom_script
 
     es ">>> Starting the gameserver"
+    log_companion_event starting
     ./PalServer.sh "${START_OPTIONS[@]}"
 }
 
 function stop_server() {
     ew ">>> Stopping server..."
+    log_companion_event stopping
     if [[ -n $PLAYER_DETECTION_PID ]]; then
         kill -SIGTERM "${PLAYER_DETECTION_PID}"
     fi
@@ -118,6 +121,7 @@ function run_steamcmd() {
 
 function fresh_install_server() {
     ei ">>> Doing a fresh install of the gameserver..."
+    log_companion_event installing
     if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
         send_install_notification
     fi
@@ -134,6 +138,7 @@ function update_server() {
     fi
     if [[ -n $STEAMCMD_VALIDATE_FILES ]] && [[ "${STEAMCMD_VALIDATE_FILES,,}" == "true" ]]; then
         ei ">>> Doing an update with validation of the gameserver files..."
+        log_companion_event updating-validate
         if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
             send_update_validation_notification
         fi
@@ -141,6 +146,7 @@ function update_server() {
         es ">>> Done updating and validating the gameserver files"
     else
         ei ">>> Doing an update of the gameserver files..."
+        log_companion_event updating
         if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
             send_update_notification
         fi

@@ -241,6 +241,9 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
     }
     const changes = await settings.applySubmission(submitted);
     log.info(`>>> Panel saved settings (${changes} override changes)`);
+    if (changes > 0) {
+      await collector.recordEvent({ at: Date.now(), type: "settings" });
+    }
     return c.redirect(`/settings?saved=${changes}`);
   });
 
@@ -270,6 +273,7 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
   app.post("/actions/restart", async (c) => {
     const t = c.get("t");
     log.warn(">>> Panel triggered a server restart");
+    await collector.recordEvent({ at: Date.now(), type: "restart" });
     try {
       await client.announce("Server restart requested from the web panel");
       await client.save();

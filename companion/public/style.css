@@ -127,6 +127,37 @@ h2 {
   margin-top: 1rem;
 }
 
+.tiles-two {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* First-view split: stats left, event log right - stacks on narrow screens */
+.dashboard-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.75rem;
+  align-items: start;
+  margin-top: 1.25rem;
+}
+
+.dashboard-split .tiles {
+  margin-top: 0;
+}
+
+.dashboard-split h2 {
+  margin-top: 0;
+}
+
+.no-top-margin {
+  margin-top: 0;
+}
+
+@media (max-width: 50rem) {
+  .dashboard-split {
+    grid-template-columns: 1fr;
+  }
+}
+
 .tile {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -209,6 +240,21 @@ th {
   color: var(--muted);
   font-size: 0.85rem;
   margin-top: 2rem;
+}
+
+.event-log {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.event-time {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  margin-right: 0.35rem;
 }
 
 .error {

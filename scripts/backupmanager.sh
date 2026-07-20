@@ -2,6 +2,7 @@
 # shellcheck disable=SC1091,SC2012,SC2004
 
 source /includes/colors.sh
+source /includes/companion.sh
 source /includes/restapi.sh
 
 # Default values if the environment variables exist
@@ -131,6 +132,7 @@ function check_required_directories() {
 
 function create_backup() {
     check_required_directories
+    log_companion_event backup
 
     date=$(date +%Y%m%d_%H%M%S)
     backup_file_name="saved-${date}.tar.gz"
