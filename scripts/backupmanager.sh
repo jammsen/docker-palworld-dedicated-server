@@ -132,7 +132,6 @@ function check_required_directories() {
 
 function create_backup() {
     check_required_directories
-    log_companion_event backup
 
     date=$(date +%Y%m%d_%H%M%S)
     backup_file_name="saved-${date}.tar.gz"
@@ -161,6 +160,8 @@ function create_backup() {
         if [[ -n $LOCAL_BACKUP_ANNOUNCE_MESSAGES_ENABLED ]] && [[ "${LOCAL_BACKUP_ANNOUNCE_MESSAGES_ENABLED,,}" == "true" ]]; then
             broadcast_backup_success
         fi
+        # Only log the companion event for a backup that actually exists
+        log_companion_event backup
         es ">>> Backup '${backup_file_name}' created successfully"
     fi
 
