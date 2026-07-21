@@ -1,3 +1,4 @@
+import { getConnInfo } from "@hono/node-server/conninfo";
 import { Hono } from "hono";
 import type { Context } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
@@ -36,8 +37,20 @@ export interface AppEnv {
   };
 }
 
-function clientIp(headerValue: string | undefined, fallback: string): string {
-  return headerValue?.split(",")[0]?.trim() || fallback;
+// Socket address is the source of truth; X-Forwarded-For is client-controlled
+// on direct deployments and only honored behind an explicit trusted proxy.
+function clientIp(c: Context, trustProxy: boolean): string {
+  if (trustProxy) {
+    // Rightmost entry: appended by the trusted proxy itself. Leftmost entries
+    // travel with the request and stay client-spoofable even behind a proxy.
+    const forwarded = c.req.header("x-forwarded-for")?.split(",").at(-1)?.trim();
+    if (forwarded) return forwarded;
+  }
+  try {
+    return getConnInfo(c).remote.address ?? "unknown";
+  } catch {
+    return "unknown";
+  }
 }
 
 export function createApp(config: CompanionConfig, version: string, deps: AppDeps): Hono<AppEnv> {
@@ -75,7 +88,7 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
   app.get("/login", (c) => c.html(LoginPage({ t: c.get("t"), language: c.get("language") })));
 
   app.post("/login", async (c) => {
-    const ip = clientIp(c.req.header("x-forwarded-for"), "unknown");
+    const ip = clientIp(c, panel.trustProxy);
     const t = c.get("t");
     const language = c.get("language");
     if (auth.isLockedOut(ip)) {
@@ -86,7 +99,9 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
     const password = typeof form.password === "string" ? form.password : "";
     if (!auth.verifyLogin(username, password)) {
       auth.recordFailure(ip);
-      log.warn(`>>> Panel login failed for user '${username}'`);
+      // Strip control characters and cap length so user input cannot forge log lines
+      const safeUser = username.replace(/[^\x20-\x7e]/g, "?").slice(0, 32);
+      log.warn(`>>> Panel login failed for user '${safeUser}' from ${ip}`);
       return c.html(LoginPage({ t, language, error: "invalid" }), 401);
     }
     auth.recordSuccess(ip);
@@ -94,9 +109,9 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
       httpOnly: true,
       sameSite: "Strict",
       path: "/",
-      secure: c.req.header("x-forwarded-proto") === "https",
+      secure: panel.trustProxy && c.req.header("x-forwarded-proto") === "https",
     });
-    log.info(">>> Panel login successful");
+    log.info(`>>> Panel login successful from ${ip}`);
     return c.redirect("/");
   });
 
@@ -251,10 +266,11 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
     if (settingsReadOnly) return c.redirect("/settings");
     const form = await c.req.parseBody();
     const key = typeof form._reset === "string" ? form._reset : "";
+    const spec = settingsByKey.get(key);
     if (key === "__all__") {
       await settings.resetAllOverrides();
       log.info(">>> Panel reset all settings-overrides");
-    } else if (settingsByKey.has(key)) {
+    } else if (spec && !spec.excluded) {
       await settings.resetOverride(key);
       log.info(`>>> Panel reset settings-override for ${key}`);
     }
@@ -272,15 +288,17 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
 
   app.post("/actions/restart", async (c) => {
     const t = c.get("t");
-    log.warn(">>> Panel triggered a server restart");
-    await collector.recordEvent({ at: Date.now(), type: "restart" });
     try {
       await client.announce("Server restart requested from the web panel");
       await client.save();
       await client.shutdown(10, "Saving done. Server restarting...");
     } catch (error) {
+      // Do not record the event or claim success when the REST call failed
       log.warn(`>>> Restart via REST API failed: ${String(error)}`);
+      return c.html(`<meta http-equiv="refresh" content="5; url=/" /><p>${t("settings.restartFailed")}</p>`, 502);
     }
+    log.warn(">>> Panel triggered a server restart");
+    await collector.recordEvent({ at: Date.now(), type: "restart" });
     return c.html(`<meta http-equiv="refresh" content="5; url=/" /><p>${t("settings.restartTriggered")}</p>`);
   });
 

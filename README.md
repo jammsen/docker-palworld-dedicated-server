@@ -130,7 +130,7 @@ This 2 persons helped a lot along to way and made me and this project better! So
 
 ## Environment variables
 
-See [this file](/docs/ENV_VARS.md) for the documentation
+See [this file](docs/ENV_VARS.md) for the documentation
 
 ## Docker-Compose examples
 
@@ -365,7 +365,7 @@ WEBHOOK_URL="https://your.webhook.url"
 
 After enabling the server should send messages in a Discord-Compatible way to your webhook url.
 
-> You can find more details about these variables [here](/docs/ENV_VARS.md#webhook-settings).
+> You can find more details about these variables [here](docs/ENV_VARS.md#webhook-settings).
 
 ### Supported events
 
@@ -392,7 +392,7 @@ PANEL_ENABLED=true
 PANEL_PASSWORD=choose-a-strong-password
 ```
 
-> **Security warning:** The panel speaks plain HTTP - do **NOT** publish port 8213 to the internet. Use it LAN/VPN-only or put a TLS reverse proxy (Caddy, Traefik, nginx) in front. Details and all `PANEL_*` variables: [ENV_VARS.md](/docs/ENV_VARS.md#web-panel).
+> **Security warning:** The panel speaks plain HTTP - do **NOT** publish port 8213 to the internet. Use it LAN/VPN-only or put a TLS reverse proxy (Caddy, Traefik, nginx) in front. Details and all `PANEL_*` variables: [ENV_VARS.md](docs/ENV_VARS.md#web-panel).
 
 ## Discord live status card
 
@@ -410,12 +410,12 @@ DISCORD_STATUS_UPDATE_INTERVAL=30
 
 The last-events log ships with proper icons out of the box: the **`icons/modern-slate`** set, rendered from the maintainer's Discord server (same caveat as the platform emojis - upload your own for independence). Set any `DISCORD_STATUS_EMOJI_EVENT_*` variable to empty to fall back to unicode emojis (🟢 🔴 ✅ ⛔ ...).
 
-Prefer a different look? The repo ships **24 ready-made icon sets** in the [`icons/`](/icons) folder (13 events each, 128x128 PNGs) in four style families - `modern-*`, `cool-*`, `gaming-*` and `pal-*`. To switch to one (or your own icons):
+Prefer a different look? The repo ships **24 ready-made icon sets** in the [`icons/`](icons) folder (13 events each, 128x128 PNGs) in four style families - `modern-*`, `cool-*`, `gaming-*` and `pal-*`. To switch to one (or your own icons):
 
 1. **Pick a set** from `icons/` (e.g. `icons/pal-sphere-classic/`).
 2. **Upload the 13 PNGs** to the Discord server your webhook lives in: Server Settings → Emoji → Upload Emoji. Name them so you can find them again, e.g. `pal_join`, `pal_leave`, `pal_rename`, `pal_online`, `pal_offline`, `pal_starting`, `pal_installing`, `pal_updating`, `pal_updating_validate`, `pal_stopping`, `pal_restart`, `pal_backup`, `pal_settings` (emoji names allow only letters, digits and underscores).
 3. **Get each token**: type the emoji with a leading backslash in any channel (e.g. `\:pal_join:`) and send - Discord prints the raw token like `<:pal_join:1234567890123456789>`. Copy the whole thing.
-4. **Paste the tokens** into the matching `DISCORD_STATUS_EMOJI_EVENT_*` variables in your `default.env` (see [ENV_VARS.md](/docs/ENV_VARS.md)) and recreate the container (`docker compose up -d`).
+4. **Paste the tokens** into the matching `DISCORD_STATUS_EMOJI_EVENT_*` variables in your `default.env` (see [ENV_VARS.md](docs/ENV_VARS.md)) and recreate the container (`docker compose up -d`).
 
 Any variable left empty keeps its unicode default, so you can also replace just a few. Invalid tokens are rejected at startup with a warning. The web dashboard keeps the unicode emojis - Discord custom emojis only render inside Discord.
 

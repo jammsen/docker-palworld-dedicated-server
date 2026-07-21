@@ -69,9 +69,13 @@ if (!config.panel && !config.discord) {
     if (shuttingDown) return;
     shuttingDown = true;
     log.warn(`>>> Companion service received ${signal}, shutting down`);
-    // Give hooks (final Discord "offline" edit, server close) a small budget
-    const budget = new Promise((resolve) => setTimeout(resolve, 3000));
-    await Promise.race([Promise.allSettled(shutdownHooks.map((hook) => hook())), budget]);
+    // Give hooks (final Discord "offline" edit, server close) enough budget to
+    // cover one full webhook request (10s AbortSignal timeout) plus overhead;
+    // Promise.race exits immediately when the hooks finish sooner.
+    const budget = new Promise((resolve) => setTimeout(resolve, 12_000));
+    // Async wrapper turns a synchronously-throwing hook into a rejection so
+    // one bad hook cannot bypass allSettled and skip the others
+    await Promise.race([Promise.allSettled(shutdownHooks.map(async (hook) => hook())), budget]);
     process.exit(0);
   };
   process.on("SIGTERM", () => void shutdown("SIGTERM"));

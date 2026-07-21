@@ -109,8 +109,18 @@ runs:
     - name: Test companion web panel
       shell: bash
       run: |
-        nc -z -v 127.0.0.1 8213 || exit 5
-        curl -fsS http://127.0.0.1:8213/api/health || exit 6
+        # The companion starts COMPANION_STARTUP_DELAY (15s) after container start,
+        # so poll the health endpoint instead of a one-shot check
+        for attempt in {1..30}; do
+          if curl -fsS http://127.0.0.1:8213/api/health; then
+            exit 0
+          fi
+          echo "Waiting for companion web panel... (attempt ${attempt}/30)"
+          sleep 2
+        done
+        echo "Companion web panel did not become healthy in time"
+        docker logs palworld-dedicated-server
+        exit 6
 
     - name: Stop server
       shell: bash

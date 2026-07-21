@@ -12,6 +12,12 @@ describe("resolveLanguage", () => {
     expect(resolveLanguage(undefined, "fr,en;q=0.8", "en")).toBe("en");
   });
 
+  it("honors q-weights: order by weight and never pick q=0 entries", () => {
+    expect(resolveLanguage(undefined, "en;q=0.5,zh-CN;q=0.9", "en")).toBe("zh-CN");
+    expect(resolveLanguage(undefined, "zh-CN;q=0,en;q=0.8", "en")).toBe("en");
+    expect(resolveLanguage(undefined, "fr;q=0.9,zh;q=0.9", "en")).toBe("zh-CN");
+  });
+
   it("falls back to the configured default, then English", () => {
     expect(resolveLanguage(undefined, undefined, "zh-CN")).toBe("zh-CN");
     expect(resolveLanguage(undefined, undefined, "xx")).toBe("en");

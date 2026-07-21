@@ -24,6 +24,8 @@ export interface PanelConfig {
   username: string;
   password: string;
   defaultLanguage: string;
+  /** Honor X-Forwarded-* headers - only safe behind a reverse proxy */
+  trustProxy: boolean;
 }
 
 export interface DiscordStatusConfig {
@@ -72,6 +74,7 @@ export function parseConfig(env: Record<string, string | undefined>): CompanionC
         username: env.PANEL_USERNAME || "admin",
         password,
         defaultLanguage: env.PANEL_DEFAULT_LANGUAGE || "en",
+        trustProxy: envBool(env.PANEL_TRUST_PROXY),
       };
     }
   }

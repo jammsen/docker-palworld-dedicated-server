@@ -29,6 +29,7 @@ export async function startDiscordStatus(config: CompanionConfig, deps: DiscordS
 
   let inFlight = false;
   let stopped = false;
+  let currentTick: Promise<void> = Promise.resolve();
 
   const tick = async () => {
     if (inFlight || stopped) return;
@@ -51,13 +52,20 @@ export async function startDiscordStatus(config: CompanionConfig, deps: DiscordS
     }
   };
 
+  // Capture the promise only when a tick actually starts, so stop() awaits
+  // the real in-flight publish and not an instantly-resolved guard return.
+  const scheduleTick = () => {
+    if (!inFlight && !stopped) currentTick = tick();
+  };
+
   log.info(`>>> Discord status card enabled (update interval: ${discord.updateIntervalSeconds}s)`);
-  void tick();
-  const timer = setInterval(() => void tick(), discord.updateIntervalSeconds * 1000);
+  scheduleTick();
+  const timer = setInterval(scheduleTick, discord.updateIntervalSeconds * 1000);
 
   return async () => {
     stopped = true;
     clearInterval(timer);
+    await currentTick; // never rejects - tick() catches internally
     try {
       // Pick up the shell's 'stopping' event written just before our SIGTERM,
       // so the final card shows the complete log including the shutdown itself

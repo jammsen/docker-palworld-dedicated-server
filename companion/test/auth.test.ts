@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { AuthService } from "../src/web/auth.js";
 
 const SECRET = "0123456789abcdef0123456789abcdef";
@@ -37,12 +37,29 @@ describe("AuthService", () => {
     expect(auth.verifyCsrf(auth.createSession() + "x", token)).toBe(false);
   });
 
-  it("locks out an IP after repeated failures and recovers after the window", () => {
-    const auth = new AuthService(SECRET, "admin", "pw");
-    for (let i = 0; i < 5; i++) auth.recordFailure("1.2.3.4");
-    expect(auth.isLockedOut("1.2.3.4")).toBe(true);
-    expect(auth.isLockedOut("5.6.7.8")).toBe(false);
-    auth.recordSuccess("1.2.3.4");
-    expect(auth.isLockedOut("1.2.3.4")).toBe(false);
+  describe("lockout", () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("locks out an IP after repeated failures and unlocks after the window", () => {
+      vi.useFakeTimers();
+      const auth = new AuthService(SECRET, "admin", "pw");
+      for (let i = 0; i < 5; i++) auth.recordFailure("1.2.3.4");
+      expect(auth.isLockedOut("1.2.3.4")).toBe(true);
+      expect(auth.isLockedOut("5.6.7.8")).toBe(false);
+      vi.advanceTimersByTime(59_000);
+      expect(auth.isLockedOut("1.2.3.4")).toBe(true);
+      vi.advanceTimersByTime(2_000);
+      expect(auth.isLockedOut("1.2.3.4")).toBe(false);
+    });
+
+    it("clears an active lockout immediately on successful login", () => {
+      const auth = new AuthService(SECRET, "admin", "pw");
+      for (let i = 0; i < 5; i++) auth.recordFailure("1.2.3.4");
+      expect(auth.isLockedOut("1.2.3.4")).toBe(true);
+      auth.recordSuccess("1.2.3.4");
+      expect(auth.isLockedOut("1.2.3.4")).toBe(false);
+    });
   });
 });

@@ -53,62 +53,70 @@ export class PalworldClient {
     this.timeoutMs = restapi.timeoutSeconds * 1000;
   }
 
-  private async request(endpoint: string, body?: unknown): Promise<unknown> {
+  private async request(endpoint: string, init: { method?: "GET" | "POST"; body?: unknown } = {}): Promise<Response> {
+    const method = init.method ?? (init.body === undefined ? "GET" : "POST");
     const response = await this.fetchFn(this.baseUrl + endpoint, {
-      method: body === undefined ? "GET" : "POST",
+      method,
       headers: {
         Authorization: this.authHeader,
         Accept: "application/json",
-        ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+        ...(init.body !== undefined ? { "Content-Type": "application/json" } : {}),
       },
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
       signal: AbortSignal.timeout(this.timeoutMs),
     });
     if (!response.ok) {
       throw new PalworldRestError(endpoint, response.status);
     }
+    return response;
+  }
+
+  // Read endpoints parse JSON; mutation endpoints below deliberately ignore the
+  // body - a 2xx is success even when the game returns plain text or nothing
+  private async requestJson(endpoint: string): Promise<unknown> {
+    const response = await this.request(endpoint);
     const text = await response.text();
     return text.length > 0 ? JSON.parse(text) : {};
   }
 
   async getInfo(): Promise<GameInfo> {
-    return (await this.request("info")) as GameInfo;
+    return (await this.requestJson("info")) as GameInfo;
   }
 
   async getMetrics(): Promise<GameMetrics> {
-    return (await this.request("metrics")) as GameMetrics;
+    return (await this.requestJson("metrics")) as GameMetrics;
   }
 
   async getPlayers(): Promise<GamePlayer[]> {
-    const data = (await this.request("players")) as { players?: GamePlayer[] };
+    const data = (await this.requestJson("players")) as { players?: GamePlayer[] };
     return data.players ?? [];
   }
 
   async getSettings(): Promise<Record<string, unknown>> {
-    return (await this.request("settings")) as Record<string, unknown>;
+    return (await this.requestJson("settings")) as Record<string, unknown>;
   }
 
   async announce(message: string): Promise<void> {
-    await this.request("announce", { message });
+    await this.request("announce", { body: { message } });
   }
 
   async save(): Promise<void> {
-    await this.request("save", {});
+    await this.request("save", { method: "POST" });
   }
 
   async shutdown(waittime: number, message: string): Promise<void> {
-    await this.request("shutdown", { waittime, message });
+    await this.request("shutdown", { body: { waittime, message } });
   }
 
   async kick(userid: string, message: string): Promise<void> {
-    await this.request("kick", { userid, message });
+    await this.request("kick", { body: { userid, message } });
   }
 
   async ban(userid: string, message: string): Promise<void> {
-    await this.request("ban", { userid, message });
+    await this.request("ban", { body: { userid, message } });
   }
 
   async unban(userid: string): Promise<void> {
-    await this.request("unban", { userid });
+    await this.request("unban", { body: { userid } });
   }
 }

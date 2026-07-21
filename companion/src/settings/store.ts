@@ -1,6 +1,6 @@
 import { mkdir, readFile, rename, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { normalizeSettingValue, settingsSchema, type SettingSpec } from "./schema.js";
+import { normalizeSettingValue, settingsSchema, validateSettingValue, type SettingSpec } from "./schema.js";
 
 export type Provenance = "default" | "env" | "override";
 
@@ -21,6 +21,7 @@ const OVERRIDES_HEADER = `# Managed by the palworld-companion web panel - do not
 export class SettingsStore {
   private readonly filePath: string;
   private writeQueue: Promise<void> = Promise.resolve();
+  private mutation: Promise<unknown> = Promise.resolve();
 
   constructor(
     private readonly dataDir: string,
@@ -34,8 +35,12 @@ export class SettingsStore {
     let content: string;
     try {
       content = await readFile(this.filePath, "utf8");
-    } catch {
-      return overrides;
+    } catch (error) {
+      // Only a missing file means "no overrides". Rethrow everything else so a
+      // transient read failure can never feed an empty map into a later write
+      // and silently wipe all existing overrides.
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") return overrides;
+      throw error;
     }
     for (const line of content.split("\n")) {
       if (/^\s*(#|$)/.test(line)) continue;
@@ -50,13 +55,23 @@ export class SettingsStore {
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([key, value]) => `${key}=${value}`);
     const content = `${OVERRIDES_HEADER}${lines.join("\n")}${lines.length > 0 ? "\n" : ""}`;
-    this.writeQueue = this.writeQueue.then(async () => {
+    // Recover a rejected chain before appending so a transient error doesn't
+    // permanently break every future write.
+    this.writeQueue = this.writeQueue.catch(() => {}).then(async () => {
       await mkdir(this.dataDir, { recursive: true });
       const tmpPath = `${this.filePath}.tmp`;
       await writeFile(tmpPath, content, "utf8");
       await rename(tmpPath, this.filePath);
     });
     await this.writeQueue;
+  }
+
+  /** Serialize read-compute-write mutations end-to-end so concurrent panel
+   *  submissions cannot silently overwrite each other's changes. */
+  private withLock<T>(fn: () => Promise<T>): Promise<T> {
+    const run = this.mutation.catch(() => undefined).then(fn);
+    this.mutation = run.catch(() => undefined);
+    return run;
   }
 
   /** Env value if set, otherwise the schema default - what "reset" reverts to */
@@ -86,36 +101,43 @@ export class SettingsStore {
    * override, differing keys get one. Returns the number of override changes.
    */
   async applySubmission(submitted: Map<string, string>): Promise<number> {
-    const overrides = await this.readOverrides();
-    let changes = 0;
-    for (const spec of settingsSchema) {
-      if (spec.excluded) continue;
-      const raw = submitted.get(spec.key);
-      if (raw === undefined) continue;
-      const value = normalizeSettingValue(spec, raw);
-      const envValue = this.envValue(spec);
-      const hadOverride = overrides.has(spec.key);
-      if (value === normalizeSettingValue(spec, envValue)) {
-        if (hadOverride) {
-          overrides.delete(spec.key);
+    return this.withLock(async () => {
+      const overrides = await this.readOverrides();
+      let changes = 0;
+      for (const spec of settingsSchema) {
+        if (spec.excluded) continue;
+        const raw = submitted.get(spec.key);
+        if (raw === undefined) continue;
+        // Defense in depth: the /settings/save route validates, but the store
+        // must not persist invalid values for any other caller either
+        if (!validateSettingValue(spec, raw).ok) continue;
+        const value = normalizeSettingValue(spec, raw);
+        const envValue = this.envValue(spec);
+        const hadOverride = overrides.has(spec.key);
+        if (value === normalizeSettingValue(spec, envValue)) {
+          if (hadOverride) {
+            overrides.delete(spec.key);
+            changes += 1;
+          }
+        } else if (!hadOverride || overrides.get(spec.key) !== value) {
+          overrides.set(spec.key, value);
           changes += 1;
         }
-      } else if (!hadOverride || overrides.get(spec.key) !== value) {
-        overrides.set(spec.key, value);
-        changes += 1;
       }
-    }
-    if (changes > 0) await this.writeOverrides(overrides);
-    return changes;
+      if (changes > 0) await this.writeOverrides(overrides);
+      return changes;
+    });
   }
 
   async resetOverride(key: string): Promise<void> {
-    const overrides = await this.readOverrides();
-    if (overrides.delete(key)) await this.writeOverrides(overrides);
+    return this.withLock(async () => {
+      const overrides = await this.readOverrides();
+      if (overrides.delete(key)) await this.writeOverrides(overrides);
+    });
   }
 
   async resetAllOverrides(): Promise<void> {
-    await this.writeOverrides(new Map());
+    return this.withLock(() => this.writeOverrides(new Map()));
   }
 
   /** Pending changes = overrides file written after the INI was last generated */

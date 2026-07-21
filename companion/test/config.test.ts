@@ -22,6 +22,7 @@ describe("parseConfig", () => {
       username: "admin",
       password: "secret",
       defaultLanguage: "en",
+      trustProxy: false,
     });
   });
 

@@ -3,8 +3,10 @@
 // auto-submit and confirm dialogs.
 export const enhanceJs = `"use strict";
 document.querySelectorAll("[data-autosubmit]").forEach(function (el) {
-  el.addEventListener("change", function () { el.form.submit(); });
-  var noscriptButton = el.form.querySelector("[data-autosubmit-fallback]");
+  var form = el.form;
+  if (!form) return;
+  el.addEventListener("change", function () { form.requestSubmit(); });
+  var noscriptButton = form.querySelector("[data-autosubmit-fallback]");
   if (noscriptButton) noscriptButton.hidden = true;
 });
 document.querySelectorAll("form[data-confirm]").forEach(function (form) {

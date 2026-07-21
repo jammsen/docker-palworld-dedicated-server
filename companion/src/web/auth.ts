@@ -5,6 +5,9 @@ export const SESSION_COOKIE = "companion_session";
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
 const MAX_FAILURES = 5;
 const LOCKOUT_MS = 60_000;
+// Bounds for the failure map so distributed attempts cannot grow it forever
+const FAILURE_TTL_MS = 15 * 60_000;
+const MAX_TRACKED_IPS = 10_000;
 
 function safeEqual(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
@@ -17,13 +20,18 @@ function safeEqual(a: string, b: string): boolean {
 // The signing secret is generated once and persisted on the game volume,
 // so sessions survive companion and container restarts.
 export class AuthService {
-  private readonly failures = new Map<string, { count: number; lockedUntil: number }>();
+  private readonly failures = new Map<string, { count: number; lockedUntil: number; lastFailureAt: number }>();
+  private readonly signingKey: Buffer;
 
   constructor(
-    private readonly secret: string,
+    secret: string,
     private readonly username: string,
     private readonly password: string,
-  ) {}
+  ) {
+    // Bind the signing key to the credentials so rotating PANEL_PASSWORD
+    // (or PANEL_USERNAME) revokes all previously issued sessions.
+    this.signingKey = createHmac("sha256", secret).update(`${username}:${password}`).digest();
+  }
 
   static async ensureSecret(state: StateStore): Promise<string> {
     let secret = state.get().sessionSecret;
@@ -35,7 +43,7 @@ export class AuthService {
   }
 
   private sign(data: string): string {
-    return createHmac("sha256", this.secret).update(data).digest("hex");
+    return createHmac("sha256", this.signingKey).update(data).digest("hex");
   }
 
   verifyLogin(username: string, password: string): boolean {
@@ -74,15 +82,35 @@ export class AuthService {
   }
 
   recordFailure(ip: string): void {
-    const entry = this.failures.get(ip) ?? { count: 0, lockedUntil: 0 };
+    this.pruneFailures();
+    const entry = this.failures.get(ip) ?? { count: 0, lockedUntil: 0, lastFailureAt: 0 };
     if (entry.count >= MAX_FAILURES && entry.lockedUntil <= Date.now()) {
       entry.count = 0; // previous lockout expired - start a fresh window
     }
     entry.count += 1;
+    entry.lastFailureAt = Date.now();
     if (entry.count >= MAX_FAILURES) {
       entry.lockedUntil = Date.now() + LOCKOUT_MS;
     }
     this.failures.set(ip, entry);
+  }
+
+  // Keep the failure map bounded under distributed brute-force: drop entries
+  // that went quiet past the TTL, then evict oldest-first (Map preserves
+  // insertion order) if a flood is still over the cap.
+  private pruneFailures(): void {
+    if (this.failures.size < MAX_TRACKED_IPS) return;
+    const now = Date.now();
+    for (const [ip, entry] of this.failures) {
+      if (now - entry.lastFailureAt > FAILURE_TTL_MS && entry.lockedUntil <= now) {
+        this.failures.delete(ip);
+      }
+    }
+    while (this.failures.size >= MAX_TRACKED_IPS) {
+      const oldest = this.failures.keys().next().value;
+      if (oldest === undefined) break;
+      this.failures.delete(oldest);
+    }
   }
 
   recordSuccess(ip: string): void {

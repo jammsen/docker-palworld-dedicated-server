@@ -50,7 +50,7 @@ function SettingInput({ setting, readOnly }: { setting: EffectiveSetting; readOn
         value={value}
         min={spec.min}
         max={spec.max}
-        step={spec.type === "int" ? 1 : spec.step}
+        step={spec.type === "int" ? 1 : (spec.step ?? "any")}
         disabled={disabled}
       />
     );

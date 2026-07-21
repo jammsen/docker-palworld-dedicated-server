@@ -85,5 +85,6 @@
   "settings.group.guild": "Guilds",
   "settings.group.pvp": "PvP",
   "settings.group.network": "Network & API",
-  "settings.restartTriggered": "Restart triggered - the server is saving and shutting down, the container restart policy will bring it back up"
+  "settings.restartTriggered": "Restart triggered - the server is saving and shutting down, the container restart policy will bring it back up",
+  "settings.restartFailed": "Restart failed - the server REST API did not respond. Check the container logs and try again."
 }

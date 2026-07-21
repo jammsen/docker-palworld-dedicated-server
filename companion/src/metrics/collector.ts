@@ -29,6 +29,7 @@ export class MetricsCollector {
   private cachedServerName = "";
   private lastSnapshot: StatusSnapshot | null = null;
   private seenShellEvents: Set<string> | null = null;
+  private collecting: Promise<StatusSnapshot> | null = null;
 
   constructor(
     private readonly config: CompanionConfig,
@@ -96,7 +97,16 @@ export class MetricsCollector {
     return this.collect();
   }
 
+  // Coalesce overlapping calls (Discord tick + panel getFresh) into one run:
+  // the game API is polled once and state writes cannot interleave.
   async collect(): Promise<StatusSnapshot> {
+    this.collecting ??= this.doCollect().finally(() => {
+      this.collecting = null;
+    });
+    return this.collecting;
+  }
+
+  private async doCollect(): Promise<StatusSnapshot> {
     let game: GameMetrics | null = null;
     let players: GamePlayer[] = [];
 
@@ -152,11 +162,14 @@ export class MetricsCollector {
     // (player detection, SteamCMD, restarts, backups) via the event file; the
     // companion only contributes REST up/down transitions. No previous
     // snapshot (companion just started) means no transition to detect.
-    let events = this.state.get().events ?? [];
     const newEvents = await this.ingestShellEvents();
     if (this.lastSnapshot !== null) {
       newEvents.push(...serverStateEvents(this.lastSnapshot.serverUp, game !== null, Date.now()));
     }
+    // Read events only after the awaits above: recordEvent() may have appended
+    // meanwhile, and state.update applies patches synchronously, so this
+    // read-append-update cannot interleave with other mutations.
+    let events = this.state.get().events ?? [];
     if (newEvents.length > 0) {
       events = appendEvents(events, newEvents);
       await this.state.update({ events });

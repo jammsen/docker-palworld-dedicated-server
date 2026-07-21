@@ -59,4 +59,4 @@ const server = createServer((req, res) => {
   }
 });
 
-server.listen(8212, () => console.log("mock palworld REST API listening on http://127.0.0.1:8212"));
+server.listen(8212, "127.0.0.1", () => console.log("mock palworld REST API listening on http://127.0.0.1:8212"));
