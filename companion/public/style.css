@@ -74,7 +74,7 @@ body {
 }
 
 main {
-  max-width: 60rem;
+  max-width: 75rem;
   margin: 0 auto;
   padding: 1.5rem 1.25rem 3rem;
 }
@@ -131,10 +131,10 @@ h2 {
   grid-template-columns: repeat(2, 1fr);
 }
 
-/* First-view split: stats left, event log right - stacks on narrow screens */
+/* First-view split: stats left (1/3), event log right (2/3) - stacks on narrow screens */
 .dashboard-split {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 2fr;
   gap: 1.75rem;
   align-items: start;
   margin-top: 1.25rem;
@@ -154,6 +154,10 @@ h2 {
 
 @media (max-width: 50rem) {
   .dashboard-split {
+    grid-template-columns: 1fr;
+  }
+
+  .cores {
     grid-template-columns: 1fr;
   }
 }
@@ -192,11 +196,11 @@ h2 {
   height: 100%;
 }
 
+/* Two cores per visual row (1+2, 3+4, ...) like the Discord card */
 .cores {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  max-width: 32rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 1.5rem;
 }
 
 .core-row {

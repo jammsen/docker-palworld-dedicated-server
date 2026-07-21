@@ -377,6 +377,9 @@ After enabling the server should send messages in a Discord-Compatible way to yo
 
 ## Web operation panel
 
+> [!NOTE]
+> 🆕 **New feature** - the web operation panel ships with this release.
+
 The image ships an optional, built-in web panel (no extra container needed) for administrating the gameserver in the browser:
 
 - **Dashboard** - server status, uptime, population, server frame time, server FPS, in-game day, RAM usage, per-CPU-core load and the last-events log (side by side for the full picture at a glance)
@@ -384,6 +387,20 @@ The image ships an optional, built-in web panel (no extra container needed) for 
 - **Settings editor** - every `PalWorldSettings.ini` value with validation, grouped and translated (English + 中文); saved changes are stored as overrides on the game volume and **survive container restarts and re-creation**
 - **One-click restart** with in-game announce and world save
 - Login-protected; sessions survive restarts
+
+![Web panel dashboard showing server status, stat tiles, the last-events log, RAM usage and per-core CPU bars](docs/assets/webpanel-dashboard.png)
+
+> [!IMPORTANT]
+> **How settings are inherited:** on every gameserver start the effective `PalWorldSettings.ini` is generated with this precedence - **later wins**:
+>
+> `template default` → `environment variable (default.env)` → `panel override`
+>
+> - Panel changes are stored as **overrides** (`companion/settings-overrides.env` on the game volume) and survive container restarts **and** re-creation.
+> - **A panel override outranks your `default.env`.** If an edit to `default.env` seems to be ignored, an override is shadowing it - press **Reset** on that setting (or *Reset all*) in the panel.
+> - Saving a value that equals your env/default removes the override again; **Reset** reverts a setting to its env/default value.
+> - Changes apply at the **next gameserver restart** - the panel shows a *restart pending* hint until then.
+> - The settings editor is only writable in `SERVER_SETTINGS_MODE=auto`. In `manual` mode the panel is read-only - edit the INI file yourself.
+> - The panel's **Export** button downloads the effective settings as a `.env` file, ready to diff against your host `default.env`.
 
 Enable it in your `default.env` and uncomment the `8213` port mapping in your compose file:
 
@@ -396,7 +413,22 @@ PANEL_PASSWORD=choose-a-strong-password
 
 ## Discord live status card
 
+> [!NOTE]
+> 🆕 **New feature** - the Discord live status card ships with this release.
+
 Instead of (or in addition to) event webhooks, the image can maintain **one single Discord message** that it keeps editing in place - a live server status card with uptime, population, server frame time, server FPS, RAM, per-core CPU bars, last restart, the online player list (with platform icons) and a **last-events log** (player joins/leaves, server starting/updating/stopping, restarts, backups, settings changes). No Discord bot account needed, a plain channel webhook is enough; the message survives container restarts (its id is stored on the game volume).
+
+![Discord live status card showing uptime, population, frame time, FPS, RAM, in-game day, per-core CPU bars, last restart, the online player list with platform icon and the last-events log](docs/assets/discord-status-card.png)
+
+> [!IMPORTANT]
+> **How the card behaves:**
+>
+> - It is **one message, edited in place** every `DISCORD_STATUS_UPDATE_INTERVAL` seconds (minimum 15 - lower values are clamped for webhook rate-limit safety). Your channel does not fill up with posts.
+> - The message id is stored on the game volume, so the **same card survives container restarts and re-creation**. To move the card to another channel or force a fresh post, see [Moving or recreating the status card](#moving-or-recreating-the-status-card).
+> - If someone deletes the message, the companion simply **posts a new card** on the next update.
+> - On container shutdown the card flips to **offline** with the final event log - it never lies about a dead server.
+> - The event log shows up to `DISCORD_STATUS_EVENT_AMOUNT` entries (1-50, clamped; long player names can reduce the count to fit Discord's embed-field size limit).
+> - `DISCORD_STATUS_WEBHOOK_URL` left empty **falls back to your existing `WEBHOOK_URL`** - both features can share one webhook.
 
 > **Dependency:** The player entries in the event log (and on the web dashboard) come from the built-in player detection - they require `PLAYER_DETECTION_ENABLED=true` (the default) and the REST API. Player detection is the single source for player events; with it disabled, the event log only contains server/system events.
 
