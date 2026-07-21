@@ -1,4 +1,4 @@
-import { formatDuration, formatGiB } from "../../discord/card.js";
+import { formatDuration, formatGiB, formatUtcTimestamp } from "../../format.js";
 import type { ServerEvent } from "../../events.js";
 import type { StatusSnapshot } from "../../metrics/collector.js";
 import { Layout } from "./layout.js";
@@ -105,7 +105,7 @@ export function DashboardPage({ t, language, snapshot, csrf }: DashboardPageProp
                 .reverse()
                 .map((event) => (
                   <li>
-                    <span class="event-time">{new Date(event.at).toISOString().replace("T", " ").slice(11, 19)}</span>{" "}
+                    <span class="event-time">{formatUtcTimestamp(event.at, "time")}</span>{" "}
                     {eventLine(event, t)}
                   </li>
                 ))}
@@ -141,7 +141,7 @@ export function DashboardPage({ t, language, snapshot, csrf }: DashboardPageProp
 
           {snapshot.lastRestartAt !== null ? (
             <p>
-              🔄 {t("status.lastRestart")}: {new Date(snapshot.lastRestartAt).toISOString().replace("T", " ").slice(0, 19)} UTC
+              🔄 {t("status.lastRestart")}: {formatUtcTimestamp(snapshot.lastRestartAt, "datetime")} UTC
             </p>
           ) : null}
         </div>

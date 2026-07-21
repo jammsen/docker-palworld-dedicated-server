@@ -86,5 +86,9 @@
   "settings.group.pvp": "PvP",
   "settings.group.network": "网络与 API",
   "settings.restartTriggered": "已触发重启 - 服务器正在保存并关闭，容器重启策略会将其重新拉起",
-  "settings.restartFailed": "重启失败 - 服务器 REST API 未响应。请检查容器日志后重试。"
+  "settings.restartFailed": "重启失败 - 服务器 REST API 未响应。请检查容器日志后重试。",
+  "settings.col.key": "设置项",
+  "settings.col.value": "值",
+  "settings.col.provenance": "来源",
+  "settings.col.actions": "操作"
 }

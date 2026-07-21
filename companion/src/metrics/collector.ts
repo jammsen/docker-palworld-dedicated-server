@@ -112,8 +112,7 @@ export class MetricsCollector {
 
     if (this.config.restapi.enabled) {
       try {
-        game = await this.client.getMetrics();
-        players = await this.client.getPlayers();
+        [game, players] = await Promise.all([this.client.getMetrics(), this.client.getPlayers()]);
         if (!this.cachedServerName) {
           this.cachedServerName = (await this.client.getInfo().catch(() => null))?.servername ?? "";
         }

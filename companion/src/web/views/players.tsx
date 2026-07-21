@@ -18,18 +18,21 @@ function ModerationForm({
   label,
   confirmText,
   csrf,
+  buttonClass = "btn-danger",
 }: {
   action: string;
   userid: string;
   label: string;
-  confirmText: string;
+  /** Omit to submit without a confirm dialog */
+  confirmText?: string;
   csrf: string;
+  buttonClass?: string;
 }) {
   return (
     <form method="post" action={action} class="inline" data-confirm={confirmText}>
       <input type="hidden" name="_csrf" value={csrf} />
       <input type="hidden" name="userid" value={userid} />
-      <button type="submit" class="btn-danger">
+      <button type="submit" class={buttonClass}>
         {label}
       </button>
     </form>
@@ -107,13 +110,7 @@ export function PlayersPage({ t, language, snapshot, csrf, banlist, actionResult
                   <code>{entry.raw}</code>
                 </td>
                 <td>
-                  <form method="post" action="/players/unban" class="inline">
-                    <input type="hidden" name="_csrf" value={csrf} />
-                    <input type="hidden" name="userid" value={entry.userid} />
-                    <button type="submit" class="linklike">
-                      {t("players.unban")}
-                    </button>
-                  </form>
+                  <ModerationForm action="/players/unban" userid={entry.userid} label={t("players.unban")} csrf={csrf} buttonClass="linklike" />
                 </td>
               </tr>
             ))}

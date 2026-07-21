@@ -1,4 +1,5 @@
 import type { ServerEvent } from "../events.js";
+import { formatDuration, formatGiB } from "../format.js";
 import type { StatusSnapshot } from "../metrics/collector.js";
 import { platformEmojiFromUserId, type PlatformEmojiOverrides } from "../palworld/platform.js";
 import type { DiscordEmbedField, EmbedPayload } from "./transport.js";
@@ -16,19 +17,6 @@ export type CardState = "online" | "starting" | "offline";
 function bar(percent: number, width: number): string {
   const filled = Math.round((Math.min(100, Math.max(0, percent)) / 100) * width);
   return "█".repeat(filled) + "░".repeat(width - filled);
-}
-
-export function formatDuration(totalSeconds: number): string {
-  const days = Math.floor(totalSeconds / 86_400);
-  const hours = Math.floor((totalSeconds % 86_400) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  if (days > 0) return `${days}d ${hours}h ${minutes}m`;
-  if (hours > 0) return `${hours}h ${minutes}m`;
-  return `${minutes}m`;
-}
-
-export function formatGiB(bytes: number): string {
-  return `${(bytes / 1024 ** 3).toFixed(1)} GiB`;
 }
 
 // Strip control characters and embed-breaking markdown from player names

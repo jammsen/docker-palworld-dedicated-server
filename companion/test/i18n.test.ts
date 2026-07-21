@@ -18,6 +18,17 @@ describe("resolveLanguage", () => {
     expect(resolveLanguage(undefined, "fr;q=0.9,zh;q=0.9", "en")).toBe("zh-CN");
   });
 
+  it("matches tags case-insensitively and returns the canonical key", () => {
+    expect(resolveLanguage(undefined, "EN-US", "en")).toBe("en");
+    expect(resolveLanguage(undefined, "ZH-cn", "en")).toBe("zh-CN");
+  });
+
+  it("treats malformed or out-of-range q-values as unacceptable", () => {
+    expect(resolveLanguage(undefined, "zh-CN;q=bogus,en;q=0.5", "en")).toBe("en");
+    expect(resolveLanguage(undefined, "zh-CN;q=2,en;q=0.5", "en")).toBe("en");
+    expect(resolveLanguage(undefined, "zh-CN;q=0.9,en;q=0.5", "en")).toBe("zh-CN");
+  });
+
   it("falls back to the configured default, then English", () => {
     expect(resolveLanguage(undefined, undefined, "zh-CN")).toBe("zh-CN");
     expect(resolveLanguage(undefined, undefined, "xx")).toBe("en");

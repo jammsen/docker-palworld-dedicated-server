@@ -16,12 +16,14 @@ export interface SettingsPageProps {
 function SettingInput({ setting, readOnly }: { setting: EffectiveSetting; readOnly: boolean }) {
   const { spec, value } = setting;
   const disabled = readOnly || spec.excluded === true;
+  // Stable id so the key cell's <label for> can reference the input
+  const id = `setting-${spec.key}`;
   if (spec.secret) {
-    return <input type="password" value="" placeholder="••••••••" disabled />;
+    return <input id={id} type="password" value="" placeholder="••••••••" disabled />;
   }
   if (spec.type === "bool") {
     return (
-      <select name={spec.key} disabled={disabled}>
+      <select id={id} name={spec.key} disabled={disabled}>
         <option value="true" selected={value === "true"}>
           true
         </option>
@@ -33,7 +35,7 @@ function SettingInput({ setting, readOnly }: { setting: EffectiveSetting; readOn
   }
   if (spec.type === "enum") {
     return (
-      <select name={spec.key} disabled={disabled}>
+      <select id={id} name={spec.key} disabled={disabled}>
         {(spec.values ?? []).map((option) => (
           <option value={option} selected={value === option}>
             {option}
@@ -45,6 +47,7 @@ function SettingInput({ setting, readOnly }: { setting: EffectiveSetting; readOn
   if (spec.type === "int" || spec.type === "float") {
     return (
       <input
+        id={id}
         type="number"
         name={spec.key}
         value={value}
@@ -55,7 +58,7 @@ function SettingInput({ setting, readOnly }: { setting: EffectiveSetting; readOn
       />
     );
   }
-  return <input type="text" name={spec.key} value={value} disabled={disabled} />;
+  return <input id={id} type="text" name={spec.key} value={value} disabled={disabled} />;
 }
 
 function ProvenanceBadge({ setting, t }: { setting: EffectiveSetting; t: (key: string) => string }) {
@@ -108,11 +111,21 @@ export function SettingsPage({ t, language, csrf, settings, readOnly, restartPen
             <section>
               <h2>{t(`settings.group.${group}`)}</h2>
               <table class="settings-table">
+                <thead>
+                  <tr>
+                    <th scope="col">{t("settings.col.key")}</th>
+                    <th scope="col">{t("settings.col.value")}</th>
+                    <th scope="col">{t("settings.col.provenance")}</th>
+                    <th scope="col">{t("settings.col.actions")}</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {groupSettings.map((setting) => (
                     <tr>
                       <td class="setting-key">
-                        <code>{setting.spec.key}</code>
+                        <label for={`setting-${setting.spec.key}`}>
+                          <code>{setting.spec.key}</code>
+                        </label>
                       </td>
                       <td>
                         <SettingInput setting={setting} readOnly={readOnly} />

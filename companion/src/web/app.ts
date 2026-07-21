@@ -64,7 +64,10 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
     c.header("Cache-Control", "no-store");
     c.header("X-Content-Type-Options", "nosniff");
     // 'unsafe-inline' styles: the usage bars set their width via a style attribute
-    c.header("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:");
+    c.header(
+      "Content-Security-Policy",
+      "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'",
+    );
     const cookieLang = getCookie(c, LANG_COOKIE);
     const language = resolveLanguage(cookieLang, c.req.header("accept-language"), panel.defaultLanguage);
     c.set("language", language);
@@ -149,7 +152,15 @@ export function createApp(config: CompanionConfig, version: string, deps: AppDep
     if (availableLanguages.includes(lang)) {
       setCookie(c, LANG_COOKIE, lang, { path: "/", sameSite: "Strict" });
     }
-    return c.redirect(c.req.header("referer") ?? "/");
+    // Referer is client-supplied: keep only path+query so the redirect can never leave the panel
+    let target = "/";
+    try {
+      const url = new URL(c.req.header("referer") ?? "/", "http://panel.invalid");
+      target = url.pathname + url.search;
+    } catch {
+      target = "/";
+    }
+    return c.redirect(target);
   });
 
   app.get("/", async (c) => {

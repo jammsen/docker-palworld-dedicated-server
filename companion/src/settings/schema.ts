@@ -195,16 +195,9 @@ export const settingsSchema: SettingSpec[] = [
 
 export const settingsByKey = new Map(settingsSchema.map((spec) => [spec.key, spec]));
 
-export const settingGroups: SettingGroup[] = [
-  "server",
-  "gameplay",
-  "rates",
-  "building",
-  "items",
-  "guild",
-  "pvp",
-  "network",
-];
+// Derived from the schema so a future setting in a new group can never be
+// silently dropped from the UI; preserves first-appearance order for rendering
+export const settingGroups: SettingGroup[] = [...new Set(settingsSchema.map((spec) => spec.group))];
 
 export interface ValidationResult {
   ok: boolean;

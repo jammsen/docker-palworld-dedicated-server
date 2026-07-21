@@ -130,7 +130,7 @@ This 2 persons helped a lot along to way and made me and this project better! So
 
 ## Environment variables
 
-See [this file](docs/ENV_VARS.md) for the documentation
+See the [environment variables documentation](docs/ENV_VARS.md)
 
 ## Docker-Compose examples
 
@@ -365,7 +365,7 @@ WEBHOOK_URL="https://your.webhook.url"
 
 After enabling the server should send messages in a Discord-Compatible way to your webhook url.
 
-> You can find more details about these variables [here](docs/ENV_VARS.md#webhook-settings).
+> You can find more details about these variables in the [webhook settings in ENV_VARS.md](docs/ENV_VARS.md#webhook-settings).
 
 ### Supported events
 

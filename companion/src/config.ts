@@ -61,6 +61,19 @@ export function parseConfig(env: Record<string, string | undefined>): CompanionC
   const warnings: string[] = [];
   const gameRoot = env.GAME_ROOT || "/palworld";
 
+  const envPort = (key: string, fallback: number): number => {
+    const parsed = envInt(env[key], fallback);
+    if (parsed >= 1 && parsed <= 65535) return parsed;
+    warnings.push(`${key}=${env[key]} is not a valid port (1-65535) - using ${fallback}`);
+    return fallback;
+  };
+  const envSeconds = (key: string, fallback: number): number => {
+    const parsed = envInt(env[key], fallback);
+    if (parsed >= 1) return parsed;
+    warnings.push(`${key}=${env[key]} is not a positive number of seconds - using ${fallback}`);
+    return fallback;
+  };
+
   let panel: PanelConfig | null = null;
   if (envBool(env.PANEL_ENABLED)) {
     const password = env.PANEL_PASSWORD ?? "";
@@ -70,7 +83,7 @@ export function parseConfig(env: Record<string, string | undefined>): CompanionC
       );
     } else {
       panel = {
-        port: envInt(env.PANEL_PORT, 8213),
+        port: envPort("PANEL_PORT", 8213),
         username: env.PANEL_USERNAME || "admin",
         password,
         defaultLanguage: env.PANEL_DEFAULT_LANGUAGE || "en",
@@ -131,8 +144,8 @@ export function parseConfig(env: Record<string, string | undefined>): CompanionC
 
   const restapi: RestApiConfig = {
     enabled: envBool(env.RESTAPI_ENABLED),
-    port: envInt(env.RESTAPI_PORT, 8212),
-    timeoutSeconds: envInt(env.RESTAPI_TIMEOUT, 10),
+    port: envPort("RESTAPI_PORT", 8212),
+    timeoutSeconds: envSeconds("RESTAPI_TIMEOUT", 10),
     adminPassword: env.ADMIN_PASSWORD ?? "",
   };
 
