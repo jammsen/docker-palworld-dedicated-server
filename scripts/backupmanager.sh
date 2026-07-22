@@ -2,6 +2,7 @@
 # shellcheck disable=SC1091,SC2012,SC2004
 
 source /includes/colors.sh
+source /includes/companion.sh
 source /includes/restapi.sh
 
 # Default values if the environment variables exist
@@ -159,6 +160,8 @@ function create_backup() {
         if [[ -n $LOCAL_BACKUP_ANNOUNCE_MESSAGES_ENABLED ]] && [[ "${LOCAL_BACKUP_ANNOUNCE_MESSAGES_ENABLED,,}" == "true" ]]; then
             broadcast_backup_success
         fi
+        # Only log the companion event for a backup that actually exists
+        log_companion_event backup
         es ">>> Backup '${backup_file_name}' created successfully"
     fi
 

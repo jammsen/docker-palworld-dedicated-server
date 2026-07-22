@@ -16,6 +16,13 @@ updates:
     patterns: ["*"]
     multi-ecosystem-group: "all-dependencies"
 
+  - package-ecosystem: "npm"
+    directory: "/companion"
+    schedule:
+      interval: "weekly"
+    patterns: ["*"]
+    multi-ecosystem-group: "all-dependencies"
+
 multi-ecosystem-groups:
   all-dependencies:
     schedule:

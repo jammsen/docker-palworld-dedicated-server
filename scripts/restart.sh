@@ -4,6 +4,7 @@
 set -e
 
 source /includes/colors.sh
+source /includes/companion.sh
 source /includes/server.sh
 source /includes/webhook.sh
 
@@ -13,6 +14,7 @@ function get_time() {
 
 function schedule_restart() {
     ew ">>> Automatic restart was triggered..."
+    log_companion_event restart
     PLAYER_DETECTION_PID=$(<PLAYER_DETECTION.PID)
     if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
         send_restart_planned_notification
@@ -44,12 +46,14 @@ function schedule_restart() {
         restapi_announce "$(get_time) Saving done"
         sleep 15
         kill -SIGTERM "${PLAYER_DETECTION_PID}"
+        log_companion_event stopping
         restapi_shutdown 10 "$(get_time) Server restarting..."
         if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
             send_stop_notification
         fi
     else
         ew ">>> Stopping server..."
+        log_companion_event stopping
         if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
             send_stop_notification
         fi
