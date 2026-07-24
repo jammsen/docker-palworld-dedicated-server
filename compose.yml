@@ -21,12 +21,43 @@ services:
         published: 25575 # RCON port on your host
         protocol: tcp
         mode: host
-      # Uncomment to reach the web panel (PANEL_ENABLED=true) - do NOT expose this port to the internet, use a reverse proxy or VPN/LAN only
-      #- target: 8213 # Web panel port inside of the container
-      #  published: 8213 # Web panel port on your host
-      #  protocol: tcp
-      #  mode: host
     env_file:
       - ./default.env
     volumes:
       - ./game:/palworld
+      # Companion sidecar: read-only view of the companion's data volume
+      # (settings-overrides.env) - uncomment together with the service below
+      #- companion-data:/companion-data:ro
+    # Companion sidecar: uncomment together with the volume line above
+    #environment:
+    #  COMPANION_DATA_DIR: /companion-data
+
+  # Optional companion sidecar: web operation panel + Discord live status card.
+  # Uncomment this service, the two "Companion sidecar" lines above and the
+  # top-level volume below, then set PANEL_* / DISCORD_STATUS_* in default.env.
+  # Docs: https://github.com/jammsen/docker-palworld-companion
+  #companion:
+  #  container_name: palworld-companion
+  #  # develop tag during the testing grace period - switches to latest with
+  #  # the companion's first stable release
+  #  image: jammsen/palworld-companion:develop
+  #  restart: unless-stopped
+  #  depends_on:
+  #    - palworld-dedicated-server
+  #  ports:
+  #    # Do NOT expose the panel to the internet - use a reverse proxy or VPN/LAN only
+  #    - target: 8213 # Web panel port inside of the container
+  #      published: 8213 # Web panel port on your host
+  #      protocol: tcp
+  #      mode: host
+  #  env_file:
+  #    - ./default.env
+  #  environment:
+  #    RESTAPI_HOST: palworld-dedicated-server
+  #    COMPANION_DATA_DIR: /data
+  #  volumes:
+  #    - ./game:/palworld:ro
+  #    - companion-data:/data
+
+#volumes:
+#  companion-data:

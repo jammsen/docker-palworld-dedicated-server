@@ -7,7 +7,6 @@
 set -e
 
 source /includes/colors.sh
-source /includes/companion.sh
 source /includes/config.sh
 source /includes/cron.sh
 source /includes/playerdetection.sh
@@ -17,7 +16,6 @@ source /includes/webhook.sh
 
 START_MAIN_PID=
 PLAYER_DETECTION_PID=
-COMPANION_PID=
 
 
 
@@ -51,7 +49,8 @@ do
     e "> Started at: $current_date $current_time"
 
     # Provide this image's settings template on the game volume for the
-    # companion's export feature (see companion CONTRACT.md)
+    # companion sidecar's settings export - see the companion's CONTRACT.md:
+    # https://github.com/jammsen/docker-palworld-companion
     if [[ -f /default.env.template ]]; then
         cp -f /default.env.template "${GAME_ROOT}/default.env.template"
     fi
@@ -63,13 +62,6 @@ do
        PLAYER_DETECTION_PID="$!"
        echo $PLAYER_DETECTION_PID > PLAYER_DETECTION.PID
        ew "> Player detection thread started with pid ${PLAYER_DETECTION_PID}"
-    fi
-
-    if [[ "${PANEL_ENABLED,,}" == "true" ]] || [[ "${DISCORD_STATUS_ENABLED,,}" == "true" ]]; then
-       companion_loop &
-       COMPANION_PID="$!"
-       echo $COMPANION_PID > COMPANION.PID
-       ew "> Companion service thread started with pid ${COMPANION_PID}"
     fi
 
     ew "> Server main thread started with pid ${START_MAIN_PID}"

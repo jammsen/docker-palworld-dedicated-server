@@ -25,29 +25,13 @@ These settings control the behavior of the Docker container:
 | RESTART_ENABLED                      | Automatic restarts the server                                                                                                                       | false                          | Boolean                               |
 | RESTART_DEBUG_OVERRIDE               | Automatic restarts down to 15 seconds instead of 15 minutes                                                                                         | false                          | Boolean                               |
 | RESTART_CRON_EXPRESSION              | Needs a Cron-Expression - See [Cron expression](#cron-expression)                                                                                   | 0 3,15 * * *                   | Cron-Expression                       |
-| PLAYER_DETECTION_ENABLED             | Set to enabled will send player join and leaves to console and webhooks, and feed the companion event log (Discord card / dashboard), NEEDS `RESTAPI_ENABLED` | true                  | Boolean                               |
+| PLAYER_DETECTION_ENABLED             | Set to enabled will send player join and leaves to console and webhooks, and feed `game-events.log` for the [companion sidecar](#companion-sidecar), NEEDS `RESTAPI_ENABLED` | true                  | Boolean                               |
 | PLAYER_DETECTION_DEBUG               | Set to enabled will post debug messages to the console output                                                                                       | false                          | Boolean                               |
 | PLAYER_DETECTION_STARTUP_DELAY       | Initial delay for start checking for players, consider steam-updates and server start up in seconds                                                 | 60                             | Integer                               |
 | PLAYER_DETECTION_CHECK_INTERVAL      | Interval in seconds to wait for next check in the infinite loop                                                                                     | 15                             | Integer                               |
 | CUSTOM_SCRIPT_ENABLED                | Set to enabled will execute a custom script before the gameserver starts, see `CUSTOM_SCRIPT_PATH`                                                  | false                          | Boolean                               |
 | CUSTOM_SCRIPT_PATH                   | Absolute path to the custom script to execute; the file must exist at container runtime (e.g. mounted via a volume)                                 | /palworld/custom-script.sh     | String (absolute path)                |
-| COMPANION_DEBUG                      | Set to enabled will post companion-service debug messages to the console output                                                                     | false                          | Boolean                               |
-| COMPANION_STARTUP_DELAY              | Initial delay in seconds before the companion service (web panel / Discord status) starts                                                           | 15                             | Integer                               |
-| PANEL_ENABLED                        | Set to enabled will start the web operation panel on `PANEL_PORT`, NEEDS `PANEL_PASSWORD` and `RESTAPI_ENABLED` - see [Web panel](#web-panel)       | false                          | Boolean                               |
-| PANEL_PORT                           | Defines the port inside the container where the web panel is hosted                                                                                 | 8213                           | UInt16                                |
-| PANEL_USERNAME                       | The login username for the web panel                                                                                                                | admin                          | String                                |
-| PANEL_PASSWORD                       | The login password for the web panel - MUST be set to a non-empty value or the panel refuses to start                                               |                                | String                                |
-| PANEL_DEFAULT_LANGUAGE               | Default language of the web panel when the browser does not state a preference                                                                      | en                             | en, zh-CN                             |
-| PANEL_TRUST_PROXY                    | Set to enabled will honor `X-Forwarded-*` headers for login rate-limiting and cookie security - ONLY enable when the panel runs behind a reverse proxy | false                       | Boolean                               |
-| DISCORD_STATUS_ENABLED               | Set to enabled will post ONE Discord status-card message and edit it in place, NEEDS `DISCORD_STATUS_WEBHOOK_URL` (or `WEBHOOK_URL`) and `RESTAPI_ENABLED` | false                    | Boolean                               |
-| DISCORD_STATUS_WEBHOOK_URL           | Discord webhook url for the status card; if empty, `WEBHOOK_URL` is used                                                                            |                                | Url                                   |
-| DISCORD_STATUS_UPDATE_INTERVAL       | Interval in seconds between status-card edits; values below 15 are clamped to 15 (webhook rate-limit safety)                                        | 30                             | Integer                               |
-| DISCORD_STATUS_EVENT_AMOUNT          | How many entries the status-card last-events log shows; values outside 1-50 are clamped (50 = stored history limit); long entries may show fewer to respect Discord's field size | 25 | Integer (1-50)                   |
-| DISCORD_STATUS_EMOJI_STEAM           | Emoji for Steam players in the status-card player list - see [Platform emojis](#platform-emojis) below                                              | `<:steam:1528444768697192488>` | `<:name:id>` or empty                 |
-| DISCORD_STATUS_EMOJI_XBOX            | Emoji for Xbox players - see [Platform emojis](#platform-emojis) below                                                                              | `<:xbox:1528444823835771020>`  | `<:name:id>` or empty                 |
-| DISCORD_STATUS_EMOJI_PS5             | Emoji for PS5 players - see [Platform emojis](#platform-emojis) below                                                                               | `<:ps5:1528444879695515748>`   | `<:name:id>` or empty                 |
-| DISCORD_STATUS_EMOJI_MAC             | Emoji for Mac players - see [Platform emojis](#platform-emojis) below                                                                               | `<:mac:1528444932132700332>`   | `<:name:id>` or empty                 |
-| DISCORD_STATUS_EMOJI_EVENT_*         | Custom icon per last-events entry, replacing the unicode default on the card. Suffixes: `JOIN`, `LEAVE`, `RENAME`, `ONLINE`, `OFFLINE`, `STARTING`, `INSTALLING`, `UPDATING`, `UPDATING_VALIDATE`, `STOPPING`, `RESTART`, `BACKUP`, `SETTINGS`. Ready-made icon sets ship in the repo's `icons/` folder - see the README section "Custom event icons" | `icons/modern-slate` tokens preset in the shipped default.env; empty = unicode fallback | `<:name:id>` or empty |
+| COMPANION_DATA_DIR                   | Read-only mount point of the [companion sidecar's](#companion-sidecar) data volume - `settings-overrides.env` written by the web panel is applied from there at boot | `${GAME_ROOT}/companion` | Path                                  |
 | WEBHOOK_ENABLED                      | Set to enabled will send webhook notifications, NEEDS `WEBHOOK_URL`                                                                                 | false                          | Boolean                               |
 | WEBHOOK_DEBUG_ENABLED                | Set to enabled will enable feedback of curl and not use --silent                                                                                    | false                          | Boolean                               |
 | WEBHOOK_URL                          | Defines the url the webhook to send data to                                                                                                         |                                | Url                                   |
@@ -63,25 +47,13 @@ SERVER_SETTINGS_MODE accepts 2 values:
 - `manual`: Settings are modified only by editing the file directly, environment variables are ignored
 
 
-### Platform emojis
+### Companion sidecar
 
-The Discord status card marks each player in the online list with a platform emoji, detected from the platform prefix of their user id (`steam_...`, `xbox_...`).
+The web operation panel and the Discord live status card run as an optional **sidecar container**: [jammsen/docker-palworld-companion](https://github.com/jammsen/docker-palworld-companion). All its variables (`PANEL_*`, `DISCORD_STATUS_*`, ...) are documented in that repo; this image only contributes:
 
-> **Caveat about the defaults:** The default `<:name:id>` tokens render from the maintainer's Discord server. Custom emojis in embeds are rendered by id from Discord's CDN, so they work in your channel too - but if those emojis ever get deleted, your card would show raw `<:steam:...>` text instead. For full independence, upload your own platform icons to **the same Discord server your webhook lives in** (Server Settings → Emoji → Upload Emoji), then get each token by typing `\:name:` in a channel and copy it into the variables.
-
-- Set a variable to **empty** to use a neutral colored-square marker instead (🟦 Steam, 🟩 Xbox, 🔹 PS5, ⚪ Mac).
-- Invalid token formats are rejected at startup with a warning and fall back to the colored square.
-
-### Web panel
-
-The web operation panel (`PANEL_ENABLED=true`) is served by the built-in companion service on `PANEL_PORT` (default 8213).
-
-> **Security warning:** The panel speaks plain HTTP and is meant for LAN/VPN use. Do **NOT** publish the panel port directly to the internet - put a reverse proxy with TLS (Caddy, Traefik, nginx) in front of it, or keep it LAN/VPN-only. The port mapping in `compose.yml` ships commented-out on purpose.
-
-- The panel refuses to start while `PANEL_PASSWORD` is empty - there is no default password.
-- Settings changed in the panel are stored on the game volume in `companion/settings-overrides.env` and survive container restarts and re-creation.
-- Setting precedence in `SERVER_SETTINGS_MODE=auto`: template default < environment variable (e.g. `default.env`) < panel override. If a change to your `default.env` seems to be ignored, a panel override likely outranks it - reset that setting in the panel.
-- In `SERVER_SETTINGS_MODE=manual` the settings editor is read-only; edit the INI file directly instead.
+- `game-events.log` on the game volume (fed by player detection, SteamCMD, restarts, backups)
+- `default.env.template` on the game volume (for the panel's settings export)
+- the boot-time read of `settings-overrides.env` from `COMPANION_DATA_DIR` - panel-written overrides applied with the highest precedence: template default < environment variable (e.g. `default.env`) < panel override. If a change to your `default.env` seems to be ignored, a panel override likely outranks it - reset that setting in the panel.
 
 ### Webhook environment variables
 
