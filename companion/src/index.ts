@@ -2,7 +2,7 @@ import { serve } from "@hono/node-server";
 import { mkdir } from "node:fs/promises";
 import { parseConfig } from "./config.js";
 import { log, setDebug } from "./logger.js";
-import { createApp } from "./web/app.js";
+import { createApp, createHealthApp } from "./web/app.js";
 
 // Injected by build.mjs; fallback keeps `tsx watch` working in dev
 declare const COMPANION_VERSION: string | undefined;
@@ -37,26 +37,34 @@ if (!config.panel && !config.discord) {
   const { StateStore } = await import("./state.js");
   const { PalworldClient } = await import("./palworld/client.js");
   const { MetricsCollector } = await import("./metrics/collector.js");
+  const { HostProcMetricsSource } = await import("./sys/metrics-source.js");
 
   const state = new StateStore(config.dataDir);
   await state.load();
   const client = new PalworldClient(config.restapi);
-  const collector = new MetricsCollector(config, client, state);
+  const collector = new MetricsCollector(config, client, state, new HostProcMetricsSource());
 
   const shutdownHooks: Array<() => Promise<void> | void> = [];
 
+  // The HTTP listener is always on: with the panel it serves the full app, in
+  // Discord-only deployments just /api/health - so a container healthcheck
+  // works no matter which feature is enabled
+  let app: { fetch: Parameters<typeof serve>[0]["fetch"] };
   if (config.panel) {
     const { AuthService } = await import("./web/auth.js");
     const { SettingsStore } = await import("./settings/store.js");
     const secret = await AuthService.ensureSecret(state);
     const auth = new AuthService(secret, config.panel.username, config.panel.password);
     const settings = new SettingsStore(config.dataDir, process.env);
-    const app = createApp(config, VERSION, { auth, collector, settings, client });
-    const server = serve({ fetch: app.fetch, port: config.panel.port, hostname: "0.0.0.0" }, (info) => {
-      log.success(`>>> Web panel listening on port ${info.port}`);
-    });
-    shutdownHooks.push(() => new Promise<void>((resolve) => server.close(() => resolve())));
+    app = createApp(config, VERSION, { auth, collector, settings, client });
+  } else {
+    app = createHealthApp(config, VERSION);
   }
+  const server = serve({ fetch: app.fetch, port: config.listenPort, hostname: "0.0.0.0" }, (info) => {
+    if (config.panel) log.success(`>>> Web panel listening on port ${info.port}`);
+    else log.info(`>>> Health endpoint listening on port ${info.port} (panel disabled)`);
+  });
+  shutdownHooks.push(() => new Promise<void>((resolve) => server.close(() => resolve())));
 
   if (config.discord) {
     const { startDiscordStatus } = await import("./discord/updater.js");

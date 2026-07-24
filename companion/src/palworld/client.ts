@@ -48,7 +48,7 @@ export class PalworldClient {
     restapi: RestApiConfig,
     private readonly fetchFn: typeof fetch = fetch,
   ) {
-    this.baseUrl = `http://127.0.0.1:${restapi.port}/v1/api/`;
+    this.baseUrl = `http://${restapi.host}:${restapi.port}/v1/api/`;
     this.authHeader = `Basic ${Buffer.from(`admin:${restapi.adminPassword}`).toString("base64")}`;
     this.timeoutMs = restapi.timeoutSeconds * 1000;
   }

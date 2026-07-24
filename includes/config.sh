@@ -175,12 +175,15 @@ function apply_server_name_token() {
     export SERVER_NAME="${SERVER_NAME//###RANDOM###/${rand}}"
 }
 
-# Apply panel-written overrides from the game volume with highest precedence.
+# Apply panel-written overrides with highest precedence. The file lives on the
+# companion's data volume, mounted read-only into this container at
+# COMPANION_DATA_DIR (falls back to the bundled-mode path on the game volume);
+# an absent mount or file simply means no overrides.
 # Precedence in auto mode: template default < container env < panel override.
 # The file is parsed line by line and validated against the ENVSUBST_SELECTORS
 # allow-list - it is NEVER sourced, so it cannot execute code.
 function apply_settings_overrides() {
-    local overrides_file="${GAME_ROOT}/companion/settings-overrides.env"
+    local overrides_file="${COMPANION_DATA_DIR:-${GAME_ROOT}/companion}/settings-overrides.env"
     local line key value
     if [[ ! -f "$overrides_file" ]]; then
         return 0

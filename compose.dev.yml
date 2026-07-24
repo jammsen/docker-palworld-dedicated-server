@@ -1,0 +1,53 @@
+# Development compose for the sidecar layout (see companion/CONTRACT.md):
+# builds both images from the working tree and wires the two one-way mounts.
+# Each container owns exactly one writable surface - the gameserver owns the
+# game volume, the companion owns its data volume; the other side mounts it
+# read-only.
+#
+#   docker compose -f compose.dev.yml up --build
+services:
+  palworld-dedicated-server:
+    container_name: palworld-dedicated-server
+    build: .
+    restart: unless-stopped
+    ports:
+      - target: 8211
+        published: 8211
+        protocol: udp
+      # 8212 (REST API) is deliberately NOT published - the companion reaches
+      # it over the internal compose network; the admin API stays off the host
+    env_file:
+      - ./default.env
+    environment:
+      # Read-only view of the companion's data volume (settings-overrides.env)
+      COMPANION_DATA_DIR: /companion-data
+    volumes:
+      - ./game:/palworld
+      - companion-data:/companion-data:ro
+
+  companion:
+    container_name: palworld-companion
+    build: ./companion
+    restart: unless-stopped
+    depends_on:
+      - palworld-dedicated-server
+    ports:
+      # Dev setup: localhost-only so the panel is never exposed on all interfaces
+      - target: 8213
+        published: 8213
+        host_ip: 127.0.0.1
+        protocol: tcp
+    env_file:
+      # Companion feature flags (PANEL_*, DISCORD_STATUS_*) plus the shared
+      # ADMIN_PASSWORD, RESTAPI_* and SERVER_SETTINGS_MODE come from the same
+      # env file as the gameserver - single place to configure both containers
+      - ./default.env
+    environment:
+      RESTAPI_HOST: palworld-dedicated-server
+      COMPANION_DATA_DIR: /data
+    volumes:
+      - ./game:/palworld:ro
+      - companion-data:/data
+
+volumes:
+  companion-data:

@@ -4,8 +4,16 @@ import { ALL_EVENT_TYPES, EVENT_LOG_CAPACITY } from "./events.js";
 
 export interface CompanionConfig {
   debug: boolean;
+  /** Companion-owned writable directory (state.json, companion-events.log, settings-overrides.env) */
   dataDir: string;
+  /** Gameserver volume - mounted read-only when running as a sidecar */
   gameRoot: string;
+  /** Event log written by the gameserver (read-only for the companion) */
+  gameEventsFile: string;
+  /** Event log for the companion's own events (restart, settings, REST up/down) */
+  companionEventsFile: string;
+  /** HTTP port (PANEL_PORT) - always served for /api/health, panel routes only when enabled */
+  listenPort: number;
   panel: PanelConfig | null;
   discord: DiscordStatusConfig | null;
   restapi: RestApiConfig;
@@ -13,14 +21,17 @@ export interface CompanionConfig {
   serverSettingsMode: string;
   gameSettingsFile: string;
   banlistFile: string;
-  /** Shipped default.env baked into the image - ordering template for the export */
+  /**
+   * Ordering/comment template for the settings export, provided by the
+   * gameserver on the game volume at boot - so any gameserver image can supply
+   * its own. Export falls back to schema order when the file is absent.
+   */
   envTemplateFile: string;
   /** Reason strings for features that were requested but could not be enabled */
   warnings: string[];
 }
 
 export interface PanelConfig {
-  port: number;
   username: string;
   password: string;
   defaultLanguage: string;
@@ -41,6 +52,8 @@ export interface DiscordStatusConfig {
 
 export interface RestApiConfig {
   enabled: boolean;
+  /** Hostname of the gameserver's REST API - the gameserver service name when running as a sidecar */
+  host: string;
   port: number;
   timeoutSeconds: number;
   adminPassword: string;
@@ -83,7 +96,6 @@ export function parseConfig(env: Record<string, string | undefined>): CompanionC
       );
     } else {
       panel = {
-        port: envPort("PANEL_PORT", 8213),
         username: env.PANEL_USERNAME || "admin",
         password,
         defaultLanguage: env.PANEL_DEFAULT_LANGUAGE || "en",
@@ -144,6 +156,7 @@ export function parseConfig(env: Record<string, string | undefined>): CompanionC
 
   const restapi: RestApiConfig = {
     enabled: envBool(env.RESTAPI_ENABLED),
+    host: env.RESTAPI_HOST || "127.0.0.1",
     port: envPort("RESTAPI_PORT", 8212),
     timeoutSeconds: envSeconds("RESTAPI_TIMEOUT", 10),
     adminPassword: env.ADMIN_PASSWORD ?? "",
@@ -163,10 +176,15 @@ export function parseConfig(env: Record<string, string | undefined>): CompanionC
     );
   }
 
+  const dataDir = env.COMPANION_DATA_DIR || `${gameRoot}/companion`;
+
   return {
     debug: envBool(env.COMPANION_DEBUG),
-    dataDir: `${gameRoot}/companion`,
+    dataDir,
     gameRoot,
+    gameEventsFile: `${gameRoot}/game-events.log`,
+    companionEventsFile: `${dataDir}/companion-events.log`,
+    listenPort: envPort("PANEL_PORT", 8213),
     panel,
     discord,
     restapi,
@@ -174,7 +192,7 @@ export function parseConfig(env: Record<string, string | undefined>): CompanionC
     serverSettingsMode: (env.SERVER_SETTINGS_MODE || "manual").toLowerCase(),
     gameSettingsFile: env.GAME_SETTINGS_FILE || `${gameRoot}/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`,
     banlistFile: `${env.GAME_SAVE_PATH || `${gameRoot}/Pal/Saved`}/SaveGames/banlist.txt`,
-    envTemplateFile: env.COMPANION_ENV_TEMPLATE || "/companion/default.env",
+    envTemplateFile: env.COMPANION_ENV_TEMPLATE || `${gameRoot}/default.env.template`,
     warnings,
   };
 }

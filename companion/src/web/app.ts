@@ -53,6 +53,21 @@ function clientIp(c: Context, trustProxy: boolean): string {
   }
 }
 
+// Minimal app served when the panel is disabled (Discord-only deployments):
+// the health endpoint stays available for container healthchecks either way
+export function createHealthApp(config: CompanionConfig, version: string): Hono {
+  const app = new Hono();
+  app.get("/api/health", (c) =>
+    c.json({
+      status: "ok",
+      version,
+      panel: false,
+      discord: config.discord !== null,
+    }),
+  );
+  return app;
+}
+
 export function createApp(config: CompanionConfig, version: string, deps: AppDeps): Hono<AppEnv> {
   const { auth, collector, settings, client } = deps;
   const panel = config.panel;

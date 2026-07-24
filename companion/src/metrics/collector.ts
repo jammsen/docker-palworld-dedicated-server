@@ -1,13 +1,12 @@
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import type { CompanionConfig } from "../config.js";
-import { appendEvents, eventKey, parseShellEvents, serverStateEvents, type ServerEvent } from "../events.js";
+import { EventLogWriter } from "../eventlog.js";
+import { mergeEvents, parseEventLog, serverStateEvents, type EventSource, type ServerEvent } from "../events.js";
 import { log } from "../logger.js";
 import type { GameMetrics, GamePlayer, PalworldClient } from "../palworld/client.js";
 import { readServerNameFromIni } from "../palworld/ini.js";
 import type { StateStore } from "../state.js";
-import { readRamUsage, type RamUsage } from "../sys/cgroup.js";
-import { cpuUsagePercent, readProcStat, type CpuCoreSample } from "../sys/proc.js";
+import type { RamUsage, SystemMetricsSource } from "../sys/metrics-source.js";
 
 export interface StatusSnapshot {
   at: number;
@@ -25,63 +24,63 @@ export interface StatusSnapshot {
 // Samples game + system metrics. One collector instance feeds both the Discord
 // card and the web panel, so the game API is polled once per interval at most.
 export class MetricsCollector {
-  private previousCpuSample: CpuCoreSample[] = [];
   private cachedServerName = "";
   private lastSnapshot: StatusSnapshot | null = null;
-  private seenShellEvents: Set<string> | null = null;
   private collecting: Promise<StatusSnapshot> | null = null;
+  private readonly eventWriter: EventLogWriter;
 
   constructor(
     private readonly config: CompanionConfig,
     private readonly client: PalworldClient,
     private readonly state: StateStore,
-  ) {}
+    private readonly metricsSource: SystemMetricsSource,
+  ) {
+    this.eventWriter = new EventLogWriter(config.companionEventsFile);
+  }
 
   /** Record an event originating inside the companion itself (e.g. panel settings save) */
   async recordEvent(event: ServerEvent): Promise<void> {
-    const events = appendEvents(this.state.get().events ?? [], [event]);
-    await this.state.update({ events });
-    if (this.lastSnapshot) this.lastSnapshot = { ...this.lastSnapshot, events };
+    await this.eventWriter.append(event);
+    if (this.lastSnapshot) {
+      this.lastSnapshot = { ...this.lastSnapshot, events: await this.readMergedEvents() };
+    }
   }
 
   /**
-   * Cheap event-only refresh for the SIGTERM path: ingest the shell event file
-   * (e.g. the 'stopping' marker written moments earlier) without touching the
-   * game REST API, which is going down at that point. Returns the freshest
-   * snapshot for the final Discord card edit.
+   * Cheap event-only refresh for the SIGTERM path: re-read the event logs
+   * (e.g. the 'stopping' marker written moments earlier by the gameserver)
+   * without touching the game REST API, which is going down at that point.
+   * Returns the freshest snapshot for the final Discord card edit.
    */
   async refreshEventsOnly(): Promise<StatusSnapshot | null> {
-    const newEvents = await this.ingestShellEvents();
-    if (newEvents.length > 0) {
-      const events = appendEvents(this.state.get().events ?? [], newEvents);
-      await this.state.update({ events });
-      if (this.lastSnapshot) this.lastSnapshot = { ...this.lastSnapshot, events };
+    if (this.lastSnapshot) {
+      this.lastSnapshot = { ...this.lastSnapshot, events: await this.readMergedEvents() };
     }
     return this.lastSnapshot;
   }
 
-  // Ingest events written by the shell side (includes/companion.sh
-  // log_companion_event). Dedupe by event key: the file is re-read whole each
-  // tick (it is trimmed to <=200 lines), and on companion restart the keys of
-  // already-persisted events prevent re-ingestion.
-  private async ingestShellEvents(): Promise<ServerEvent[]> {
-    let content: string;
+  // The two log files ARE the event store: both are bounded by their writers,
+  // so each read simply re-parses them whole and merges by timestamp. No
+  // in-memory bookkeeping, nothing persisted to state.json.
+  private async readMergedEvents(): Promise<ServerEvent[]> {
+    const [game, companion] = await Promise.all([
+      this.readEventLog(this.config.gameEventsFile, "game"),
+      this.readEventLog(this.config.companionEventsFile, "companion"),
+    ]);
+    return mergeEvents(game, companion);
+  }
+
+  private async readEventLog(filePath: string, source: EventSource): Promise<ServerEvent[]> {
     try {
-      content = await readFile(join(this.config.dataDir, "events.log"), "utf8");
-    } catch {
+      return parseEventLog(await readFile(filePath, "utf8"), source);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+        return []; // Missing file = no events yet (or no mount) - not an error
+      }
+      // Permission/I-O problems must stay diagnosable instead of looking like an empty log
+      log.warn(`>>> Failed to read ${source} event log at ${filePath}: ${String(error)}`);
       return [];
     }
-    if (this.seenShellEvents === null) {
-      this.seenShellEvents = new Set((this.state.get().events ?? []).map(eventKey));
-    }
-    const fresh: ServerEvent[] = [];
-    for (const event of parseShellEvents(content)) {
-      const key = eventKey(event);
-      if (this.seenShellEvents.has(key)) continue;
-      this.seenShellEvents.add(key);
-      fresh.push(event);
-    }
-    return fresh;
   }
 
   latest(): StatusSnapshot | null {
@@ -129,22 +128,15 @@ export class MetricsCollector {
       this.cachedServerName = (await readServerNameFromIni(this.config.gameSettingsFile)) ?? "";
     }
 
+    // A failing metrics source (future per-container implementations) must
+    // not take down the whole collection - game data and events still matter
     let cpuCorePercents: number[] = [];
+    let ram: RamUsage = { usedBytes: 0, totalBytes: 0 };
     try {
-      if (this.previousCpuSample.length === 0) {
-        // First collection: take a short double sample so the very first
-        // snapshot already has meaningful per-core percentages
-        this.previousCpuSample = await readProcStat();
-        await new Promise((resolve) => setTimeout(resolve, 500));
-      }
-      const cpuSample = await readProcStat();
-      cpuCorePercents = cpuUsagePercent(this.previousCpuSample, cpuSample);
-      this.previousCpuSample = cpuSample;
+      ({ cpuCorePercents, ram } = await this.metricsSource.sample());
     } catch (error) {
-      log.debug(`/proc/stat read failed: ${String(error)}`);
+      log.debug(`system metrics sampling failed: ${String(error)}`);
     }
-
-    const ram = await readRamUsage();
 
     // Derive the last restart from server uptime; persist so it survives companion restarts
     let lastRestartAt = this.state.get().lastRestartAt ?? null;
@@ -157,22 +149,17 @@ export class MetricsCollector {
       }
     }
 
-    // Events: the shell side is the single source for everything it observes
-    // (player detection, SteamCMD, restarts, backups) via the event file; the
-    // companion only contributes REST up/down transitions. No previous
-    // snapshot (companion just started) means no transition to detect.
-    const newEvents = await this.ingestShellEvents();
+    // Events: the gameserver is the single source for everything it observes
+    // (player detection, SteamCMD, restarts, backups) via game-events.log; the
+    // companion only contributes REST up/down transitions, persisted to its
+    // own companion-events.log. No previous snapshot (companion just started)
+    // means no transition to detect.
     if (this.lastSnapshot !== null) {
-      newEvents.push(...serverStateEvents(this.lastSnapshot.serverUp, game !== null, Date.now()));
+      for (const event of serverStateEvents(this.lastSnapshot.serverUp, game !== null, Date.now())) {
+        await this.eventWriter.append(event);
+      }
     }
-    // Read events only after the awaits above: recordEvent() may have appended
-    // meanwhile, and state.update applies patches synchronously, so this
-    // read-append-update cannot interleave with other mutations.
-    let events = this.state.get().events ?? [];
-    if (newEvents.length > 0) {
-      events = appendEvents(events, newEvents);
-      await this.state.update({ events });
-    }
+    const events = await this.readMergedEvents();
 
     this.lastSnapshot = {
       at: Date.now(),

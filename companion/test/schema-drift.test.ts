@@ -1,13 +1,18 @@
-// Drift guard: the settings schema, includes/config.sh ENVSUBST_SELECTORS and
-// the Dockerfile ENV defaults must stay in sync. Skipped when the repo files
-// are not present (e.g. inside the Docker build stage, which only has companion/).
+// Drift guard: the settings schema, the gameserver repo's includes/config.sh
+// ENVSUBST_SELECTORS and its Dockerfile ENV defaults must stay in sync. The
+// gameserver repo is found either as the parent dir (monorepo layout) or as a
+// sibling checkout (sidecar layout); skipped when neither is present (e.g.
+// inside the Docker build stage or a lone CI checkout).
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { settingsSchema } from "../src/settings/schema.js";
 
-const CONFIG_SH = "../includes/config.sh";
-const DOCKERFILE = "../Dockerfile";
-const repoAvailable = existsSync(CONFIG_SH) && existsSync(DOCKERFILE);
+const GAMESERVER_ROOT = ["..", "../docker-palworld-dedicated-server"].find((root) =>
+  existsSync(`${root}/includes/config.sh`),
+);
+const CONFIG_SH = `${GAMESERVER_ROOT}/includes/config.sh`;
+const DOCKERFILE = `${GAMESERVER_ROOT}/Dockerfile`;
+const repoAvailable = GAMESERVER_ROOT !== undefined && existsSync(DOCKERFILE);
 
 // Engine.ini setting - handled separately from ENVSUBST_SELECTORS in config.sh
 const NON_SELECTOR_KEYS = new Set(["NETSERVERMAXTICKRATE"]);

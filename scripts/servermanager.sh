@@ -49,6 +49,12 @@ do
     current_time=$(date +%H:%M:%S)
     ei ">>> Starting server manager"
     e "> Started at: $current_date $current_time"
+
+    # Provide this image's settings template on the game volume for the
+    # companion's export feature (see companion CONTRACT.md)
+    if [[ -f /default.env.template ]]; then
+        cp -f /default.env.template "${GAME_ROOT}/default.env.template"
+    fi
     start_main &
     START_MAIN_PID="$!"
 

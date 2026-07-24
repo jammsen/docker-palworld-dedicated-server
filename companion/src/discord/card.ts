@@ -46,13 +46,13 @@ function cpuFields(corePercents: number[]): DiscordEmbedField[] {
   );
 
   const fields: DiscordEmbedField[] = columns.map((column, index) => ({
-    name: index === 0 ? "⚙️ CPU Core Breakdown" : "​",
+    name: index === 0 ? "⚙️ Host CPU Breakdown" : "​",
     value: `\`\`\`${column.join("\n")}\`\`\``,
     inline: true,
   }));
   if (rest.length > 0) {
     const avg = Math.round(rest.reduce((sum, v) => sum + v, 0) / rest.length);
-    fields.push({ name: "CPU (rest)", value: `\`\`\`${rest.length} more cores, avg ${avg}%\`\`\`` });
+    fields.push({ name: "Host CPU (rest)", value: `\`\`\`${rest.length} more cores, avg ${avg}%\`\`\`` });
   }
   return fields;
 }
@@ -210,7 +210,7 @@ export function buildStatusCard(
       { name: "⏲️ Frame time", value: `\`${game.serverframetime.toFixed(1)} ms\``, inline: true },
       { name: "⚡ Server FPS", value: `\`${game.serverfps}\``, inline: true },
       {
-        name: "💾 RAM Usage",
+        name: "💾 Host RAM Usage",
         value: `\`${formatGiB(snapshot.ram.usedBytes)} / ${formatGiB(snapshot.ram.totalBytes)}\``,
         inline: true,
       },

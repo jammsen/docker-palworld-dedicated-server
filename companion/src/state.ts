@@ -1,15 +1,12 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import type { ServerEvent } from "./events.js";
 import { log } from "./logger.js";
 
 export interface CompanionState {
   discordMessageId?: string;
   sessionSecret?: string;
   lastRestartAt?: number;
-  /** Ring buffer of recent server events (joins/leaves/up/down), newest last */
-  events?: ServerEvent[];
 }
 
 // Persistent state on the game volume - survives container restarts AND re-creation
@@ -35,6 +32,9 @@ export class StateStore {
     }
     try {
       this.state = JSON.parse(raw) as CompanionState;
+      // Events moved to companion-events.log; drop the legacy ring buffer so
+      // it is not re-serialized forever
+      delete (this.state as Record<string, unknown>).events;
     } catch {
       log.warn(`>>> ${this.filePath} contains invalid JSON - starting with empty state`);
       this.state = {};

@@ -9,6 +9,26 @@ describe("parseConfig", () => {
     expect(config.warnings).toHaveLength(0);
   });
 
+  it("derives sidecar paths from GAME_ROOT with a bundled-mode data-dir fallback", () => {
+    const config = parseConfig({});
+    expect(config.dataDir).toBe("/palworld/companion");
+    expect(config.gameEventsFile).toBe("/palworld/game-events.log");
+    expect(config.companionEventsFile).toBe("/palworld/companion/companion-events.log");
+    expect(config.restapi.host).toBe("127.0.0.1");
+  });
+
+  it("honors COMPANION_DATA_DIR and RESTAPI_HOST for the sidecar layout", () => {
+    const config = parseConfig({
+      GAME_ROOT: "/palworld",
+      COMPANION_DATA_DIR: "/data",
+      RESTAPI_HOST: "palworld-dedicated-server",
+    });
+    expect(config.dataDir).toBe("/data");
+    expect(config.gameEventsFile).toBe("/palworld/game-events.log");
+    expect(config.companionEventsFile).toBe("/data/companion-events.log");
+    expect(config.restapi.host).toBe("palworld-dedicated-server");
+  });
+
   it("refuses to enable the panel without a password", () => {
     const config = parseConfig({ PANEL_ENABLED: "true", PANEL_PASSWORD: "" });
     expect(config.panel).toBeNull();
@@ -18,12 +38,12 @@ describe("parseConfig", () => {
   it("enables the panel with defaults applied", () => {
     const config = parseConfig({ PANEL_ENABLED: "true", PANEL_PASSWORD: "secret" });
     expect(config.panel).toEqual({
-      port: 8213,
       username: "admin",
       password: "secret",
       defaultLanguage: "en",
       trustProxy: false,
     });
+    expect(config.listenPort).toBe(8213);
   });
 
   it("falls back to WEBHOOK_URL for the Discord status card", () => {
