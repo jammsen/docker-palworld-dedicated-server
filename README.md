@@ -407,7 +407,7 @@ After enabling the server should send messages in a Discord-Compatible way to yo
 
 The **web operation panel** (dashboard, player moderation, settings editor with persistence, one-click restart) and the **Discord live status card** (one message, edited in place with live server stats and an event log) live in their own repo and run as an optional sidecar container next to this image:
 
-> **[jammsen/docker-palworld-companion](https://github.com/jammsen/docker-palworld-companion)** - image: `jammsen/palworld-companion`
+> **[jammsen/docker-palworld-companion](https://github.com/jammsen/docker-palworld-companion)** - image: `jammsen/palworld-companion:develop` (until the first stable release)
 
 Enabling it takes three steps: uncomment the `companion` service (and the marked volume lines) in the [compose example](#docker-compose-examples), set `PANEL_PASSWORD` (plus `PANEL_ENABLED=true` / `DISCORD_STATUS_ENABLED=true`) in your `default.env`, and make sure `RESTAPI_ENABLED=true` and `ADMIN_PASSWORD` are set - the companion talks to this image through the REST API and two shared volume mounts. Full documentation, screenshots and all `PANEL_*` / `DISCORD_STATUS_*` variables: see the companion repo.
 

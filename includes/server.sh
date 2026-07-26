@@ -84,6 +84,9 @@ function stop_server() {
     if [[ -n $PLAYER_DETECTION_PID ]]; then
         kill -SIGTERM "${PLAYER_DETECTION_PID}"
     fi
+    if [[ -n $GAME_EVENTS_MAINTENANCE_PID ]]; then
+        kill -SIGTERM "${GAME_EVENTS_MAINTENANCE_PID}" 2>/dev/null || true
+    fi
     if [[ -n $RESTAPI_ENABLED ]] && [[ "${RESTAPI_ENABLED,,}" == "true" ]]; then
         save_and_shutdown_server
     fi

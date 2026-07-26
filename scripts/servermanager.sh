@@ -9,6 +9,7 @@ set -e
 source /includes/colors.sh
 source /includes/config.sh
 source /includes/cron.sh
+source /includes/gameevents.sh
 source /includes/playerdetection.sh
 source /includes/security.sh
 source /includes/server.sh
@@ -16,6 +17,7 @@ source /includes/webhook.sh
 
 START_MAIN_PID=
 PLAYER_DETECTION_PID=
+GAME_EVENTS_MAINTENANCE_PID=
 
 
 
@@ -63,6 +65,11 @@ do
        echo $PLAYER_DETECTION_PID > PLAYER_DETECTION.PID
        ew "> Player detection thread started with pid ${PLAYER_DETECTION_PID}"
     fi
+
+    # Single remover for game-events.log - every other process only appends
+    # (see includes/gameevents.sh for the concurrency design)
+    game_events_maintenance_loop &
+    GAME_EVENTS_MAINTENANCE_PID="$!"
 
     ew "> Server main thread started with pid ${START_MAIN_PID}"
     wait ${START_MAIN_PID}
