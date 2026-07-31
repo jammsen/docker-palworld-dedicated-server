@@ -49,7 +49,7 @@ SERVER_SETTINGS_MODE accepts 2 values:
 
 ### Companion sidecar
 
-The web operation panel and the Discord live status card run as an optional **sidecar container**: [jammsen/docker-palworld-companion](https://github.com/jammsen/docker-palworld-companion). All its variables (`PANEL_*`, `DISCORD_STATUS_*`, ...) are documented in that repo; this image only contributes:
+The web operation panel and the Discord status card/bot run as a **sidecar container**: [jammsen/docker-palworld-companion](https://github.com/jammsen/docker-palworld-companion). It is part of the compose example and disabled by default - all its variables sit in the `Companion-sidecar-settings` section of `default.env` (one shared env file for both containers) and are documented in that repo. This image only contributes:
 
 - `game-events.log` on the game volume (fed by player detection, SteamCMD, restarts, backups)
 - `default.env.template` on the game volume (for the panel's settings export)

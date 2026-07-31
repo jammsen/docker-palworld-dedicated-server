@@ -160,44 +160,41 @@ services:
         mode: host
     env_file:
       - ./default.env
+    environment:
+      # Read-only view of the companion's data dir - settings-overrides.env
+      # written by the web panel is applied from there at boot
+      COMPANION_DATA_DIR: /companion-data
     volumes:
       - ./game:/palworld
-      # Companion sidecar: read-only view of the companion's data volume
-      # (settings-overrides.env) - uncomment together with the service below
-      #- companion-data:/companion-data:ro
-    # Companion sidecar: uncomment together with the volume line above
-    #environment:
-    #  COMPANION_DATA_DIR: /companion-data
+      - ./companion:/companion-data:ro
 
-  # Optional companion sidecar: web operation panel + Discord live status card.
-  # Uncomment this service, the two "Companion sidecar" lines above and the
-  # top-level volume below, then set PANEL_* / DISCORD_STATUS_* in default.env.
+  # Companion sidecar: web operation panel + Discord status card & bot.
+  # Disabled by default - it idles until you enable PANEL_ENABLED and/or
+  # DISCORD_STATUS_ENABLED in default.env (ALL companion variables live there,
+  # in the "Companion-sidecar-settings" section).
   # Docs: https://github.com/jammsen/docker-palworld-companion
-  #companion:
-  #  container_name: palworld-companion
-  #  # develop tag during the testing grace period - switches to latest with
-  #  # the companion's first stable release
-  #  image: jammsen/palworld-companion:develop
-  #  restart: unless-stopped
-  #  depends_on:
-  #    - palworld-dedicated-server
-  #  ports:
-  #    # Do NOT expose the panel to the internet - use a reverse proxy or VPN/LAN only
-  #    - target: 8213 # Web panel port inside of the container
-  #      published: 8213 # Web panel port on your host
-  #      protocol: tcp
-  #      mode: host
-  #  env_file:
-  #    - ./default.env
-  #  environment:
-  #    RESTAPI_HOST: palworld-dedicated-server
-  #    COMPANION_DATA_DIR: /data
-  #  volumes:
-  #    - ./game:/palworld:ro
-  #    - companion-data:/data
-
-#volumes:
-#  companion-data:
+  companion:
+    container_name: palworld-companion
+    # develop tag during the testing grace period - switches to latest with
+    # the companion's first stable release
+    image: jammsen/palworld-companion:latest
+    restart: unless-stopped
+    depends_on:
+      - palworld-dedicated-server
+    ports:
+      # Do NOT expose the panel to the internet - use a reverse proxy or VPN/LAN only
+      - target: 8213 # Web panel port inside of the container
+        published: 8213 # Web panel port on your host
+        protocol: tcp
+        mode: host
+    env_file:
+      - ./default.env
+    environment:
+      RESTAPI_HOST: palworld-dedicated-server
+      COMPANION_DATA_DIR: /data
+    volumes:
+      - ./game:/palworld:ro
+      - ./companion:/data
 
 ```
 <!-- compose-end -->
@@ -409,7 +406,17 @@ The **web operation panel** (dashboard, player moderation, settings editor with 
 
 > **[jammsen/docker-palworld-companion](https://github.com/jammsen/docker-palworld-companion)** - image: `jammsen/palworld-companion:develop` (until the first stable release)
 
-Enabling it takes three steps: uncomment the `companion` service (and the marked volume lines) in the [compose example](#docker-compose-examples), set `PANEL_PASSWORD` (plus `PANEL_ENABLED=true` / `DISCORD_STATUS_ENABLED=true`) in your `default.env`, and make sure `RESTAPI_ENABLED=true` and `ADMIN_PASSWORD` are set - the companion talks to this image through the REST API and two shared volume mounts. Full documentation, screenshots and all `PANEL_*` / `DISCORD_STATUS_*` variables: see the companion repo.
+The companion is part of the [compose example](#docker-compose-examples) and **disabled by default** - it starts alongside the gameserver and idles until you enable a feature. Your server directory looks like this:
+
+```text
+.
+├── companion    # companion data dir (created on first start)
+├── compose.yml  # both services
+├── default.env  # ALL variables for both services, in one file
+└── game         # game data dir
+```
+
+Enabling it is done entirely in `default.env`, in the `Companion-sidecar-settings` section: set `PANEL_ENABLED=true` plus a `PANEL_PASSWORD` for the web panel, and/or `DISCORD_STATUS_ENABLED=true` for the Discord card - then `docker compose up -d` again. `RESTAPI_ENABLED=true` and `ADMIN_PASSWORD` (already in the file) are required - the companion talks to this image through the REST API and two shared volume mounts. Full documentation: [README with screenshots](https://github.com/jammsen/docker-palworld-companion#readme), [every variable (ENV_VARS.md)](https://github.com/jammsen/docker-palworld-companion/blob/develop/docs/ENV_VARS.md), [icon sets for the Discord card](https://github.com/jammsen/docker-palworld-companion/tree/develop/icons).
 
 > **Security warning:** The panel speaks plain HTTP - do **NOT** publish port 8213 to the internet. Use it LAN/VPN-only or put a TLS reverse proxy (Caddy, Traefik, nginx) in front.
 
