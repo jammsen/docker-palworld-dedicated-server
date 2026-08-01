@@ -40,12 +40,12 @@ services:
     container_name: palworld-companion
     # develop tag during the testing grace period - switches to latest with
     # the companion's first stable release
-    image: jammsen/palworld-companion:latest
+    image: jammsen/palworld-companion:develop
     restart: unless-stopped
     depends_on:
       - palworld-dedicated-server
     ports:
-      # Uncomment to reach the web panel (Needs: PANEL_ENABLED=true)
+      # (Needs: PANEL_ENABLED=true)
       # Warning! DO NOT expose this port to the internet, use a reverse proxy or VPN/LAN only
       - target: 8213 # Web panel port inside of the container
         published: 8213 # Web panel port on your host
