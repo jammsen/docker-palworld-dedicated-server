@@ -59,7 +59,7 @@ function eo_nn() {
 # This creates a wrapper for echo to add colors
 function colorful_echos() {
     # --newline: append the line break inside the SAME write as the message.
-    # Multiple threads (servermanager, start_main, player detection, companion)
+    # Multiple threads (servermanager, start_main, player detection)
     # share stdout - a separate `echo ""` call for the newline lets another
     # thread's output merge into the middle of a line.
     local trailing_newline=""

@@ -1,7 +1,7 @@
 # shellcheck disable=SC2148,SC1091
 
 source /includes/colors.sh
-source /includes/companion.sh
+source /includes/gameevents.sh
 source /includes/restapi.sh
 source /includes/webhook.sh
 
@@ -74,21 +74,18 @@ function start_server() {
     check_and_run_custom_script
 
     es ">>> Starting the gameserver"
-    log_companion_event starting
+    log_game_event starting
     ./PalServer.sh "${START_OPTIONS[@]}"
 }
 
 function stop_server() {
     ew ">>> Stopping server..."
-    log_companion_event stopping
+    log_game_event stopping
     if [[ -n $PLAYER_DETECTION_PID ]]; then
         kill -SIGTERM "${PLAYER_DETECTION_PID}"
     fi
-    if [[ -n $COMPANION_PID ]]; then
-        # Kill the node process first so it can do a final Discord "offline" edit,
-        # then the supervising loop so it does not restart it
-        pkill -TERM -f "node /companion/companion.mjs" 2>/dev/null || true
-        kill -SIGTERM "${COMPANION_PID}" 2>/dev/null || true
+    if [[ -n $GAME_EVENTS_MAINTENANCE_PID ]]; then
+        kill -SIGTERM "${GAME_EVENTS_MAINTENANCE_PID}" 2>/dev/null || true
     fi
     if [[ -n $RESTAPI_ENABLED ]] && [[ "${RESTAPI_ENABLED,,}" == "true" ]]; then
         save_and_shutdown_server
@@ -121,7 +118,7 @@ function run_steamcmd() {
 
 function fresh_install_server() {
     ei ">>> Doing a fresh install of the gameserver..."
-    log_companion_event installing
+    log_game_event installing
     if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
         send_install_notification
     fi
@@ -138,7 +135,7 @@ function update_server() {
     fi
     if [[ -n $STEAMCMD_VALIDATE_FILES ]] && [[ "${STEAMCMD_VALIDATE_FILES,,}" == "true" ]]; then
         ei ">>> Doing an update with validation of the gameserver files..."
-        log_companion_event updating-validate
+        log_game_event updating-validate
         if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
             send_update_validation_notification
         fi
@@ -146,7 +143,7 @@ function update_server() {
         es ">>> Done updating and validating the gameserver files"
     else
         ei ">>> Doing an update of the gameserver files..."
-        log_companion_event updating
+        log_game_event updating
         if [[ -n $WEBHOOK_ENABLED ]] && [[ "${WEBHOOK_ENABLED,,}" == "true" ]]; then
             send_update_notification
         fi

@@ -57,10 +57,7 @@ ___
   - [Backup Manager](#backup-manager)
   - [Webhook integration](#webhook-integration)
     - [Supported events](#supported-events)
-  - [Web operation panel](#web-operation-panel)
-  - [Discord live status card](#discord-live-status-card)
-    - [Custom event icons](#custom-event-icons)
-    - [Moving or recreating the status card](#moving-or-recreating-the-status-card)
+  - [Companion sidecar: web panel \& Discord status card](#companion-sidecar-web-panel--discord-status-card)
   - [Deploy with Helm](#deploy-with-helm)
   - [FAQ](#faq)
     - [Does this image support Xbox Dedicated Servers?](#does-this-image-support-xbox-dedicated-servers)
@@ -161,15 +158,44 @@ services:
         published: 25575 # RCON port on your host
         protocol: tcp
         mode: host
-      # Uncomment to reach the web panel (PANEL_ENABLED=true) - do NOT expose this port to the internet, use a reverse proxy or VPN/LAN only
-      #- target: 8213 # Web panel port inside of the container
-      #  published: 8213 # Web panel port on your host
-      #  protocol: tcp
-      #  mode: host
     env_file:
       - ./default.env
+    environment:
+      # Read-only view of the companion's data dir - settings-overrides.env
+      # written by the web panel is applied from there at boot
+      COMPANION_DATA_DIR: /companion-data
     volumes:
       - ./game:/palworld
+      - ./companion:/companion-data:ro
+
+  # Companion sidecar: web operation panel + Discord status card & bot.
+  # Disabled by default - it idles until you enable PANEL_ENABLED and/or
+  # DISCORD_STATUS_ENABLED in default.env (ALL companion variables live there,
+  # in the "Companion-sidecar-settings" section).
+  # Docs: https://github.com/jammsen/docker-palworld-companion
+  companion:
+    container_name: palworld-companion
+    # develop tag during the testing grace period - switches to latest with
+    # the companion's first stable release
+    image: jammsen/palworld-companion:develop
+    restart: unless-stopped
+    depends_on:
+      - palworld-dedicated-server
+    ports:
+      # (Needs: PANEL_ENABLED=true)
+      # Warning! DO NOT expose this port to the internet, use a reverse proxy or VPN/LAN only
+      - target: 8213 # Web panel port inside of the container
+        published: 8213 # Web panel port on your host
+        protocol: tcp
+        mode: host
+    env_file:
+      - ./default.env
+    environment:
+      RESTAPI_HOST: palworld-dedicated-server
+      COMPANION_DATA_DIR: /data
+    volumes:
+      - ./game:/palworld:ro
+      - ./companion:/data
 
 ```
 <!-- compose-end -->
@@ -375,88 +401,31 @@ After enabling the server should send messages in a Discord-Compatible way to yo
 - Server updating
 - Server updating and validating
 
-## Web operation panel
+## Companion sidecar: web panel & Discord status card
 
-> [!NOTE]
-> 🆕 **New feature** - the web operation panel ships with this release.
+The **web operation panel** (dashboard, player moderation, settings editor with persistence, one-click restart) and the **Discord live status card** (one message, edited in place with live server stats and an event log) live in their own repo and run as an optional sidecar container next to this image:
 
-The image ships an optional, built-in web panel (no extra container needed) for administrating the gameserver in the browser:
+> **[jammsen/docker-palworld-companion](https://github.com/jammsen/docker-palworld-companion)** - image: `jammsen/palworld-companion:develop` (until the first stable release)
 
-- **Dashboard** - server status, uptime, population, server frame time, server FPS, in-game day, RAM usage, per-CPU-core load and the last-events log (side by side for the full picture at a glance)
-- **Players** - online players with level/ping/buildings, kick/ban/unban and the ban list
-- **Settings editor** - every `PalWorldSettings.ini` value with validation, grouped and translated (English + 中文); saved changes are stored as overrides on the game volume and **survive container restarts and re-creation**
-- **One-click restart** with in-game announce and world save
-- Login-protected; sessions survive restarts
+The companion is part of the [compose example](#docker-compose-examples) and **disabled by default** - it starts alongside the gameserver and idles until you enable a feature. Your server directory looks like this:
 
-![Web panel dashboard showing server status, stat tiles, the last-events log, RAM usage and per-core CPU bars](docs/assets/webpanel-dashboard.png)
-
-> [!IMPORTANT]
-> **How settings are inherited:** on every gameserver start the effective `PalWorldSettings.ini` is generated with this precedence - **later wins**:
->
-> `template default` → `environment variable (default.env)` → `panel override`
->
-> - Panel changes are stored as **overrides** (`companion/settings-overrides.env` on the game volume) and survive container restarts **and** re-creation.
-> - **A panel override outranks your `default.env`.** If an edit to `default.env` seems to be ignored, an override is shadowing it - press **Reset** on that setting (or *Reset all*) in the panel.
-> - Saving a value that equals your env/default removes the override again; **Reset** reverts a setting to its env/default value.
-> - Changes apply at the **next gameserver restart** - the panel shows a *restart pending* hint until then.
-> - The settings editor is only writable in `SERVER_SETTINGS_MODE=auto`. In `manual` mode the panel is read-only - edit the INI file yourself.
-> - The panel's **Export** button downloads the effective settings as a `.env` file, ready to diff against your host `default.env`.
-
-Enable it in your `default.env` and uncomment the `8213` port mapping in your compose file:
-
-```shell
-PANEL_ENABLED=true
-PANEL_PASSWORD=choose-a-strong-password
+```text
+.
+├── companion    # companion data dir (created on first start)
+├── compose.yml  # both services
+├── default.env  # ALL variables for both services, in one file
+└── game         # game data dir
 ```
 
-> **Security warning:** The panel speaks plain HTTP - do **NOT** publish port 8213 to the internet. Use it LAN/VPN-only or put a TLS reverse proxy (Caddy, Traefik, nginx) in front. Details and all `PANEL_*` variables: [ENV_VARS.md](docs/ENV_VARS.md#web-panel).
+Enabling it is done entirely in `default.env`, in the `Companion-sidecar-settings` section: set `PANEL_ENABLED=true` plus a `PANEL_PASSWORD` for the web panel, and/or `DISCORD_STATUS_ENABLED=true` for the Discord card - then `docker compose up -d` again. `RESTAPI_ENABLED=true` and `ADMIN_PASSWORD` (already in the file) are required - the companion talks to this image through the REST API and two shared volume mounts. 
 
-## Discord live status card
+Full documentation: 
+- [README with screenshots](https://github.com/jammsen/docker-palworld-companion#readme)
+- [every variable (ENV_VARS.md)](https://github.com/jammsen/docker-palworld-companion/blob/develop/docs/ENV_VARS.md)
+- [Discord bot mode walkthrough](https://github.com/jammsen/docker-palworld-companion/blob/develop/docs/ENV_VARS.md#bot-mode)
+- [icon sets for the Discord card](https://github.com/jammsen/docker-palworld-companion/tree/develop/icons).
 
-> [!NOTE]
-> 🆕 **New feature** - the Discord live status card ships with this release.
-
-Instead of (or in addition to) event webhooks, the image can maintain **one single Discord message** that it keeps editing in place - a live server status card with uptime, population, server frame time, server FPS, RAM, per-core CPU bars, last restart, the online player list (with platform icons) and a **last-events log** (player joins/leaves, server starting/updating/stopping, restarts, backups, settings changes). No Discord bot account needed, a plain channel webhook is enough; the message survives container restarts (its id is stored on the game volume).
-
-![Discord live status card showing uptime, population, frame time, FPS, RAM, in-game day, per-core CPU bars, last restart, the online player list with platform icon and the last-events log](docs/assets/discord-status-card.png)
-
-> [!IMPORTANT]
-> **How the card behaves:**
->
-> - It is **one message, edited in place** every `DISCORD_STATUS_UPDATE_INTERVAL` seconds (minimum 15 - lower values are clamped for webhook rate-limit safety). Your channel does not fill up with posts.
-> - The message id is stored on the game volume, so the **same card survives container restarts and re-creation**. To move the card to another channel or force a fresh post, see [Moving or recreating the status card](#moving-or-recreating-the-status-card).
-> - If someone deletes the message, the companion simply **posts a new card** on the next update.
-> - On container shutdown the card flips to **offline** with the final event log - it never lies about a dead server.
-> - The event log shows up to `DISCORD_STATUS_EVENT_AMOUNT` entries (1-50, clamped; long player names can reduce the count to fit Discord's embed-field size limit).
-> - `DISCORD_STATUS_WEBHOOK_URL` left empty **falls back to your existing `WEBHOOK_URL`** - both features can share one webhook.
-
-> **Dependency:** The player entries in the event log (and on the web dashboard) come from the built-in player detection - they require `PLAYER_DETECTION_ENABLED=true` (the default) and the REST API. Player detection is the single source for player events; with it disabled, the event log only contains server/system events.
-
-```shell
-DISCORD_STATUS_ENABLED=true
-DISCORD_STATUS_WEBHOOK_URL="https://discord.com/api/webhooks/..."   # falls back to WEBHOOK_URL
-DISCORD_STATUS_UPDATE_INTERVAL=30
-```
-
-### Custom event icons
-
-The last-events log ships with proper icons out of the box: the **`icons/modern-slate`** set, rendered from the maintainer's Discord server (same caveat as the platform emojis - upload your own for independence). Set any `DISCORD_STATUS_EMOJI_EVENT_*` variable to empty to fall back to unicode emojis (🟢 🔴 ✅ ⛔ ...).
-
-Prefer a different look? The repo ships **24 ready-made icon sets** in the [`icons/`](icons) folder (13 events each, 128x128 PNGs) in four style families - `modern-*`, `cool-*`, `gaming-*` and `pal-*`. To switch to one (or your own icons):
-
-1. **Pick a set** from `icons/` (e.g. `icons/pal-sphere-classic/`).
-2. **Upload the 13 PNGs** to the Discord server your webhook lives in: Server Settings → Emoji → Upload Emoji. Name them so you can find them again, e.g. `pal_join`, `pal_leave`, `pal_rename`, `pal_online`, `pal_offline`, `pal_starting`, `pal_installing`, `pal_updating`, `pal_updating_validate`, `pal_stopping`, `pal_restart`, `pal_backup`, `pal_settings` (emoji names allow only letters, digits and underscores).
-3. **Get each token**: type the emoji with a leading backslash in any channel (e.g. `\:pal_join:`) and send - Discord prints the raw token like `<:pal_join:1234567890123456789>`. Copy the whole thing.
-4. **Paste the tokens** into the matching `DISCORD_STATUS_EMOJI_EVENT_*` variables in your `default.env` (see [ENV_VARS.md](docs/ENV_VARS.md)) and recreate the container (`docker compose up -d`).
-
-Any variable left empty keeps its unicode default, so you can also replace just a few. Invalid tokens are rejected at startup with a warning. The web dashboard keeps the unicode emojis - Discord custom emojis only render inside Discord.
-
-### Moving or recreating the status card
-
-The card heals itself - whenever the stored message cannot be edited anymore, the companion simply posts a fresh card on the next update and remembers the new one:
-
-- **Recreate the card** (e.g. you want it below newer messages): just **delete the message in Discord**. Within one update interval a fresh card appears in the same channel. No restart needed.
-- **Move it to another channel**: point the webhook at the target channel (Discord: channel settings → Integrations → Webhooks → select it → change the channel) - or set `DISCORD_STATUS_WEBHOOK_URL` to a webhook of the target channel and recreate the container. The next update posts a fresh card in the new channel. **Delete the old message manually** - it stays behind and will not update anymore.
+> **Security warning:** The panel speaks plain HTTP - do **NOT** publish port 8213 to the internet. Use it LAN/VPN-only or put a TLS reverse proxy (Caddy, Traefik, nginx) in front.
 
 ## Deploy with Helm
 

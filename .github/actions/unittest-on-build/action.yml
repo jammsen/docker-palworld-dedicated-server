@@ -36,7 +36,6 @@ runs:
         -p 8211:8211/udp \
         -p 8212:8212/tcp \
         -p 25575:25575/tcp \
-        -p 8213:8213/tcp \
         -e PUID=7351 \
         -e PGID=2431 \
         -e ADMIN_PASSWORD=123 \
@@ -44,8 +43,6 @@ runs:
         -e RESTART_ENABLED=true \
         -e GAMEDATA_API_ENABLED=true \
         -e SERVER_SETTINGS_MODE=auto \
-        -e PANEL_ENABLED=true \
-        -e PANEL_PASSWORD=test-ci-password \
         -v ./game:/palworld/ \
         --restart unless-stopped \
         --stop-timeout 30 \
@@ -105,22 +102,6 @@ runs:
         nc -z -u -v 127.0.0.1 8211 || exit 2
         nc -z -v 127.0.0.1 8212 || exit 3
         nc -z -v 127.0.0.1 25575 || exit 4
-
-    - name: Test companion web panel
-      shell: bash
-      run: |
-        # The companion starts COMPANION_STARTUP_DELAY (15s) after container start,
-        # so poll the health endpoint instead of a one-shot check
-        for attempt in {1..30}; do
-          if curl -fsS http://127.0.0.1:8213/api/health; then
-            exit 0
-          fi
-          echo "Waiting for companion web panel... (attempt ${attempt}/30)"
-          sleep 2
-        done
-        echo "Companion web panel did not become healthy in time"
-        docker logs palworld-dedicated-server
-        exit 6
 
     - name: Stop server
       shell: bash

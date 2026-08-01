@@ -17,18 +17,6 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
-FROM node:22-bookworm-slim@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3 AS companionbuild
-
-WORKDIR /build
-
-COPY companion/package.json companion/package-lock.json ./
-RUN npm ci --no-audit --no-fund
-
-COPY companion/ ./
-RUN npm run typecheck \
-    && npm test \
-    && npm run build
-
 FROM cm2network/steamcmd:root@sha256:e6b6b3503bf0e41feafe12dc709c90151afba193e1292cac55d28a7d470b1493
 
 LABEL maintainer="Sebastian Schmidt - https://github.com/jammsen/docker-palworld-dedicated-server"
@@ -73,37 +61,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     # Custom-script-settings
     CUSTOM_SCRIPT_ENABLED=false \
     CUSTOM_SCRIPT_PATH="/palworld/custom-script.sh" \
-    # Companion-service-settings
-    COMPANION_DEBUG=false \
-    COMPANION_STARTUP_DELAY=15 \
-    # Web-panel-settings - NEEDS REST API ENABLED!
-    PANEL_ENABLED=false \
-    PANEL_PORT=8213 \
-    PANEL_USERNAME=admin \
-    PANEL_PASSWORD= \
-    PANEL_DEFAULT_LANGUAGE=en \
-    # Discord-status-settings - NEEDS REST API ENABLED!
-    DISCORD_STATUS_ENABLED=false \
-    DISCORD_STATUS_WEBHOOK_URL= \
-    DISCORD_STATUS_UPDATE_INTERVAL=30 \
-    DISCORD_STATUS_EVENT_AMOUNT=25 \
-    DISCORD_STATUS_EMOJI_STEAM="<:steam:1528444768697192488>" \
-    DISCORD_STATUS_EMOJI_XBOX="<:xbox:1528444823835771020>" \
-    DISCORD_STATUS_EMOJI_PS5="<:ps5:1528444879695515748>" \
-    DISCORD_STATUS_EMOJI_MAC="<:mac:1528444932132700332>" \
-    DISCORD_STATUS_EMOJI_EVENT_JOIN="<:pal_sl_join:1528897301907771460>" \
-    DISCORD_STATUS_EMOJI_EVENT_LEAVE="<:pal_sl_leave:1528897336162648066>" \
-    DISCORD_STATUS_EMOJI_EVENT_RENAME="<:pal_sl_rename:1528897568212258976>" \
-    DISCORD_STATUS_EMOJI_EVENT_ONLINE="<:pal_sl_online:1528897465263067176>" \
-    DISCORD_STATUS_EMOJI_EVENT_OFFLINE="<:pal_sl_offline:1528897375215550644>" \
-    DISCORD_STATUS_EMOJI_EVENT_STARTING="<:pal_sl_starting:1528897750966599853>" \
-    DISCORD_STATUS_EMOJI_EVENT_INSTALLING="<:pal_sl_installing:1528897264519479570>" \
-    DISCORD_STATUS_EMOJI_EVENT_UPDATING="<:pal_sl_updating:1528897841152393368>" \
-    DISCORD_STATUS_EMOJI_EVENT_UPDATING_VALIDATE="<:pal_sl_updatingvalidate:1528897869602492658>" \
-    DISCORD_STATUS_EMOJI_EVENT_STOPPING="<:pal_sl_stopping:1528897784508453025>" \
-    DISCORD_STATUS_EMOJI_EVENT_RESTART="<:pal_sl_restart:1528897601775210536>" \
-    DISCORD_STATUS_EMOJI_EVENT_BACKUP="<:pal_sl_backup:1528897223025492132>" \
-    DISCORD_STATUS_EMOJI_EVENT_SETTINGS="<:pal_sl_settings:1528897681290956951>" \
     # Webhook-settings
     WEBHOOK_ENABLED=false \
     WEBHOOK_DEBUG_ENABLED=false \
@@ -263,16 +220,15 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 EXPOSE 8211/udp
 EXPOSE 8212/tcp
-EXPOSE 8213/tcp
 
 # Install minimum required packages for dedicated server
 COPY --from=supercronicverify /usr/local/bin/supercronic /usr/local/bin/supercronic
 COPY --from=tianon/gosu /gosu /usr/local/bin/gosu
-COPY --from=node:22-bookworm-slim@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3 /usr/local/bin/node /usr/local/bin/node
-COPY --from=companionbuild /build/dist /companion
-# Ordering/comment template for the panel's settings export - keeps the export
-# line-compatible with the user's default.env for easy diffing
-COPY --chmod=644 default.env /companion/default.env
+# Ordering/comment template for the companion sidecar's settings export -
+# copied onto the game volume at boot (see servermanager.sh) so the companion
+# can keep its export line-compatible with this image's default.env:
+# https://github.com/jammsen/docker-palworld-companion
+COPY --chmod=644 default.env /default.env.template
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests gettext-base jq procps xdg-user-dirs \
@@ -296,9 +252,6 @@ RUN gosu --version \
 RUN restapicli --version
 
 RUN supercronic --version
-
-RUN node --version \
-    && node /companion/companion.mjs --version
 
 
 VOLUME ["${GAME_ROOT}"]

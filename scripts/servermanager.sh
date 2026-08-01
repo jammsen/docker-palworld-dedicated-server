@@ -7,9 +7,9 @@
 set -e
 
 source /includes/colors.sh
-source /includes/companion.sh
 source /includes/config.sh
 source /includes/cron.sh
+source /includes/gameevents.sh
 source /includes/playerdetection.sh
 source /includes/security.sh
 source /includes/server.sh
@@ -17,7 +17,7 @@ source /includes/webhook.sh
 
 START_MAIN_PID=
 PLAYER_DETECTION_PID=
-COMPANION_PID=
+GAME_EVENTS_MAINTENANCE_PID=
 
 
 
@@ -49,6 +49,13 @@ do
     current_time=$(date +%H:%M:%S)
     ei ">>> Starting server manager"
     e "> Started at: $current_date $current_time"
+
+    # Provide this image's settings template on the game volume for the
+    # companion sidecar's settings export - see the companion's CONTRACT.md:
+    # https://github.com/jammsen/docker-palworld-companion
+    if [[ -f /default.env.template ]]; then
+        cp -f /default.env.template "${GAME_ROOT}/default.env.template"
+    fi
     start_main &
     START_MAIN_PID="$!"
 
@@ -59,12 +66,10 @@ do
        ew "> Player detection thread started with pid ${PLAYER_DETECTION_PID}"
     fi
 
-    if [[ "${PANEL_ENABLED,,}" == "true" ]] || [[ "${DISCORD_STATUS_ENABLED,,}" == "true" ]]; then
-       companion_loop &
-       COMPANION_PID="$!"
-       echo $COMPANION_PID > COMPANION.PID
-       ew "> Companion service thread started with pid ${COMPANION_PID}"
-    fi
+    # Single remover for game-events.log - every other process only appends
+    # (see includes/gameevents.sh for the concurrency design)
+    game_events_maintenance_loop &
+    GAME_EVENTS_MAINTENANCE_PID="$!"
 
     ew "> Server main thread started with pid ${START_MAIN_PID}"
     wait ${START_MAIN_PID}
