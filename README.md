@@ -182,7 +182,8 @@ services:
     depends_on:
       - palworld-dedicated-server
     ports:
-      # Do NOT expose the panel to the internet - use a reverse proxy or VPN/LAN only
+      # Uncomment to reach the web panel (Needs: PANEL_ENABLED=true)
+      # Warning! DO NOT expose this port to the internet, use a reverse proxy or VPN/LAN only
       - target: 8213 # Web panel port inside of the container
         published: 8213 # Web panel port on your host
         protocol: tcp
