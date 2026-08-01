@@ -416,7 +416,13 @@ The companion is part of the [compose example](#docker-compose-examples) and **d
 └── game         # game data dir
 ```
 
-Enabling it is done entirely in `default.env`, in the `Companion-sidecar-settings` section: set `PANEL_ENABLED=true` plus a `PANEL_PASSWORD` for the web panel, and/or `DISCORD_STATUS_ENABLED=true` for the Discord card - then `docker compose up -d` again. `RESTAPI_ENABLED=true` and `ADMIN_PASSWORD` (already in the file) are required - the companion talks to this image through the REST API and two shared volume mounts. Full documentation: [README with screenshots](https://github.com/jammsen/docker-palworld-companion#readme), [every variable (ENV_VARS.md)](https://github.com/jammsen/docker-palworld-companion/blob/develop/docs/ENV_VARS.md), [icon sets for the Discord card](https://github.com/jammsen/docker-palworld-companion/tree/develop/icons).
+Enabling it is done entirely in `default.env`, in the `Companion-sidecar-settings` section: set `PANEL_ENABLED=true` plus a `PANEL_PASSWORD` for the web panel, and/or `DISCORD_STATUS_ENABLED=true` for the Discord card - then `docker compose up -d` again. `RESTAPI_ENABLED=true` and `ADMIN_PASSWORD` (already in the file) are required - the companion talks to this image through the REST API and two shared volume mounts. 
+
+Full documentation: 
+- [README with screenshots](https://github.com/jammsen/docker-palworld-companion#readme)
+- [every variable (ENV_VARS.md)](https://github.com/jammsen/docker-palworld-companion/blob/develop/docs/ENV_VARS.md)
+- [Discord bot mode walkthrough](https://github.com/jammsen/docker-palworld-companion/blob/develop/docs/ENV_VARS.md#bot-mode)
+- [icon sets for the Discord card](https://github.com/jammsen/docker-palworld-companion/tree/develop/icons).
 
 > **Security warning:** The panel speaks plain HTTP - do **NOT** publish port 8213 to the internet. Use it LAN/VPN-only or put a TLS reverse proxy (Caddy, Traefik, nginx) in front.
 
