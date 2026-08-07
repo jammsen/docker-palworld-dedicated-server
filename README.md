@@ -455,7 +455,7 @@ A Helm chart to deploy this container can be found at [palworld-helm](https://gi
 
 ### I changed the `BaseCampWorkerMaxNum` setting, why didn't this update the server?
 
-> This is a confirmed bug. Changing `BaseCampWorkerMaxNum` in the `PalWorldSettings.ini` has no effect on the server. There are tools out there to help with this, like this one: <https://github.com/legoduded/palworld-worldoptions>
+  > This is a confirmed bug. Changing `BASE_CAMP_WORKER_MAX_NUM` in the `PalWorldSettings.ini` has no effect on the server. There are tools out there to help with this, like this one: <https://github.com/legoduded/palworld-worldoptions>
 
 > [!WARNING]
 > Adding `WorldOption.sav` will break `PalWorldSetting.ini`. So any new changes to the settings (either on the file or via ENV VARS), you will have to create a new `WorldOption.sav` and update it every time for those changes to have an effect.
